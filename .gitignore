@@ -7,6 +7,9 @@ _note.md
 # Claude Code scripts
 .scripts/
 
+# Generated data cache
+.data/
+
 # Claude Code skill/survey artefacts
 _project-overview.md
 _codebase-overview.md

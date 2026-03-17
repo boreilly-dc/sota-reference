@@ -1,0 +1,12 @@
+# Claude Code
+CLAUDE.md
+.claude/
+.claudeignore
+_note.md
+
+# Claude Code scripts
+.scripts/
+
+# Claude Code skill/survey artefacts
+_project-overview.md
+_codebase-overview.md

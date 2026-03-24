@@ -14,3 +14,6 @@ _note.md
 _project-overview.md
 _codebase-overview.md
 .idea/
+
+# Downloaded research papers
+.papers/

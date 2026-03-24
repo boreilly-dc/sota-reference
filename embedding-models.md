@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-19 |
-| Last Updated | 2026-03-19 |
-| Version | 2.0 |
+| Last Updated | 2026-03-20 |
+| Version | 2.1 |
 
 ---
 
@@ -23,6 +23,7 @@
 - [Cost Analysis: Self-Hosting vs API](#cost-analysis-self-hosting-vs-api)
 - [Decision Framework](#decision-framework)
 - [Hyperscaler Managed Embedding Services](#hyperscaler-managed-embedding-services)
+- [Context-Length Performance: BGE-M3 vs Alternatives](#context-length-performance-bge-m3-vs-alternatives)
 - [Areas of Uncertainty](#areas-of-uncertainty)
 - [References](#references)
 
@@ -124,7 +125,9 @@ The sweet spot for local deployment. These models run on consumer GPUs (4--8GB V
 - **VRAM**: ~2GB (GPU), runs on CPU with ~3GB RAM
 - **Local deployment**: sentence-transformers, FastEmbed, Ollama, ONNX
 - **Why choose it**: The only major open-source model offering all three retrieval modes (dense, sparse, multi-vector) in one model. MIT licence. Multilingual (100+ languages). Runs comfortably on consumer hardware including Mac. Excellent for hybrid search pipelines combining keyword and semantic search.
-- **Limitations**: Lower MTEB scores than 7B+ models. Dense-only retrieval is less competitive.
+- **Context-length performance**: BGE-M3 excels at short contexts but degrades sharply beyond ~2K tokens. Independent benchmarking shows passkey retrieval scores of 1.0 at 512 tokens, 0.8 at 2K, but dropping to 0.32 at 4K and 0.34 at 8K — despite the 8192-token advertised maximum. For documents longer than ~2K tokens, consider Qwen3-Embedding-0.6B (which maintains ≥94% accuracy up to 8K with LAST pooling) or chunking to keep inputs under 2K tokens.
+- **Pooling strategy**: Use CLS pooling with BGE-M3 (not MEAN or LAST). Pooling choice has a dramatic impact — the wrong pooling strategy can cut performance by 50%+.
+- **Limitations**: Lower MTEB scores than 7B+ models. Dense-only retrieval is less competitive. Performance degrades significantly on longer inputs.
 
 #### stella_en_1.5B_v5 --- Best Mid-Size English-Only
 
@@ -534,6 +537,48 @@ Running NV-Embed-v2 on a single A100 costs roughly $1--2/hour, translating to ~$
 
 All hyperscalers also support self-hosting open-weight models on their GPU instances (e.g., AWS p4d/p5 with A100/H100, Azure NC-series, GCP A3 with H100).
 
+## Context-Length Performance: BGE-M3 vs Alternatives
+
+MTEB scores measure average performance but hide a critical variable: how performance changes with input length. Independent benchmarking across context lengths reveals that models have very different degradation curves.
+
+### Passkey retrieval accuracy by context length
+
+| Model | Best pooling | 512 tokens | 2K tokens | 4K tokens | 8K tokens |
+|-------|-------------|-----------|----------|----------|----------|
+| **Qwen3-Embedding-0.6B** | LAST | 1.00 | 0.94 | 1.00 | 1.00 |
+| **BGE-M3** | CLS | 1.00 | 0.80 | 0.32 | 0.34 |
+| **Jina-Embeddings-v3** | MEAN | 1.00 | 0.92 | 0.36 | 0.40 |
+| **E5-Base-4K** | MEAN | 0.70 | 0.86 | 0.72 | 0.72 |
+| **Nomic-Embed-Text-v1.5** | MEAN | 0.16 | 0.22 | 0.46 | 0.58 |
+
+Source: [Comprehensive Embedding Models Evaluation](https://x22x22.github.io/embedding_models_comprehensive_evaluation.html)
+
+**Key takeaways:**
+- **BGE-M3's sweet spot is ≤2K tokens.** Despite supporting 8192 tokens, it performs best on shorter inputs. If your chunks are under 2K tokens (which is typical for RAG at 256–512 tokens), BGE-M3 is excellent.
+- **Qwen3-Embedding-0.6B is the context-length champion** among similarly sized models. It maintains near-perfect accuracy at all tested lengths.
+- **Pooling strategy matters enormously.** Using the wrong pooling can cut performance by 50%+. Always use the model's recommended pooling: CLS for BGE-M3, LAST for Qwen3, MEAN for Jina v3.
+- **Bigger doesn't always mean better for retrieval.** In an independent 16-model benchmark on product search, e5-small (118M params) achieved 100% Top-5 accuracy at 16ms latency, outperforming models 70x its size. Domain-specific performance varies significantly from MTEB averages.
+
+### When to choose BGE-M3
+
+- You need **hybrid search** (dense + sparse + ColBERT) from a single model — BGE-M3 is the only major model offering all three modes
+- Your **chunks are ≤2K tokens** (standard for most RAG pipelines)
+- You need **multilingual** support (100+ languages)
+- You want a **permissive licence** (MIT) for commercial use
+- You're running on **limited hardware** (568M params, ~2GB VRAM)
+
+### When to choose an alternative
+
+| Scenario | Better choice | Why |
+|----------|--------------|-----|
+| Long chunks (>2K tokens) | Qwen3-Embedding-0.6B | Maintains accuracy at 4K–8K tokens |
+| Maximum retrieval quality | Qwen3-Embedding-8B or BGE-en-ICL | Higher MTEB scores across all tasks |
+| Fastest inference | all-MiniLM-L6-v2 or e5-small | 16ms latency, 100% Top-5 on some benchmarks |
+| Best retrieval per parameter | Snowflake Arctic Embed | SOTA retrieval at 334M params |
+| Full-document embedding | GTE-Qwen2-7B-instruct | 128K context, no chunking needed |
+| Multimodal (text + images) | Jina v4 | Vision-language retrieval |
+| Dense-only retrieval | Qwen3-Embedding-0.6B or Snowflake Arctic | Higher dense scores than BGE-M3 |
+
 ## Areas of Uncertainty
 
 - **MTEB score reliability**: All scores are self-reported. No independent verification exists. Models may be optimised for MTEB tasks rather than real-world performance. Focus on task-specific scores (e.g. retrieval) relevant to your use case.
@@ -567,3 +612,6 @@ All hyperscalers also support self-hosting open-weight models on their GPU insta
 20. [Qwen3-Embedding - GitHub](https://github.com/QwenLM/Qwen3-Embedding) - Official Qwen3 embedding repository
 21. [Voyage 3.5 on Azure AI](https://ai.azure.com/catalog/models/voyage-3.5-embedding-model) - Azure availability and benchmarks
 22. [Scaling PyTorch Inference with ONNX Runtime - Microsoft](https://opensource.microsoft.com/blog/2022/04/19/scaling-up-pytorch-inference-serving-billions-of-daily-nlp-inferences-with-onnx-runtime/) - ONNX Runtime production benchmarks
+23. [Comprehensive Embedding Models Evaluation: Native vs Chunked Processing](https://x22x22.github.io/embedding_models_comprehensive_evaluation.html) - Context-length performance comparison across 5 models
+24. [Benchmark of 16 Best Open Source Embedding Models for RAG - AIMultiple](https://aimultiple.com/open-source-embedding-models) - Independent 16-model retrieval benchmark on product search
+25. [BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings Through Self-Knowledge Distillation](https://arxiv.org/abs/2402.03216v3) - Original BGE-M3 paper

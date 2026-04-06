@@ -32,9 +32,8 @@ Scores across BFCL V4 (structured function calling) and Tau²-bench domains (air
 
 ![Tool Use Benchmarks](images/tool-use-benchmarks.png)
 
-## Regenerate Charts
+### Local Models (≤ 30B params)
 
-```bash
-python3 .scripts/plot_model_elo.py
-python3 .scripts/plot_tool_use.py
-```
+Tool use performance for models that can run locally, with frontier model reference lines. Covers BFCL V4, Docker's practical tool calling eval, and Tau²-bench Retail.
+
+![Tool Use - Local Models](images/tool-use-local-models.png)

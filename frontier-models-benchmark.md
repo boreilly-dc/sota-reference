@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-04-06 |
-| Version | 2.2 |
+| Last Updated | 2026-04-30 |
+| Version | 2.3 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data pulled on 6 April 2026. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/Hard, Aider Polyglot, BFCL V4, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
+This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data pulled on 30 April 2026. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/Hard, Aider Polyglot, BFCL V4, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
 
 Each model entry includes origin, release date, model lineage, licence, parameter count, context window, and throughput data where known.
 
@@ -32,21 +32,23 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 
 | # | Model | Origin | Released | Predecessor | Successor | Licence | Params | Context | tok/s | TTFT |
 |---|-------|--------|----------|-------------|-----------|---------|--------|---------|-------|------|
-| 1 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~50-60 | ~2-5 s |
-| 2 | **Claude Opus 4.6 (thinking)** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~50-60 | ~2-5 s |
-| 3 | **Claude Sonnet 4.6** | Anthropic | 2026-02-17 | Claude Sonnet 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~80-100 | ~1-3 s |
-| 4 | **Gemini 3.1 Pro Preview** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
-| 5 | **Grok 4.20 Beta** | xAI | 2026-02-17 | Grok 4.1 | Incumbent | Proprietary | ~500B (MoE, "small" variant) | 256K-2M | Unknown | Unknown |
-| 6 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
-| 7 | **GPT-5.4 Pro** | OpenAI | 2026-03-06 | GPT-5.3 Codex | Incumbent | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
-| 8 | **GPT-5.4 High** | OpenAI | 2026-03-05 | GPT-5.3 Codex | GPT-5.4 Pro | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
-| 9 | **GPT-5.4** | OpenAI | 2026-03-05 | GPT-5.3 Codex | GPT-5.4 Pro | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
+| 1 | **Claude Opus 4.7 (thinking)** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 2 | **Claude Opus 4.6 (thinking)** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 3 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 4 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 5 | **Muse Spark** | Meta | 2026-04 | — | Incumbent | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
+| 6 | **Gemini 3.1 Pro Preview** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
+| 7 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
+| 8 | **Grok 4.20 Beta** | xAI | 2026-02-17 | Grok 4.1 | Incumbent | Proprietary | ~500B (MoE, "small" variant) | 256K-2M | Unknown | Unknown |
+| 9 | **GPT-5.5** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
+| 10 | **GPT-5.4 High** | OpenAI | 2026-03-05 | GPT-5.3 Codex | GPT-5.5 | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
 
 **Key observations:**
-- Anthropic holds the top three Arena spots. Claude Opus 4.6 (thinking) leads at Elo ~1500 (BenchLM April 2026 snapshot) — roughly +17 over the nearest non-Anthropic model.
-- GPT-5.4 Pro (released 6 March 2026) is the newest frontier model and leads BenchLM's overall composite at 92/100 (#1 of 103 models evaluated). Arena Elo is still stabilising.
-- Grok 4.1 Thinking (codename: quasarflux) now holds #1 on the LMArena text-capability leaderboard at Elo 1483 (confirmed April 4, 2026). Grok 4.20's full model is still training; provisional Arena Elo of 1505-1535.
-- GLM-5 (Zhipu AI, Elo 1451) is the highest-ranked open-source model — see the [Open Source](#open-source) section.
+- Anthropic holds the top four Arena spots. Claude Opus 4.7 (thinking) leads at Elo ~1504 — roughly +8 over the nearest non-Anthropic model. Claude Opus 4.7 was released 16 April 2026.
+- **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Arena Elo is still stabilising. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
+- **Muse Spark** (Meta) is a new entrant in the Arena top 5 at Elo ~1493. Details are limited.
+- GPT-5.4 Pro still leads BenchLM's overall composite at 92/100 (#1 of 225+ models evaluated); GPT-5.5 follows at 91/100.
+- GLM-5 (Zhipu AI, Elo 1451) remains the highest-ranked open-source model — see the [Open Source](#open-source) section.
 
 ## Agentic Coding
 
@@ -54,42 +56,42 @@ Composite ranking across SWE-Bench Verified, SWE-Bench Pro, Terminal-Bench 2.0, 
 
 | # | Model | Origin | Released | Predecessor | Successor | Licence | Params | Context | tok/s | TTFT |
 |---|-------|--------|----------|-------------|-----------|---------|--------|---------|-------|------|
-| 1 | **GPT-5.4 Pro** | OpenAI | 2026-03-06 | GPT-5.3 Codex | Incumbent | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
-| 2 | **GPT-5.4** | OpenAI | 2026-03-05 | GPT-5.3 Codex | GPT-5.4 Pro | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
-| 3 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~50-60 | ~2-5 s |
+| 1 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 2 | **GPT-5.5** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
+| 3 | **GPT-5.4 Pro** | OpenAI | 2026-03-06 | GPT-5.3 Codex | GPT-5.5 | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
 | 4 | **Gemini 3.1 Pro** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
-| 5 | **Claude Sonnet 4.6** | Anthropic | 2026-02-17 | Claude Sonnet 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~80-100 | ~1-3 s |
-| 6 | **GPT-5.3 Codex** | OpenAI | 2026-02-05 | GPT-5.2 Codex | GPT-5.4 | Proprietary | Undisclosed | 400K | Unknown | Unknown |
-| 7 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | Open weights | 230B (MoE) | 204K | ~100 | Unknown |
-| 8 | **GLM-4.7** | Zhipu AI | Q1 2026 | GLM-4.6 | Incumbent | Open-source | Undisclosed (MoE) | 128K | Unknown | Unknown |
-| 9 | **DeepSeek V3.2-Exp (Reasoner)** | DeepSeek | Q1 2026 | DeepSeek V3.1 | Incumbent | Open-source | 685B / 37B active (MoE) | 128K | Unknown | Unknown |
+| 5 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 6 | **Claude Sonnet 4.6** | Anthropic | 2026-02-17 | Claude Sonnet 4.5 | Incumbent | Proprietary | Undisclosed | 1M | ~80-100 | ~1-3 s |
+| 7 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | Open weights (Modified MIT) | ~1T / 32B active (MoE) | 256K | Unknown | Unknown |
+| 8 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | Open weights | 230B (MoE) | 204K | ~100 | Unknown |
+| 9 | **GLM-4.7** | Zhipu AI | Q1 2026 | GLM-4.6 | Incumbent | Open-source | Undisclosed (MoE) | 128K | Unknown | Unknown |
 
 **Benchmark scores (where available):**
 
 | Model | SWE-Bench Verified | SWE-Bench Pro | Terminal-Bench 2.0 | Terminal-Bench Hard | Aider Polyglot |
 |-------|-------------------|--------------|--------------------|--------------------|---------------|
+| Claude Opus 4.7 | 82.0% | 64.3% | — | — | — |
+| GPT-5.5 | — | 58.6% | 82.7% | — | — |
 | GPT-5.4 Pro | 86.0% | — | — | — | — |
-| GPT-5.4 | — | 57.7% | — | 58% | — |
+| GPT-5.4 | 78.2% | 57.7% | — | 58% | — |
+| Gemini 3.1 Pro | 78.8% | 54.2% | 78.4% | 54% | — |
 | Claude Opus 4.6 | 80.8% | — | 74.7% | 53% | — |
-| Gemini 3.1 Pro | 80.6% | — | 78.4% | 54% | — |
 | Claude Sonnet 4.6 | 79.6% | — | — | 49% | — |
-| GPT-5.3 Codex | — | 56.8% | 77.3% | 53% | — |
-| Claude Opus 4.5 | 80.9% | 45.9% | — | — | — |
+| Kimi K2.6 | — | 58.6% | — | — | — |
 | MiniMax M2.5 | 80.2% | — | — | — | — |
 | GLM-4.7 | 73.8% | — | — | — | — |
-| DeepSeek V3.2-Exp | 73.0% | — | — | — | 74.2% |
 
 **Key observations:**
-- **GPT-5.4 Pro is the new SWE-bench Verified leader at 86.0%** — a 5-point jump over the previous cluster of ~80-81% models. This is the first model to clearly break away from the pack on this benchmark.
-- The remaining top models on SWE-Bench Verified are still tightly clustered (79.6–80.9%). At this level, the agent scaffold/harness matters more than the model itself — scaffold choice causes a 22-point swing vs ~1 point from model selection.
-- GPT-5.4 leads on the harder benchmarks (SWE-Bench Pro 57.7%, Terminal-Bench Hard 58%) which test longer, more complex agentic tasks.
-- GLM-4.7 (Zhipu AI, 73.8% SWE-Bench Verified) is a new open-source coding contender with thinking capabilities, scoring 95.7% on AIME 2025 and 42.8% on Humanity's Last Exam.
-- MiniMax M2.5 (80.2% SWE-Bench Verified) remains the top open-weights model on that benchmark.
-- DeepSeek V3.2-Exp achieves 74.2% on Aider Polyglot at $1.30/run — roughly 22x cheaper than GPT-5.
+- **Claude Opus 4.7 leads SWE-Bench Pro at 64.3%** — a 6.6-point jump over the previous leader (GPT-5.4 at 57.7%). This is the hardest agentic coding benchmark and the clearest differentiator between frontier models.
+- GPT-5.4 Pro retains the highest SWE-Bench Verified score at 86.0%, though this appears scaffold-dependent — vals.ai lists GPT-5.4 at 78.2% on the same benchmark with a different harness.
+- **GPT-5.5** (released 23 April 2026) leads Terminal-Bench 2.0 at 82.7% and debuts on SWE-Bench Pro at 58.6%.
+- **Kimi K2.6** (Moonshot AI, 20 April 2026) matches GPT-5.5 on SWE-Bench Pro at 58.6% — the strongest open-weights coding result. Supports 12-hour autonomous coding sessions and 300-agent swarms.
+- Claude Mythos Preview (gated, ~50 companies via "Project Glasswing") scored 93.9% on SWE-Bench Verified — not publicly available but signals the ceiling for agentic coding.
+- The scaffold/harness effect remains large: the same model can swing 22+ points depending on the agent framework used.
 
 ## Tool Use
 
-Ranked by the Berkeley Function Calling Leaderboard V4 (BFCL V4, last updated December 2025), supplemented by Tau2-bench for business agent tool use.
+Ranked by the Berkeley Function Calling Leaderboard V4 (BFCL V4, last updated 12 April 2026), supplemented by Tau2-bench for business agent tool use.
 
 | # | Model | Origin | Released | Predecessor | Successor | Licence | Params | Context | tok/s | TTFT |
 |---|-------|--------|----------|-------------|-----------|---------|--------|---------|-------|------|
@@ -116,7 +118,7 @@ Ranked by the Berkeley Function Calling Leaderboard V4 (BFCL V4, last updated De
 - GLM-4.5 from Zhipu AI is both the overall BFCL V4 leader (70.9%) and fully open-source (MIT).
 - GPT-5 scores a surprisingly low 59.2% on structured function calling, suggesting OpenAI optimised for other capabilities.
 - Kimi K2.5 (Moonshot AI) leads Tau2-bench for telecom/customer-service tool use — a different axis of tool-calling competence.
-- The BFCL V4 leaderboard has not yet evaluated most Q1 2026 models (GPT-5.2+, Claude Opus 4.6, Gemini 3.x).
+- The BFCL V4 leaderboard was updated on 12 April 2026 but still lacks evaluations for the newest models (Claude Opus 4.7, GPT-5.5, Kimi K2.6). Gemini 3.1 Pro and Claude Opus 4.6 now score ~99.3% on tool-calling sub-metrics per llm-stats.com rankings.
 
 ## Visual Understanding
 
@@ -124,29 +126,31 @@ Ranked by MMMU-Pro (college-level multimodal understanding), cross-referenced wi
 
 | # | Model | Origin | Released | Predecessor | Successor | Licence | Params | Context | tok/s | TTFT |
 |---|-------|--------|----------|-------------|-----------|---------|--------|---------|-------|------|
-| 1 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
-| 2 | **GPT-5.2 Pro** | OpenAI | 2025-12-11 | GPT-5 | GPT-5.4 | Proprietary | Undisclosed | 400K | ~70-90 | Variable |
-| 3 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~50-60 | ~2-5 s |
-| 4 | **Gemini 2.5 Pro** | Google DeepMind | 2025-03 | Gemini 2.0 Pro | Gemini 3 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-2 s |
-| 5 | **Grok 4 Heavy** | xAI | 2025-07 | Grok 3 | Grok 4.1 | Proprietary | Undisclosed | 256K | Unknown | Unknown |
-| 6 | **Qwen 3.5 VL** | Alibaba | 2026-02-16 | Qwen 2.5-VL-72B | Incumbent | Open-source (Apache 2.0) | 397B / 17B active (MoE) | 128K | Unknown | Unknown |
-| 7 | **GPT-5.2** | OpenAI | 2025-12-11 | GPT-5 | GPT-5.4 | Proprietary | Undisclosed | 400K | ~187 | ~1.2 s |
-| 8 | **Claude Opus 4.5** | Anthropic | 2025-10 | Claude Opus 4 | Claude Opus 4.6 | Proprietary | Undisclosed | 200K | ~50-60 | ~2-5 s |
+| 1 | **GPT-5.4 Pro** | OpenAI | 2026-03-06 | GPT-5.3 Codex | GPT-5.5 | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
+| 2 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
+| 3 | **GPT-5.2** | OpenAI | 2025-12-11 | GPT-5 | GPT-5.4 | Proprietary | Undisclosed | 400K | ~187 | ~1.2 s |
+| 4 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 5 | **Gemini 2.5 Pro** | Google DeepMind | 2025-03 | Gemini 2.0 Pro | Gemini 3 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-2 s |
+| 6 | **Claude Sonnet 4.6** | Anthropic | 2026-02-17 | Claude Sonnet 4.5 | Incumbent | Proprietary | Undisclosed | 1M | ~80-100 | ~1-3 s |
+| 7 | **Grok 4 Heavy** | xAI | 2025-07 | Grok 3 | Grok 4.1 | Proprietary | Undisclosed | 256K | Unknown | Unknown |
+| 8 | **Qwen 3.5 VL** | Alibaba | 2026-02-16 | Qwen 2.5-VL-72B | Incumbent | Open-source (Apache 2.0) | 397B / 17B active (MoE) | 128K | Unknown | Unknown |
 
 **Benchmark scores:**
 
 | Model | MMMU-Pro | Video-MMMU | MathVista | ChartQA |
 |-------|---------|-----------|-----------|---------|
+| GPT-5.4 Pro | 94.0% | — | — | — |
 | Gemini 3 Pro | 81.0% | 87.6% | 82.3% | 89.1% |
-| GPT-5.2 Pro | 78.5% | — | — | — |
+| GPT-5.2 | 79.5% | — | — | — |
 | Claude Opus 4.6 | 76.8% | — | — | — |
 | Gemini 2.5 Pro | 75.2% | — | — | — |
+| Claude Sonnet 4.6 | 74.5% | — | — | — |
 | Grok 4 Heavy | 73.6% | — | — | — |
 | Qwen 3.5 VL | 71.5% | — | — | — |
-| GPT-5.2 | 72.8% | — | — | — |
 
 **Key observations:**
-- Google DeepMind dominates vision. Gemini 3 Pro leads MMMU-Pro (81.0%), Video-MMMU (87.6%), MathVista (82.3%), and ChartQA (89.1%) — a clean sweep.
+- **GPT-5.4 Pro now leads MMMU-Pro at 94.0%** — a 13-point jump over Gemini 3 Pro (81.0%). This is the first time a non-Google model has topped this benchmark.
+- Google DeepMind still dominates breadth across vision benchmarks. Gemini 3 Pro leads Video-MMMU (87.6%), MathVista (82.3%), and ChartQA (89.1%).
 - Qwen 3.5 VL (397B MoE, Apache 2.0) is the best open-source vision model at 71.5% MMMU-Pro.
 - Notable open-source runners-up: GLM-4.5V (106B MoE, MIT — SOTA on 41 open multimodal benchmarks), GLM-4.1V-9B-Thinking (9B, rivals 72B models), InternVL3-78B (strong on OCR and hallucination resistance).
 
@@ -199,7 +203,7 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 |---|-------|--------|----------|-------------|-----------|------------------------|-------------|---------|---------|------------|
 | 1 | **GLM-5** | Zhipu AI | 2026-02-11 | GLM-4.5 (355B) | Incumbent | 744B / ~40B | MoE | 128K | Apache 2.0 | Arena Elo 1451, Quality Index 49.6, MMLU-Pro 89.7%, HumanEval 92.1% |
 | 2 | **DeepSeek V3.2** | DeepSeek | 2026-02-15 | DeepSeek V3.1 | Incumbent | 685B / 37B | MoE (DeepSeekMoE + MLA) | 128K | DeepSeek Licence | Quality Index 41.2, LiveCodeBench 86-90%, AIME 92%, SWE-Bench 72.8% |
-| 3 | **Kimi K2.5** | Moonshot AI | Q1 2026 | Kimi K2 | Incumbent | ~1T / undisclosed | MoE | 128K | Open weights (MIT) | Quality Index 46.7, LiveCodeBench 85%, AIME 96%, Tau2-bench #1 tool-use |
+| 3 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | ~1T / 32B | MoE | 256K | Open weights (Modified MIT) | Intelligence Index 54, SWE-Bench Pro 58.6%, 300-agent swarm coding |
 | 4 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | 230B / undisclosed | MoE | 204K | Open weights | Quality Index 42.0, SWE-Bench Verified 80.2% (#1 open-weights coding) |
 | 5 | **MiMo-V2-Flash** | Xiaomi | 2025-12-16 | MiMo-V1 | Incumbent | 309B / 15B | MoE (hybrid attn + MTP) | 128K | Apache 2.0 | LiveCodeBench 87%, AIME 96%, ~150 tok/s |
 | 6 | **Qwen3-235B-A22B** | Alibaba | 2025-04-29 | Qwen 2.5-72B | Qwen 3.5 | 235B / 22B | MoE | 128K | Apache 2.0 | Hybrid thinking (fast/deep), 119 languages |
@@ -209,11 +213,12 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 
 **Key observations:**
 - GLM-5 (Zhipu AI, 744B MoE) unseated DeepSeek in February 2026 as the top open-source model. Native support for 14+ Asian languages including Tamil, Hindi, and Telugu.
-- **Gemma 4** (Google DeepMind, April 2, 2026) is the biggest new open-source entry. The 31B dense model ranks #3 among all open models on Arena AI's text leaderboard (Elo ~1452). Apache 2.0 licence — a significant shift from Gemma 3's more restrictive Gemma Licence. Four sizes: E2B (2.3B active), E4B (4B active), 26B MoE (4B active), 31B dense.
-- **GLM-4.7** (Zhipu AI) is a notable new coding-focused release with thinking capabilities: AIME 2025 95.7%, SWE-bench Verified 73.8%, HLE 42.8% (+12.4% over GLM-4.6).
+- **Kimi K2.6** (Moonshot AI, 20 April 2026) is the strongest new open-weights entry. Artificial Analysis Intelligence Index of 54 — the highest for any open-weight model — with SWE-Bench Pro 58.6% matching GPT-5.5. Supports 12-hour autonomous coding sessions and 300-agent coordinated swarms. $0.60/M input, $2.50/M output.
+- **Gemma 4** (Google DeepMind, April 2, 2026) is a major open-source entry. The 31B dense model ranks #3 among all open models on Arena AI's text leaderboard (Elo ~1452). Apache 2.0 licence — a significant shift from Gemma 3's more restrictive Gemma Licence. Four sizes: E2B (2.3B active), E4B (4B active), 26B MoE (4B active), 31B dense.
+- **GLM-4.7** (Zhipu AI) is a notable coding-focused release with thinking capabilities: AIME 2025 95.7%, SWE-bench Verified 73.8%, HLE 42.8% (+12.4% over GLM-4.6).
 - Every top open-source model at the frontier tier uses MoE architecture (Gemma 4 31B dense is the exception, ranking via raw parameter density).
 - Apache 2.0 dominates licensing, with Meta's Llama Community Licence the main exception.
-- The gap to proprietary models continues to narrow: GLM-5 at Arena Elo 1451 vs Claude Opus 4.6 (thinking) at ~1500 — a ~50 Elo gap, down from ~200+ a year ago.
+- The gap to proprietary models continues to narrow: GLM-5 at Arena Elo 1451 vs Claude Opus 4.7 (thinking) at ~1504 — a ~53 Elo gap, down from ~200+ a year ago.
 
 ## Best Models <= 20B Parameters
 
@@ -241,7 +246,20 @@ Models with 20B or fewer total parameters (or, for MoE models, 20B or fewer acti
 
 ## Throughput (tok/s)
 
-Output token generation speed measured by Artificial Analysis (tested every 8 hours on live API endpoints) and the Awesome Agents speed leaderboard, as of March 2026.
+Output token generation speed measured by Artificial Analysis (tested every 8 hours on live API endpoints) and the Awesome Agents speed leaderboard, as of April 2026.
+
+### Artificial Analysis Intelligence Index
+
+The Intelligence Index is a composite score across multiple benchmarks. As of late April 2026:
+
+| # | Model | Score | Notes |
+|---|-------|-------|-------|
+| 1 | **GPT-5.5** | 60 | New #1, broke the three-way tie at 57 |
+| 2 | **Claude Opus 4.7** | 57 | |
+| 3 | **Gemini 3.1 Pro Preview** | 57 | |
+| 4 | **GPT-5.4** | 57 | |
+| 5 | **Kimi K2.6** | 54 | Strongest open-weight model |
+| 6 | **Claude Opus 4.6** | 53 | |
 
 ### Model Speed Rankings (via default API provider)
 
@@ -306,6 +324,10 @@ Output token generation speed measured by Artificial Analysis (tested every 8 ho
 - LiveBench — https://livebench.ai
 
 ### Model Announcements and Documentation
+- GPT-5.5 — https://ofox.ai/blog/gpt-5-5-api-vs-claude-opus-gemini-3-1-flagship-2026/
+- Claude Opus 4.7 — https://ofox.ai/blog/claude-opus-4-7-api-review-upgrade-guide-2026/
+- Claude Mythos Preview — https://www.infoq.com/news/2026/04/anthropic-claude-mythos/
+- Kimi K2.6 — https://huggingface.co/moonshotai/Kimi-K2.6
 - GPT-5.4 — https://openai.com/index/introducing-gpt-5-4/
 - Claude Opus 4.6 — https://www.anthropic.com/news/claude-opus-4-6
 - Claude Sonnet 4.6 — https://www.anthropic.com/news/claude-sonnet-4-6
@@ -313,7 +335,7 @@ Output token generation speed measured by Artificial Analysis (tested every 8 ho
 - Grok 4.20 — https://x.ai/news/grok-4
 - GLM-5 — https://z.ai/blog/glm-5
 - DeepSeek V3.2 — https://api-docs.deepseek.com/news/news251201
-- Kimi K2.5 — https://en.wikipedia.org/wiki/Kimi_(chatbot)
+- Kimi K2.5 / K2.6 — https://en.wikipedia.org/wiki/Kimi_(chatbot)
 - MiniMax M2.5 — https://www.minimax.io
 - MiMo-V2-Flash — https://mimo.xiaomi.com/blog/mimo-v2-flash
 - Qwen3 / 3.5 — https://arxiv.org/abs/2505.09388, https://artificialanalysis.ai/articles/qwen3-5-small-models
@@ -348,3 +370,10 @@ Output token generation speed measured by Artificial Analysis (tested every 8 ho
 - Grok 4.1 LMArena dominance (April 2026) — https://www.modezone.com/grok-4-1-dominates-the-lmarena-leaderboard
 - BenchLM LLM Leaderboard History — https://benchlm.ai/llm-leaderboard-history
 - Lushbinary Gemma 4 Developer Guide — https://lushbinary.com/blog/gemma-4-developer-guide-benchmarks-architecture-local-deployment-2026/
+- Ofox LLM Leaderboard April 2026 — https://ofox.ai/blog/llm-leaderboard-best-ai-models-ranked-2026/
+- GPT-5.5 Intelligence Index — https://artificialanalysis.ai/articles/openai-gpt5-5-is-the-new-leading-AI-model
+- GPT-5.5 vs Claude Opus 4.7 vs Gemini 3.1 Pro — https://ofox.ai/blog/gpt-5-5-api-vs-claude-opus-gemini-3-1-flagship-2026/
+- Kimi K2.6 Release — https://www.marktechpost.com/2026/04/20/moonshot-ai-releases-kimi-k2-6-with-long-horizon-coding-agent-swarm-scaling-to-300-sub-agents-and-4000-coordinated-steps/
+- Claude Mythos Preview — https://llm-stats.com/blog/research/claude-mythos-preview-launch
+- LLM Stats Tool Calling Rankings — https://llm-stats.com/leaderboards/best-ai-for-tool-calling
+- vals.ai SWE-bench Verified — https://llm-stats.com/benchmarks/swe-bench-verified

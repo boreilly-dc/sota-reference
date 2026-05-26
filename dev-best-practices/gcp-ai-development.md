@@ -3,8 +3,9 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-26 |
-| Last Updated | 2026-05-26 |
-| Version | 1.0 |
+| Last Updated | 2026-05-27 |
+| Official Docs Verified | 2026-05-26 |
+| Version | 1.1 |
 
 ---
 
@@ -26,22 +27,23 @@
 - [CI/CD for AI Applications](#cicd-for-ai-applications)
 - [Agent Studio and Low-Code Scenarios](#agent-studio-and-low-code-scenarios)
 - [Architecture Patterns by Business Size](#architecture-patterns-by-business-size)
+- [Implementation Gaps to Fill](#implementation-gaps-to-fill)
 - [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
 - [References](#references)
 
 ## Executive Summary
 
-Google Cloud's AI platform underwent a major consolidation at Cloud Next 2026 (April 2026). **Vertex AI has been retired as a standalone product** and replaced by the **Gemini Enterprise Agent Platform** — a unified environment for building, scaling, governing, and optimising autonomous AI agents. The platform brings together model access (Model Garden), agent development (ADK and Agent Studio), managed runtime (Agent Engine), persistent context (Memory Bank and Sessions), and evaluation tooling under a single control plane. [1][2]
+Google Cloud has consolidated agent development under the **Gemini Enterprise Agent Platform** while **Vertex AI remains an active Google Cloud platform and API surface** for machine learning and generative AI. Treat Agent Platform as the current agent-building control plane, and treat Vertex AI resource names and APIs as still relevant where the official docs and Terraform provider use them. [1][2]
 
-The most significant 2026 developments:
+The most significant current platform developments:
 
-1. **Gemini Enterprise Agent Platform** (April 2026) — replaces Vertex AI as the central AI development surface. Unifies model building, agent orchestration, deployment, and governance.
-2. **Agent Development Kit (ADK) 2.0** — open-source, code-first framework for building production agents. Available in Python, TypeScript, Go, Java, and Kotlin. Model-agnostic and deployment-agnostic.
-3. **Ironwood TPU GA** (April 2026) — seventh-generation TPU, first designed primarily for inference. 10x peak performance over TPU v5p and 4x per-chip improvement over TPU v6e (Trillium).
-4. **A2A Protocol v1.0** — open agent-to-agent communication protocol (donated to Linux Foundation), in production at 150+ organisations. Complements MCP for inter-agent collaboration.
-5. **Managed MCP servers** — first-class MCP support integrated with Agent Engine, enabling standardised tool connectivity for agents across BigQuery, Cloud SQL, and other services.
-6. **Model Garden expansion** — 200+ foundation models including Gemini 3.1 Pro, Gemini 3.5 Flash, Gemma 4, and third-party models (Anthropic Claude Opus/Sonnet/Haiku, Llama, Mistral).
-7. **TPU 8 preview** — eighth-generation architecture splits into training-optimised (Sunfish/Broadcom) and inference-optimised (Zebrafish/MediaTek) chips, targeting late 2027.
+1. **Gemini Enterprise Agent Platform** — current Google Cloud surface for agent development, deployment, evaluation, and governance. [1]
+2. **Agent Development Kit (ADK)** — open-source, code-first framework for agents. Current ADK documentation lists Python, TypeScript, Go, Java, and Kotlin support; confirm maturity per language SDK before production use. [3]
+3. **Agent Runtime** — managed runtime for deploying and scaling agents. Some adjacent services and APIs are preview-labelled, so production designs need a feature-by-feature launch-stage check. [4][5]
+4. **RAG Engine** — managed retrieval infrastructure with mode-specific trade-offs: Serverless mode is public preview and Spanner mode is the more mature stateful option for production RAG that needs tighter control. [6][7]
+5. **Model Armor** — prompt/response screening, prompt injection and jailbreak detection, sensitive data protection, and floor settings for central policy enforcement. [8]
+6. **Remote MCP servers and MCP Toolbox** — official Google Cloud paths for connecting agents to tools and databases, including BigQuery and Cloud SQL patterns. [9][10]
+7. **Model Garden and partner models** — Gemini, Gemma, and selected partner models remain accessible through current Google Cloud model surfaces, with availability and launch stage varying by model and region. [11][12]
 
 For contractors building cloud AI systems, the GCP landscape has three tiers of engagement:
 
@@ -55,7 +57,7 @@ This guide covers production best practices across all three, with emphasis on t
 
 ## Evidence Basis and Status Labels
 
-This playbook uses current Google Cloud documentation, the Agent Platform product pages, and official Google developer blog posts as normative sources. Community guides and third-party blog posts are not used as primary evidence.
+This playbook uses current official documentation from Google Cloud, Google AI, Terraform Registry, and Anthropic's Claude-on-Vertex documentation as normative sources. Third-party blogs and community guides are intentionally excluded from the reference list.
 
 Feature status matters because the Agent Platform is evolving rapidly from the Vertex AI migration. Use these labels:
 
@@ -63,43 +65,42 @@ Feature status matters because the Agent Platform is evolving rapidly from the V
 |-------|---------|---------------|
 | **GA** | Generally available in current documentation | Suitable for production |
 | **Preview** | Public preview or preview-labelled API | Use behind an explicit risk decision; avoid as a hard dependency for regulated production |
-| **Legacy** | Former Vertex AI surface still accessible but deprecated | Use only for migration; plan to move off |
+| **Legacy** | Explicitly legacy-labelled documentation or product surface | Use only for migration; plan to move off |
 | **Region-dependent** | Availability varies by geography, model, or TPU type | Confirm in the console before committing to design |
+| **Pre-GA** | Marked by Google as Preview, Experimental, or otherwise subject to Pre-GA terms | Avoid as a hard dependency for regulated production unless the risk is accepted |
 
 Current status checkpoints:
 
 | Area | Current stance |
 |------|---------------|
-| Gemini Enterprise Agent Platform | GA — the primary development surface for all new AI work on GCP [1] |
-| Agent Engine (formerly Deployments) | GA — managed runtime for deploying agents built with ADK, LangGraph, or CrewAI [3] |
-| Memory Bank | GA — managed long-term memory for context-aware agents across sessions [3] |
-| Sessions (multi-day) | GA — persistent agent sessions with state management [3] |
-| ADK 2.0 | GA — open-source, code-first agent framework [4] |
-| Agent Studio | GA — visual low-code agent builder [5] |
-| Model Garden | GA — 200+ models, region-dependent availability [6] |
-| Ironwood TPU | GA (April 2026) — seventh-gen inference-optimised TPU [7] |
-| A2A Protocol v1.0 | GA — open standard for agent interoperability [8] |
-| Managed MCP servers | GA for select Google Cloud services (BigQuery, Cloud SQL); expanding [9] |
-| Vertex AI Search (now Agent Platform Search) | GA — enterprise search and retrieval [10] |
+| Gemini Enterprise Agent Platform | Current official agent-building platform surface. [1] |
+| Vertex AI | Still active; do not describe it as retired. Many Agent Platform resources still use Vertex AI API or Terraform names. [2][20] |
+| Agent Runtime | Current managed runtime name in official docs; check adjacent capabilities individually because some are preview-labelled. [4][5] |
+| ADK | Official ADK docs list Python, TypeScript, Go, Java, Kotlin; confirm maturity per language SDK because product pages can lag SDK announcements. [3] |
+| Model Garden | Current model catalogue; model availability and launch stage are region- and model-dependent. [11] |
+| Gemini 3.1 Pro | Pre-GA in official docs and currently documented with a 1M token context window. [12] |
+| RAG Engine Serverless mode | Public preview; important limitations include regional and security-feature constraints. [6] |
+| Model Armor | Current official security service for prompt and response screening. [8] |
+| Remote MCP servers / MCP Toolbox | Official integration pattern for agents and database tools; exact service coverage should be confirmed per server. [9][10] |
 
 ---
 
 ## Platform Architecture: Gemini Enterprise Agent Platform
 
-The Gemini Enterprise Agent Platform is the unified control plane for AI development on Google Cloud. It replaces the former Vertex AI service and consolidates model access, agent building, deployment, governance, and evaluation.
+The Gemini Enterprise Agent Platform is the current Google Cloud control plane for agent development. It sits alongside active Vertex AI APIs and resources rather than replacing every Vertex AI surface. Use the current Agent Platform docs for agent lifecycle decisions, and use current Vertex AI docs where the service, SDK, or Terraform resource remains Vertex AI-named. [1][2]
 
 | Component | Purpose |
 |-----------|---------|
 | **Model Garden** | 200+ foundation models: Gemini family, Gemma (open-source), Anthropic Claude, Meta Llama, Mistral, and others |
-| **Agent Development Kit (ADK)** | Open-source code-first SDK for building agents. Python, TypeScript, Go, Java, Kotlin |
+| **Agent Development Kit (ADK)** | Open-source code-first SDK for building agents. Official language support: Python, TypeScript, Go, Java, Kotlin |
 | **Agent Studio** | Visual low-code agent builder for rapid prototyping and simple use cases |
-| **Agent Engine** | Managed runtime for deploying and scaling agents (autoscaling, IAM, regional pinning, persistent sessions) |
+| **Agent Runtime** | Managed runtime for deploying and scaling agents; some adjacent runtime capabilities are preview-labelled |
 | **Memory Bank** | Managed long-term memory service for context-aware agent interactions across sessions |
 | **Sessions** | Multi-day persistent agent sessions with state management |
-| **Agent Platform Search** | Enterprise search and retrieval (formerly Vertex AI Search) — combines structured and unstructured data |
+| **RAG Engine / Search** | Managed retrieval, indexing, and grounding surfaces; mode and feature support varies |
 | **Evaluation Suite** | Model and agent evaluation: automated benchmarks, trajectory evaluation, and human-in-the-loop scoring |
 | **Model Armor** | Content safety, prompt injection detection, and responsible AI guardrails |
-| **Agent Garden** | Library of prebuilt agents and templates for common use cases |
+| **Agent Garden** | Prebuilt agents and templates; check launch stage before production dependency |
 
 ### Recommended project topology
 
@@ -115,8 +116,8 @@ Google Cloud Organisation
 │   │   └── Mirror of production with lower capacity
 │   └── Project: ai-prod
 │       ├── Agent Platform (production agents)
-│       ├── Agent Engine (managed agent runtime)
-│       ├── Agent Platform Search (enterprise retrieval)
+│       ├── Agent Runtime (managed agent runtime)
+│       ├── RAG Engine / Search (enterprise retrieval)
 │       ├── Cloud Run (application layer)
 │       ├── AlloyDB (production vector store + operational data)
 │       ├── VPC with Private Service Connect
@@ -149,38 +150,39 @@ The Model Garden hosts 200+ models spanning Google's own Gemini and Gemma famili
 
 | Use Case | Recommended Model | Alternative (Open-Source) | Notes |
 |----------|-------------------|---------------------------|-------|
-| Complex reasoning / long-context | Gemini 3.1 Pro / Claude Opus 4.6 | Llama 4 Maverick | Gemini 3.1 Pro: 2M token context window |
-| High-volume chat / simple Q&A | Gemini 3.5 Flash / Claude Haiku 4.5 | Gemma 4 2B | Flash optimised for cost/speed |
-| Multimodal (vision + text) | Gemini 3.1 Pro / Claude Sonnet 4.6 | Llama 4 Scout | Gemini native multimodal |
-| Code generation | Gemini 3.1 Pro / Claude Opus 4.6 | DeepSeek-V3 / Gemma 4 Code | — |
-| Embedding | text-embedding-005 | Gemma Embedding | 768 dimensions, native integration |
-| Edge / lightweight | Gemma 4 2B / Gemini Nano | Phi-4-mini (GKE) | On-device or low-latency |
-| Structured extraction | Gemini 3.1 Pro (function calling) | Mistral Large | JSON mode + structured output |
+| Complex reasoning / long-context | Gemini 3.1 Pro where Pre-GA is acceptable; otherwise use the latest GA Gemini Pro-class model available in the target region | Claude on Vertex where available | Gemini 3.1 Pro is Pre-GA and documented with a 1M token context window; do not treat it as a default regulated-production dependency. [12] |
+| High-volume chat / simple Q&A | Current Gemini Flash-class GA model available in region | Gemma on self-managed GKE / Vertex AI where supported | Use current pricing and model cards at design time; do not hard-code a stale Flash generation. [13] |
+| Multimodal (vision + text) | Current Gemini multimodal model available in region | Partner/open models where supported | Confirm input modalities, launch stage, and regional availability per model. [11][12] |
+| Code generation | Gemini Pro-class model after evaluation | Claude on Vertex where available | Choose by measured quality on the client codebase, not provider defaults. [12][14] |
+| Embedding | `gemini-embedding-001` for text; `gemini-embedding-2` where multimodal embeddings are required and available | Existing `text-embedding-005` indexes during migration | Google documents `gemini-embedding-001` as the unified successor to earlier specialised embedding models such as `text-embedding-005`; Google AI documents Gemini Embedding 2 for multimodal embedding use cases. [15][16] |
+| Edge / lightweight | Gemma / Gemini Nano where officially supported for the target runtime | Small open models on GKE | Confirm model distribution, hardware, and licence at design time. |
+| Structured extraction | Gemini model with function calling / structured output support | Partner model with JSON/schema support | Validate schema adherence in CI. |
 | Speech-to-text | Chirp 2 | Whisper (GKE) | Supports 100+ languages |
-| Text-to-speech | Cloud TTS / Gemini 3.1 Pro | — | Neural voices or conversational |
-| Image generation | Imagen 4 / Gemini 3.1 Flash Image | Stable Diffusion (GKE) | Enterprise safety filters built-in |
+| Text-to-speech | Cloud Text-to-Speech / current Gemini audio-capable model where supported | — | Confirm supported modalities and regions in current model docs |
+| Image generation | Imagen / current Gemini image-capable model where supported | Stable Diffusion (GKE) | Confirm model availability, safety controls, and launch stage in current model docs |
 
 ### Model selection principles
 
-1. **Start with Gemini 3.5 Flash** for cost-efficient prototyping — upgrade to Pro or Claude only when evaluation metrics demand it. Flash is 10–20x cheaper than Pro for many tasks.
+1. **Start with the current Gemini Flash-class model** for cost-efficient prototyping — upgrade to Pro-class or partner models only when evaluation metrics demand it. Confirm the exact model generation, launch stage, region, and price from current official model and pricing docs before committing. [11][13]
 2. **Use Gemini's native capabilities first** — native multimodal, function calling, grounding, and code execution are deeply integrated with the Agent Platform and require less glue code.
-3. **Pin model versions** in production — use explicit version strings (e.g., `gemini-3.1-pro-002`) rather than aliases that auto-update.
+3. **Pin model versions** in production — use explicit version strings where the serving API supports them rather than aliases that auto-update.
 4. **Benchmark on your data** — use the Evaluation Suite or open-source tools (DeepEval, RAGAS) to compare models on your actual workload before committing.
 5. **Leverage prompt caching** for repeated context — Gemini supports context caching for prompts with reusable prefixes, reducing cost by up to 75% on cached tokens.
-6. **Consider Claude on Vertex for specific strengths** — Claude models are available natively in Model Garden. Use them when evaluation shows they outperform Gemini for your specific task (e.g., nuanced instruction following, long-form writing).
-7. **Use Gemma for self-hosted scenarios** — when you need model weights on your own infrastructure (compliance, air-gapped, edge), Gemma 4 is the best-supported open model on GCP.
+6. **Consider Claude on Vertex for specific strengths** — Anthropic documents Claude access through Vertex AI. Use Claude only when evaluation shows it outperforms Gemini for the specific task and the required model is available in the target region. [14]
+7. **Use Gemma for self-hosted or open-weight scenarios** — when you need model weights on your own infrastructure, confirm the exact Gemma release, licence, and supported serving stack.
 
 ---
 
 ## RAG and Knowledge Retrieval
 
-### Agent Platform Search — the managed retrieval layer
+### RAG Engine and Search — managed retrieval layers
 
-Agent Platform Search (formerly Vertex AI Search) provides end-to-end managed RAG: point at a data source, and the service handles chunking, embedding, indexing, and retrieval. It supports structured data (BigQuery, Cloud SQL), unstructured documents (Cloud Storage, websites), and hybrid configurations.
+Google Cloud now has multiple official retrieval paths. **RAG Engine** is the Agent Platform retrieval infrastructure for grounding generative AI apps, with Serverless and Spanner modes. **Vertex AI Search / Discovery Engine-style search resources** still appear in official APIs and Terraform provider resources for search apps and data stores. Pick the retrieval surface by launch stage, data-residency needs, security controls, and operational control rather than by product name alone. [6][7][26][27]
 
 | Vector Store / Retrieval Backend | When to Use |
 |----------------------------------|-------------|
-| **Agent Platform Search** | Default for enterprise RAG. Managed chunking, embedding, hybrid search (semantic + keyword), and ranking. No infrastructure to manage. |
+| **RAG Engine, Spanner mode** | Default managed RAG path when you want Google-managed retrieval with stronger production-control expectations than Serverless mode. |
+| **RAG Engine, Serverless mode** | Fastest setup for managed RAG experiments and lower-control workloads. Public preview; validate limitations before production. |
 | **AlloyDB AI** | Teams already on PostgreSQL wanting relational + vector in one database. SQL-based embedding generation via Vertex AI integration. |
 | **Cloud SQL for PostgreSQL (pgvector)** | Smaller-scale vector search alongside existing relational data. Lower cost than AlloyDB. |
 | **Vertex AI Vector Search** | High-scale, low-latency approximate nearest neighbour (ANN) search. Best for large embedding corpora (100M+ vectors). |
@@ -190,19 +192,19 @@ Agent Platform Search (formerly Vertex AI Search) provides end-to-end managed RA
 
 ### Retrieval architecture
 
-For most enterprise RAG deployments, Agent Platform Search is the default starting point:
+For most managed RAG deployments, start by evaluating RAG Engine mode constraints:
 
 ```
-Query → Agent Platform Search
+Query → RAG Engine
          ├── Semantic search (embeddings)
-         ├── Keyword search (BM25)
-         └── Fusion + Re-ranking → Top-K chunks → LLM
+         ├── Ranking / retrieval configuration
+         └── Grounded context → LLM
 ```
 
 For teams wanting full control over the retrieval pipeline with SQL-based access:
 
 ```
-Query → Embedding (text-embedding-005)
+Query → Embedding (gemini-embedding-001 / gemini-embedding-2)
          → AlloyDB AI (pgvector ANN search + metadata filtering)
            → Re-rank (optional: cross-encoder or Gemini)
              → Top-K chunks → LLM
@@ -217,17 +219,18 @@ Query → Embedding → Vertex AI Vector Search (ScaNN index)
 
 **Best practices:**
 
-- **Use Agent Platform Search as the default** unless you have specific requirements for SQL-based retrieval or need to co-locate vectors with relational data. It handles chunking, embedding, indexing, and re-ranking with zero infrastructure.
+- **Use RAG Engine first for managed retrieval** when its launch stage, region, security, and feature constraints match the workload.
+- **Do not treat RAG Engine Serverless mode as a default regulated-production choice** — it is public preview. If the workload needs compliance features such as CMEK or dedicated isolated database instances, evaluate Spanner mode and confirm metadata-search constraints in the current docs. [6][7][17]
 - **Use AlloyDB AI when your data is already in PostgreSQL** — it can generate embeddings via SQL functions that call Vertex AI, eliminating the need for external embedding pipelines.
-- **Use text-embedding-005** as the default embedding model — native GCP integration, 768 dimensions, strong multilingual performance.
+- **Use `gemini-embedding-001` for new text embedding pipelines** unless a stronger workload-specific reason exists. Use `gemini-embedding-2` for multimodal embedding requirements where available. Existing `text-embedding-005` indexes can remain during migration, but should not be the default for new designs. [15][16]
 - **Enable grounding** in Gemini API calls — Gemini supports built-in grounding with Google Search or your own data stores, reducing hallucination without a full RAG pipeline.
 - **Use metadata filters** to scope retrieval by document type, customer, date range, or access level.
 - **Set retrieval to return 5–10 chunks** — more context doesn't always improve quality and increases token cost.
-- **Implement re-ranking** for quality-sensitive applications — use a cross-encoder model or the built-in Agent Platform Search ranker to improve precision.
+- **Implement ranking and retrieval evaluation** for quality-sensitive applications — measure retrieval precision/recall separately from final-answer quality.
 
 ### Multimodal RAG
 
-Agent Platform Search supports multimodal ingestion:
+For multimodal RAG, prefer official multimodal embedding and Gemini grounding capabilities where available, but validate whether the selected RAG Engine mode supports the required file types, metadata filters, and security controls.
 
 - Images and diagrams are processed alongside text using Gemini's native vision capabilities.
 - Tables are extracted and preserved as structured content.
@@ -238,11 +241,11 @@ Agent Platform Search supports multimodal ingestion:
 
 | Document Type | Chunking Approach | Configuration |
 |---------------|-------------------|---------------|
-| Structured reports (PDF, DOCX) | Layout-aware chunking (Agent Platform Search built-in) | Respects headings, sections, paragraphs |
+| Structured reports (PDF, DOCX) | Layout-aware extraction before indexing | Preserve headings, sections, paragraphs |
 | Legal / compliance documents | Hierarchical chunking | Parent: section, child: paragraph |
 | Code documentation | Fixed-size with overlap | 512 tokens, 128 overlap |
 | Tabular data | Row-per-chunk or table-per-chunk | Preserve column headers |
-| Mixed multimedia | Multimodal chunking | Enable figure extraction + captioning |
+| Mixed multimedia | Multimodal embedding / captioning where supported | Validate support in selected retrieval mode |
 | Web content | Document-aware | Respect HTML structure, strip boilerplate |
 
 ---
@@ -293,8 +296,8 @@ Source (Cloud Storage Bucket)
     → Cloud Workflows orchestration:
       1. Document AI: extract layout + tables + forms
       2. Cloud DLP: classify and detect PII/PHI
-      3. Cloud Run job: chunk + embed (text-embedding-005)
-      4. Agent Platform Search / AlloyDB: index chunks
+      3. Cloud Run job: chunk + embed (gemini-embedding-001 / gemini-embedding-2)
+      4. RAG Engine / AlloyDB / Vector Search: index chunks
       5. Firestore / BigQuery: store processing metadata + status
 ```
 
@@ -312,9 +315,9 @@ Source (Cloud Storage Bucket)
 
 ## Agent Development
 
-### Agent Development Kit (ADK) 2.0
+### Agent Development Kit (ADK)
 
-ADK is Google's open-source, code-first framework for building production agents. It's the primary pro-code path on GCP and is designed to work with Agent Engine for managed deployment.
+ADK is Google's open-source, code-first framework for building agents. It is the primary pro-code path on Google Cloud and is designed to work with Agent Runtime for managed deployment. [3][4]
 
 **Key characteristics:**
 
@@ -322,16 +325,16 @@ ADK is Google's open-source, code-first framework for building production agents
 |---------|-------------|
 | **Multi-language** | Python, TypeScript, Go, Java, Kotlin |
 | **Model-agnostic** | Works with Gemini, Claude, Llama, or any model backend |
-| **Deployment-agnostic** | Deploy to Agent Engine, Cloud Run, GKE, or any container platform |
+| **Deployment-agnostic** | Deploy to Agent Runtime, Cloud Run, GKE, or other supported container platforms |
 | **Built-in orchestration** | Sequential, parallel, loop, and conditional agent compositions |
 | **MCP support** | Native MCP client for connecting to tool servers |
 | **A2A support** | Native Agent-to-Agent protocol for inter-agent communication |
 | **OpenTelemetry** | Built-in instrumentation for observability |
 | **Evaluation** | Integrated evaluation framework for testing agent behaviour |
 
-### Agent Engine — the managed runtime
+### Agent Runtime — the managed runtime
 
-Agent Engine (formerly Vertex AI Agent Builder Deployments) is the managed runtime for deploying agents at scale. It handles:
+Agent Runtime is the managed runtime for deploying agents at scale. The underlying API and Terraform resources may still use Vertex AI or Reasoning Engine names, so do not infer product retirement from resource names. [4][20]
 
 - **Autoscaling** — scales agents based on request volume.
 - **Session isolation** — each user session runs in an isolated context.
@@ -351,14 +354,14 @@ Memory Bank is a managed service for agent memory:
 | **Semantic** | Embedding-based retrieval of relevant past interactions |
 | **Episodic** | Time-ordered events and experiences |
 
-### MCP on Google Cloud (2026)
+### MCP on Google Cloud
 
 MCP (Model Context Protocol) is a first-class citizen on the Agent Platform:
 
-- **Managed MCP servers** for Google Cloud services — BigQuery, Cloud SQL, Cloud Storage, Firestore, and others. Agents can query databases, read files, and interact with cloud services via standardised MCP tools.
+- **Remote MCP servers / MCP Toolbox** for Google Cloud services — BigQuery and Cloud SQL are explicitly documented in official Google Cloud MCP material. Confirm the exact server's supported services before designing around it. [9][10]
 - **Cloud Run as MCP host** — deploy custom MCP servers as Cloud Run services with automatic scaling, IAM authentication, and private networking.
 - **ADK MCP client** — native MCP client in ADK for connecting agents to any MCP-compliant tool server.
-- **MCP Tool Registry** — discover and manage MCP tools available to your agents.
+- **Tool discovery and governance** — maintain an internal registry of approved MCP servers and tool scopes, even where the platform provides discovery features.
 
 ### A2A Protocol (Agent-to-Agent)
 
@@ -386,26 +389,26 @@ MCP and A2A are complementary: **MCP connects agents to tools; A2A connects agen
 ### Best practices for production agents
 
 1. **Keep agents single-purpose** — one agent, one job. Compose complex behaviours through orchestration, not monolithic prompts.
-2. **Use Agent Engine for managed deployment** — it handles autoscaling, session isolation, and IAM. Graduate to Cloud Run only when you need custom networking, GPUs, or unsupported frameworks.
-3. **Use managed MCP servers for Google Cloud services** — don't write custom integrations for BigQuery, Cloud SQL, or Storage when an official MCP server exists.
+2. **Use Agent Runtime for managed deployment** — it handles the managed-agent runtime path. Graduate to Cloud Run or GKE when you need custom networking, GPUs, unsupported frameworks, or capabilities not yet GA.
+3. **Use official MCP servers / MCP Toolbox where available** — don't write custom integrations for BigQuery or Cloud SQL when an official MCP path satisfies the requirement.
 4. **Scope IAM per agent** — each agent's service account should have only the permissions it needs. Use Workload Identity Federation for external service access.
 5. **Set token budgets and timeout limits** — prevent runaway reasoning loops. Configure max output tokens and session timeouts per agent.
 6. **Enable Memory Bank selectively** — short-term memory for all multi-turn agents; long-term memory only for agents that genuinely benefit from cross-session recall (personalisation, learning assistants).
 7. **Instrument with OpenTelemetry** — ADK has built-in OTel support. Export traces to Cloud Trace and metrics to Cloud Monitoring from day one.
 8. **Use A2A for cross-boundary communication** — when agents are built by different teams or need to communicate across trust boundaries, A2A provides the standardised protocol. Within a single team's codebase, direct function calls or ADK orchestration are simpler.
 
-### When to use Agent Engine vs. Cloud Run
+### When to use Agent Runtime vs. Cloud Run
 
-| Criterion | Agent Engine (managed) | Cloud Run (self-managed) |
+| Criterion | Agent Runtime (managed) | Cloud Run (self-managed) |
 |-----------|------------------------|--------------------------|
 | Time to production | Days | Weeks |
-| Custom networking (VPC, PSC) | Limited (PSC-I deployments available) | Full control |
+| Custom networking (VPC, PSC) | Check current runtime feature support and launch stage | Full control |
 | GPU workloads | Not supported | Supported (GPU node pools) |
 | Framework support | ADK, LangGraph, CrewAI | Any framework |
 | Autoscaling | Automatic | Configure min/max instances |
 | Session management | Built-in (Sessions + Memory Bank) | BYO (Redis, Firestore) |
-| Cost at low volume | Higher per-invocation | Scale-to-zero |
-| Cost at high volume | Competitive | Lower (own compute) |
+| Cost at low volume | Depends on runtime pricing and session use | Scale-to-zero |
+| Cost at high volume | Depends on invocation profile and managed features used | Potentially lower with own compute |
 | Observability | Built-in tracing + Cloud Trace export | Configure OTel collector |
 
 ---
@@ -431,9 +434,9 @@ Google Cloud's approach to AI gateway patterns differs from AWS and Azure. Rathe
 ```
 Client → Apigee (API management, auth, quotas, analytics)
            → Cloud Run (routing logic, prompt transformation)
-             ├── Gemini 3.1 Pro (complex queries)
-             ├── Gemini 3.5 Flash (simple queries)
-             └── Claude Sonnet 4.6 (specific tasks)
+             ├── Gemini Pro-class model (complex queries)
+             ├── Gemini Flash-class model (simple queries)
+             └── Claude on Vertex (specific evaluated tasks)
 ```
 
 Apigee provides enterprise API management: developer portals, API keys, OAuth, usage plans, and analytics. Use this for multi-tenant SaaS or when you need formal API products.
@@ -482,7 +485,7 @@ For teams already on GKE with service mesh infrastructure.
 | Workload Characteristic | Recommended Service | Rationale |
 |------------------------|---------------------|-----------|
 | Event-driven, short-lived (<60 min) | Cloud Run | Scale-to-zero, pay-per-request, native Gemini SDK, up to 60-min timeout |
-| Agent sessions (managed) | Agent Engine | No infrastructure, built-in sessions + memory, ADK-native |
+| Agent sessions (managed) | Agent Runtime | No infrastructure, built-in sessions + memory, ADK-native |
 | Long-running or GPU workloads | GKE Autopilot | GPU node pools, persistent connections, full Kubernetes control |
 | Custom model hosting (open-source) | GKE + vLLM / TGI | Full control over serving infrastructure, TPU/GPU support |
 | Batch processing / evaluation | Cloud Run Jobs | Parallel task execution, no infrastructure, cost-efficient |
@@ -501,6 +504,8 @@ Cloud Run is the default compute for Agent Platform-backed applications:
 - **Scale-to-zero** — no cost when idle. Minimum instances for latency-sensitive paths.
 - **Startup CPU boost** — faster cold starts for JIT-compiled languages.
 - **Direct VPC egress** — access private resources (AlloyDB, Memorystore) without a connector.
+
+These Cloud Run limits and features should still be checked against current service documentation for the selected region and trigger type. [19][21][22][23]
 
 **When Cloud Run isn't enough:**
 
@@ -521,11 +526,9 @@ Cloud Run is the default compute for Agent Platform-backed applications:
 
 | Chip | Purpose | Key Benefit |
 |------|---------|-------------|
-| **Ironwood (TPU v7)** | Inference-first | 10x over v5p, 4x over v6e. 4.6 PFLOPS per chip. GA April 2026 |
+| **Ironwood (TPU v7)** | Inference-first | Google-published TPU generation for AI inference workloads; confirm availability and quotas by region. [32] |
 | **Trillium (TPU v6e)** | Training + inference | Production-ready, cost-effective for medium-scale |
 | **TPU v5p** | Large-scale training | UltraClusters for frontier model training |
-| **TPU 8t "Sunfish" (preview)** | Training (Broadcom, 2nm) | Next-gen training, late 2027 |
-| **TPU 8i "Zebrafish" (preview)** | Inference (MediaTek, 2nm) | Next-gen inference, late 2027 |
 | **Axion (Arm)** | General compute | Best price/performance for non-GPU workloads |
 | **NVIDIA L4** | Cost-efficient inference | Available on Cloud Run and GKE |
 | **NVIDIA H100/A100** | High-performance inference | Available on GKE |
@@ -544,7 +547,7 @@ For scenarios requiring model weights on your own infrastructure:
 **Best practices:**
 
 1. **Default to Cloud Run** for all API-serving AI workloads — it scales to zero, handles bursts, and the 60-minute timeout covers most agent sessions.
-2. **Use Agent Engine** when you want zero infrastructure — it handles scaling, sessions, and memory automatically. Only move to Cloud Run when you need custom networking or GPUs.
+2. **Use Agent Runtime** when you want managed agent deployment. Move to Cloud Run or GKE when you need custom networking, GPUs, unsupported frameworks, or features that are not GA in the managed runtime.
 3. **Use GKE Autopilot with GPU pools** for self-hosted models — Autopilot handles node provisioning, you define pod resource requests.
 4. **Use TPUs for Gemma** — Gemma models are optimised for TPU inference via JAX/FLAX. Cost-effective at scale compared to NVIDIA GPUs.
 5. **Use Spot VMs for batch inference** — evaluation jobs, document processing, and non-latency-sensitive workloads save 60–91%.
@@ -580,15 +583,15 @@ Security for AI on GCP follows the same zero-trust principles as traditional wor
 
 ### VPC Service Controls for AI
 
-VPC-SC creates security perimeters around Google Cloud services, preventing data exfiltration even if IAM is misconfigured.
+VPC-SC creates security perimeters around supported Google Cloud services, helping reduce data exfiltration risk even if another control is misconfigured. Confirm that every target service and API is listed as supported before making VPC-SC a design dependency. [28]
 
 **Configure VPC-SC perimeters around:**
 
-- Agent Platform (model invocations, agent sessions)
+- Vertex AI / Agent Platform services that are listed as VPC-SC supported products for the target feature
 - Cloud Storage (document corpus, model artefacts)
 - BigQuery (structured data, analytics)
 - AlloyDB / Cloud SQL (operational data, vector stores)
-- Agent Platform Search (enterprise search indexes)
+- RAG/search indexes where the underlying service is VPC-SC-supported
 - Cloud Logging (audit logs containing model interactions)
 
 **Access levels** define who can cross the perimeter boundary:
@@ -600,10 +603,10 @@ VPC-SC creates security perimeters around Google Cloud services, preventing data
 
 ### Private Service Connect (PSC)
 
-PSC provides private connectivity to Google APIs without traversing the public internet:
+PSC provides private connectivity patterns for Google APIs and producer services. Confirm that the selected API path and deployment mode support PSC before making it a production control. [29]
 
-- **PSC endpoints** for Gemini/Agent Platform API calls — traffic stays on Google's backbone.
-- **PSC for Agent Engine** — deploy agents with private networking (PSC-I deployment mode).
+- **PSC endpoints** for Google APIs where Private Service Connect supports the target API path.
+- **PSC/private networking for Agent Runtime** where the current official runtime feature set supports the deployment mode.
 - **PSC for AlloyDB/Cloud SQL** — private vector store access from Cloud Run.
 
 ### IAM for AI workloads
@@ -621,11 +624,11 @@ PSC provides private connectivity to Google APIs without traversing the public i
 **Best practices:**
 
 1. **Deploy VPC-SC perimeters from day one** for regulated workloads — retrofitting is painful and error-prone.
-2. **Use Private Service Connect** for all model invocations in production — eliminates public internet traversal for API calls.
+2. **Use Private Service Connect where supported and required** for production model/API access — validate the exact API path before treating PSC as mandatory.
 3. **One service account per agent** — scope permissions to exactly what each agent needs. Never share service accounts across agents with different trust levels.
 4. **Use Workload Identity Federation** for external access — avoid service account keys. Map GitHub Actions, Azure AD, or AWS IAM to GCP service accounts.
-5. **Enable Cloud Audit Logs** for all AI services — Data Access logs capture who invoked which model with what parameters.
-6. **Use CMEK** (Customer-Managed Encryption Keys) for sensitive workloads — encrypt model artefacts, vector stores, and agent sessions with keys you control.
+5. **Enable Cloud Audit Logs** for supported AI services — Data Access logs are essential for model and data access investigations, but exact payload and retention behaviour must be validated per service. [30]
+6. **Use CMEK where supported** for sensitive workloads — confirm service-level CMEK support for model artefacts, vector stores, logs, and session/memory data before committing to a compliance design.
 7. **Implement egress controls** — use VPC firewall rules and organisation policies to prevent agents from exfiltrating data to unauthorised endpoints.
 8. **Use Cloud Armor** with pre-configured WAF rules — the OWASP top 10 rule set plus custom rules for LLM-specific attacks (prompt injection patterns, jailbreak attempts).
 
@@ -635,20 +638,20 @@ PSC provides private connectivity to Google APIs without traversing the public i
 
 ### Model Armor
 
-Model Armor is the Agent Platform's built-in content safety layer, providing input and output filtering for responsible AI:
+Model Armor is Google Cloud's prompt and response screening service for generative AI applications. It supports security and safety checks such as prompt injection and jailbreak detection, malicious URI detection, sensitive data protection, content safety filters, template-based configuration, and organisation-level floor settings. [8][18]
 
 | Capability | Description |
 |------------|-------------|
 | **Prompt injection detection** | Identifies and blocks prompt injection attempts before they reach the model |
 | **Content filtering** | Configurable thresholds for harmful content (hate speech, violence, sexual content, dangerous activities) |
 | **PII detection** | Identifies personal information in prompts and responses |
-| **Grounding checks** | Verifies model responses are grounded in provided context (reduces hallucination) |
-| **Custom policies** | Define organisation-specific content rules |
-| **Audit logging** | All filtering decisions logged for compliance review |
+| **Malicious URI detection** | Detects malicious URIs in prompts and responses |
+| **Templates and floor settings** | Define reusable templates and centrally enforced minimum policy settings |
+| **Logging integration** | Requires explicit operational design for Cloud Logging visibility, retention, and access controls |
 
 ### Implementing responsible AI
 
-1. **Apply Model Armor to all production agents** — configure appropriate thresholds per use case. A customer-facing chatbot needs stricter filtering than an internal code assistant.
+1. **Apply Model Armor to production user-facing agents** — configure appropriate thresholds per use case. A customer-facing chatbot needs stricter filtering than an internal code assistant.
 2. **Use the safety settings API** — Gemini models support configurable safety thresholds per category (harassment, hate speech, sexually explicit, dangerous content).
 3. **Implement human-in-the-loop for high-stakes decisions** — agents handling financial, legal, or medical advice should escalate to humans rather than acting autonomously.
 4. **Log all model interactions** — maintain audit trails for compliance. Use Cloud Logging with appropriate retention policies.
@@ -656,6 +659,7 @@ Model Armor is the Agent Platform's built-in content safety layer, providing inp
 6. **Use Cloud DLP for output sanitisation** — scan model responses for accidental PII leakage before returning to users.
 7. **Implement rate limiting per user** — prevents abuse of AI capabilities and limits blast radius of compromised accounts.
 8. **Define clear escalation paths** — when Model Armor blocks a request, provide helpful guidance rather than opaque errors.
+9. **Validate regional and integration constraints** — align Model Armor location, logging, and template/floor-settings design with the rest of the workload before production rollout. [18]
 
 ---
 
@@ -668,25 +672,17 @@ GCP AI pricing has three primary dimensions:
 | Dimension | How it's charged | Key lever |
 |-----------|-----------------|-----------|
 | **Model invocation** | Per 1M input/output tokens (varies by model) | Model selection, prompt caching, prompt length |
-| **Agent Platform services** | Per-request for Agent Engine, Sessions, Memory Bank | Session duration, memory retention policy |
+| **Agent Platform services** | Per-request or feature-specific pricing for Agent Runtime, Sessions, Memory Bank, and related services | Session duration, memory retention policy |
 | **Compute** | Per vCPU-second / GPU-hour / TPU chip-hour | Instance sizing, scale-to-zero, spot pricing |
-| **Storage + retrieval** | Per GB stored + per query (Agent Platform Search, vector stores) | Data lifecycle policies, query volume |
+| **Storage + retrieval** | Per GB stored + per query for RAG Engine, search, vector stores, and databases | Data lifecycle policies, query volume |
 
-### Token pricing tiers (indicative, May 2026)
+### Pricing source of truth
 
-| Model | Input (per 1M tokens) | Output (per 1M tokens) | Context caching |
-|-------|----------------------|------------------------|-----------------|
-| Gemini 3.5 Flash | ~$0.10 | ~$0.40 | 75% reduction on cached |
-| Gemini 3.1 Pro | ~$1.25 | ~$5.00 | 75% reduction on cached |
-| Claude Sonnet 4.6 (on Vertex) | ~$3.00 | ~$15.00 | Prompt caching available |
-| Claude Haiku 4.5 (on Vertex) | ~$0.80 | ~$4.00 | Prompt caching available |
-| text-embedding-005 | ~$0.00005 | — | — |
-
-*Prices are indicative and region-dependent. Check the pricing page for current rates.*
+Do not hard-code token prices in architecture guidance. Gemini, partner model, embedding, batch, cache, and provisioned-throughput prices change by model generation, region, input/output tier, modality, and launch stage. Use Google AI / Google Cloud pricing pages and Anthropic's Claude-on-Vertex documentation as the source of truth at proposal time. [13][14]
 
 ### Cost optimisation strategies
 
-1. **Use Gemini 3.5 Flash as the default** — it's 10–25x cheaper than Pro for many tasks. Only upgrade when evaluation shows Flash can't meet quality requirements.
+1. **Use the current Gemini Flash-class model as the default low-cost tier** — only upgrade to Pro-class or partner models when evaluation shows the lower-cost model cannot meet quality requirements.
 2. **Enable context caching** — for prompts with reusable system instructions, few-shot examples, or document context, caching reduces input token cost by up to 75%. Cached content must be >32K tokens and persists for a configurable TTL.
 3. **Implement model routing** — use a lightweight classifier or heuristic to route simple queries to Flash and complex queries to Pro. This alone can reduce costs 40–60%.
 4. **Use batch API for non-real-time workloads** — evaluation, document processing, and offline analysis can use batch pricing (typically 50% discount).
@@ -695,7 +691,7 @@ GCP AI pricing has three primary dimensions:
 7. **Right-size Cloud Run instances** — most AI gateway workloads need minimal CPU/memory since inference runs remotely. 1 vCPU / 512 MiB is often sufficient.
 8. **Set per-request token budgets** — configure `max_output_tokens` to prevent runaway generation. A 4,000-token cap on a summarisation task prevents accidentally generating 100K tokens.
 9. **Monitor token usage in real-time** — export metrics to Cloud Monitoring and set alerts for unexpected spikes.
-10. **Negotiate committed use discounts** — at $1M+ annual AI spend, Google Cloud offers 25–50% discounts on Vertex AI / Agent Platform consumption as part of broader cloud commitments.
+10. **Negotiate committed-use or private pricing only after usage modelling** — discounts and commitments are commercial terms, not architecture assumptions.
 
 ### Billing alerts and governance
 
@@ -809,15 +805,16 @@ The built-in evaluation service supports:
 
 ### Terraform for GCP AI
 
-Terraform is the primary IaC tool for GCP AI infrastructure. The `google` and `google-beta` providers cover Agent Platform resources.
+Terraform is the primary IaC tool for Google Cloud infrastructure. Current Agent Platform resources may still appear under Vertex AI / Reasoning Engine names in the official Terraform provider, so align module names with product language while using provider resource names exactly as documented. [20]
 
 **Key resources:**
 
 | Terraform Resource | Purpose |
 |-------------------|---------|
 | `google_vertex_ai_endpoint` | Model serving endpoints |
-| `google_discovery_engine_search_engine` | Agent Platform Search apps |
+| `google_discovery_engine_search_engine` | Search apps where Discovery Engine resources are the current documented path |
 | `google_discovery_engine_data_store` | Search data stores |
+| `google_vertex_ai_reasoning_engine` | Agent Runtime / reasoning-engine deployments |
 | `google_alloydb_cluster` + `google_alloydb_instance` | AlloyDB vector store |
 | `google_cloud_run_v2_service` | Application compute |
 | `google_cloud_run_v2_job` | Batch processing |
@@ -832,7 +829,7 @@ Terraform is the primary IaC tool for GCP AI infrastructure. The `google` and `g
 ```
 terraform/
 ├── modules/
-│   ├── agent-platform/      # Agent Engine, Search, Model Garden config
+│   ├── agent-platform/      # Agent Runtime, RAG/search, Model Garden config
 │   ├── networking/           # VPC, PSC, firewall rules, Cloud Armor
 │   ├── data/                 # AlloyDB, BigQuery, Cloud Storage
 │   ├── compute/              # Cloud Run services, GKE clusters
@@ -846,19 +843,19 @@ terraform/
 └── variables.tf
 ```
 
-### Agent Engine deployment with Terraform
+### Agent Runtime deployment with Terraform
 
-Agent Engine deployments are managed through the ADK CLI or `gcloud` rather than pure Terraform, since agents contain application code. The recommended pattern:
+Agent Runtime deployments can be represented in Terraform through current Vertex AI / Reasoning Engine resources, but application packaging, agent release promotion, and runtime evaluation still need a CI/CD workflow. The recommended pattern:
 
 1. **Terraform** provisions infrastructure: networking, databases, service accounts, IAM, monitoring.
-2. **ADK CLI / `agents deploy`** deploys agent code to Agent Engine, referencing Terraform-managed infrastructure.
+2. **ADK / `gcloud` / Terraform-managed runtime resources** deploy agent code or runtime references, depending on the selected deployment path and current provider support.
 3. **CI/CD pipeline** orchestrates both: Terraform applies first, then agent deployment.
 
 ### Best practices
 
 1. **Use remote state in GCS** with state locking via Cloud Storage's generation-based preconditions.
 2. **Separate state files per environment** — dev/staging/prod should never share Terraform state.
-3. **Use the `google-beta` provider** for Agent Platform resources that are newly GA — the `google` provider lags behind on new resources.
+3. **Use `google-beta` only when the official provider docs require it** — otherwise prefer the stable `google` provider for resources available there.
 4. **Pin provider versions** — GCP Terraform provider releases are frequent. Pin to a specific minor version and upgrade deliberately.
 5. **Use Workload Identity Federation** for Terraform CI/CD — no service account keys. Map your CI runner's identity to a GCP service account.
 6. **Store secrets in Secret Manager** — reference them in Terraform but never store values in state. Use `data "google_secret_manager_secret_version"` for lookups.
@@ -881,7 +878,7 @@ Source (GitHub / Cloud Source Repositories)
           ├── Lint + type check
           ├── Unit tests (prompt templates, tool schemas)
           ├── Build container image → Artifact Registry
-          ├── Deploy to staging (Agent Engine or Cloud Run)
+          ├── Deploy to staging (Agent Runtime or Cloud Run)
           ├── Evaluation suite (golden datasets, trajectory tests)
           ├── Canary deployment to production (10% traffic)
           ├── Monitor error rate + latency
@@ -941,7 +938,7 @@ Agent Studio is the visual, low-code surface for building agents on the Gemini E
 |---------|-------------|
 | **Visual agent builder** | Drag-and-drop flow design for agent behaviour |
 | **Data store grounding** | Connect to Cloud Storage, BigQuery, websites, or structured data for RAG |
-| **Prebuilt connectors** | Integration with Google Workspace, third-party SaaS via managed MCP servers |
+| **Connectors and tools** | Google Workspace, approved MCP servers, and third-party tools where officially supported |
 | **Multi-channel deployment** | Web widget, API, Dialogflow CX integration |
 | **Conversation design** | Built-in conversation testing and simulation |
 | **Version management** | Draft/publish workflow with rollback |
@@ -976,19 +973,19 @@ For new projects, prefer Agent Studio unless you specifically need Dialogflow CX
 
 ### Small business (1–50 employees, <$5K/month AI spend)
 
-**Pattern: Gemini Flash + Cloud Run + Agent Platform Search**
+**Pattern: Gemini Flash-class model + Cloud Run + managed RAG**
 
 ```
 Users → Cloud Run (Next.js / FastAPI frontend)
-          → Gemini 3.5 Flash API (reasoning)
-          → Agent Platform Search (document retrieval)
+          → Gemini Flash-class API (reasoning)
+          → RAG Engine / search data store (document retrieval)
           → Cloud Storage (document upload)
 ```
 
 **Key decisions:**
 
-- Use Gemini 3.5 Flash exclusively — cost-efficient and capable enough for most business tasks.
-- Agent Platform Search for RAG — no vector database to manage.
+- Use a current Gemini Flash-class model exclusively until evaluation proves a need for a larger or partner model.
+- Managed RAG where the launch stage and security constraints fit — no vector database to manage.
 - Cloud Run for everything — single service, scale-to-zero, minimal ops.
 - Firebase Auth for user management.
 - Minimal infrastructure: one GCP project, no VPC-SC, no separate environments.
@@ -997,14 +994,14 @@ Users → Cloud Run (Next.js / FastAPI frontend)
 
 ### Medium business (50–500 employees, $5K–$50K/month AI spend)
 
-**Pattern: Multi-model + Cloud Run + AlloyDB + Agent Engine**
+**Pattern: Multi-model + Cloud Run + AlloyDB + Agent Runtime**
 
 ```
 Users → Cloud Run (application layer, model routing)
-          ├── Gemini 3.5 Flash (simple queries, classification)
-          ├── Gemini 3.1 Pro (complex reasoning, analysis)
-          └── Claude Sonnet 4.6 (specific tasks where it excels)
-        → Agent Engine (multi-step agents)
+          ├── Gemini Flash-class model (simple queries, classification)
+          ├── Gemini Pro-class model (complex reasoning, analysis)
+          └── Claude on Vertex (specific tasks where it excels)
+        → Agent Runtime (multi-step agents)
         → AlloyDB AI (vector store + operational data)
         → Document AI (document processing pipeline)
         → Cloud Workflows (orchestration)
@@ -1013,7 +1010,7 @@ Users → Cloud Run (application layer, model routing)
 **Key decisions:**
 
 - Model routing to optimise cost/quality trade-off.
-- Agent Engine for managed agent deployment — avoid infrastructure overhead.
+- Agent Runtime for managed agent deployment where required features are GA or accepted by risk decision.
 - AlloyDB AI for combined relational + vector storage — single database for application state and embeddings.
 - Separate dev/prod projects with VPC-SC in production.
 - Cloud Build CI/CD with evaluation gates.
@@ -1029,11 +1026,11 @@ Users → Cloud Run (application layer, model routing)
 Users → Global Load Balancer (Cloud Armor WAF)
           → Apigee (API management, per-tenant quotas)
             → Cloud Run / GKE (application layer)
-              ├── Agent Engine (managed agents)
+              ├── Agent Runtime (managed agents)
               ├── ADK agents on Cloud Run (custom agents)
               └── Self-hosted models on GKE (Gemma, domain-specific)
             → AlloyDB (multi-region, vector + relational)
-            → Agent Platform Search (enterprise search)
+            → RAG Engine / search / Vector Search (enterprise retrieval)
             → Spanner (global consistency for critical state)
             → BigQuery (analytics, evaluation datasets, billing)
 ```
@@ -1043,13 +1040,25 @@ Users → Global Load Balancer (Cloud Armor WAF)
 - Apigee for multi-tenant API management with per-customer quotas and analytics.
 - GKE Autopilot for self-hosted models and custom workloads requiring GPUs/TPUs.
 - Multi-region deployment for availability and data residency.
-- Full VPC-SC perimeters, Private Service Connect, CMEK.
+- VPC-SC perimeters, Private Service Connect, and CMEK where supported by the selected services and regions.
 - Comprehensive evaluation pipeline with trajectory testing and human review.
 - Dedicated SRE with SLOs, error budgets, and incident management.
 - A2A protocol for cross-team agent collaboration.
-- Committed use discounts negotiated with Google Cloud.
+- Committed-use or private-pricing review after measured usage modelling.
 
 **Typical use cases:** Organisation-wide AI platform, multi-agent systems spanning business units, customer-facing AI products, regulated industry applications (financial services, healthcare, government).
+
+---
+
+## Implementation Gaps to Fill
+
+This playbook is a design guide, not yet an executable delivery pack. Before using it as a client-facing implementation standard, add:
+
+1. **Launch-stage matrix** — service, API/resource name, GA/Preview/Pre-GA status, supported regions, Terraform provider support, and replacement/migration path. Prioritise Agent Runtime, RAG Engine modes, Gemini model versions, Model Armor, and MCP servers. [1][4][6][8][12]
+2. **Security baseline artifacts** — organisation policies, VPC-SC supported-product checks, Private Service Connect design, service-account/IAM role mappings, audit-log retention, and Model Armor logging/templates. [18][28][29][30][31]
+3. **Operational runbooks** — quota exhaustion, model version rollback, prompt regression, RAG index rebuild, Model Armor false positives, retrieval-quality degradation, and runaway agent loops. Tie each runbook to Cloud Logging, Cloud Monitoring, Cloud Trace, and ADK OpenTelemetry signals. [25][30]
+4. **CI/CD examples** — Terraform plan/apply, agent deployment, model/prompt version pinning, evaluation gates, canary rollout, and rollback automation. [20][26][27]
+5. **Cost model template** — current official model pricing lookup, context caching assumptions, batch API eligibility, storage/retrieval costs, Cloud Run/GKE sizing, and billing export labels. [13]
 
 ---
 
@@ -1057,8 +1066,8 @@ Users → Global Load Balancer (Cloud Armor WAF)
 
 | Anti-Pattern | Why It's Bad | What to Do Instead |
 |--------------|--------------|-------------------|
-| **Using Vertex AI legacy APIs for new projects** | Deprecated; will not receive new features; migration debt accumulates | Use Gemini Enterprise Agent Platform APIs and SDKs |
-| **Defaulting to Gemini Pro for all requests** | 10–25x more expensive than Flash; most queries don't need Pro-level reasoning | Implement model routing; start with Flash, upgrade based on evaluation |
+| **Calling all Vertex AI surfaces legacy** | Vertex AI remains active and many current resources still use Vertex AI names | Use Agent Platform docs for agent lifecycle decisions and current Vertex AI docs/provider resources where they remain official |
+| **Defaulting to Gemini Pro for all requests** | More expensive models are often unnecessary for simple tasks | Implement model routing; start with a current Flash-class model, upgrade based on evaluation |
 | **Skipping evaluation in CI** | Prompt/model changes break things silently; quality regressions reach production undetected | Run automated evaluation on every change; block deployment on regression |
 | **Monolithic agents** | Hard to debug, test, and maintain; single failure point; token-hungry system prompts | Decompose into single-purpose agents orchestrated via ADK or A2A |
 | **Storing vectors in Cloud SQL without pgvector tuning** | Default PostgreSQL config has terrible ANN performance at scale | Use AlloyDB AI (optimised for vector), tune `ivfflat` lists, or use Vertex AI Vector Search for large scale |
@@ -1066,7 +1075,7 @@ Users → Global Load Balancer (Cloud Armor WAF)
 | **Service account key files** | Security risk; hard to rotate; leak in git history | Use Workload Identity (GKE), Workload Identity Federation (external CI), or attached service accounts (Cloud Run) |
 | **Single-project deployment** | No environment isolation; production changes tested on production | Separate GCP projects per environment with promotion pipeline |
 | **No VPC-SC in regulated environments** | Data exfiltration risk even with correct IAM; compliance audit failure | Deploy VPC-SC perimeters from day one for any workload handling sensitive data |
-| **Building custom integrations for standard GCP services** | Reinventing what managed MCP servers already provide; maintenance burden | Use official managed MCP servers for BigQuery, Cloud SQL, Storage |
+| **Building custom integrations for standard GCP services** | Reinventing official MCP/database-tooling paths; maintenance burden | Use official MCP servers / MCP Toolbox where they cover the target service and security model |
 | **Ignoring context caching** | Paying full input token price on every request for repeated system prompts | Enable context caching for prompts with >32K tokens of reusable context |
 | **Using Dialogflow CX for new text-only agents** | More complex than needed; Agent Studio + ADK is the modern path | Use Agent Studio for low-code or ADK for pro-code; reserve Dialogflow CX for telephony |
 | **No observability for agent reasoning** | Can't debug why an agent made a specific decision; incidents are undiagnosable | Instrument with OpenTelemetry from day one; trace every tool call and model invocation |
@@ -1075,23 +1084,35 @@ Users → Global Load Balancer (Cloud Armor WAF)
 
 ## References
 
-1. Google Cloud Blog — "Gemini Enterprise Agent Platform optimizes your agents" (April 2026). https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/gemini-enterprise-agent-platform/
-2. Google Cloud Next 2026 announcements hub. https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/next-2026/
-3. GCP Study Hub — "Vertex AI Is Now Gemini Enterprise Agent Platform: What Changed in 2026". https://gcpstudyhub.com/blog/vertex-ai-replaced-by-gemini-enterprise-agent-platform
-4. Agent Development Kit (ADK) documentation. https://adk.dev/
-5. Google Cloud documentation — Gemini Enterprise Agent Platform. https://docs.cloud.google.com/gemini-enterprise-agent-platform
-6. Google Cloud — Model Garden. https://cloud.google.com/model-garden
-7. Google Blog — "Ironwood: The first Google TPU for the age of inference". https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/ironwood-tpu-age-of-inference/
-8. A2A Protocol specification. https://a2a-protocol.org/latest/
-9. Google Cloud Blog — "Building Connected Agents with MCP and A2A". https://cloud.google.com/blog/topics/developers-practitioners/building-connected-agents-with-mcp-and-a2a
-10. Google Cloud documentation — Agent Platform Search. https://docs.cloud.google.com/gemini-enterprise-agent-platform
-11. Google Cloud documentation — VPC Service Controls. https://docs.cloud.google.com/vpc-service-controls/docs
-12. Google Cloud documentation — Host AI agents on Cloud Run. https://docs.cloud.google.com/run/docs/ai-agents
-13. Google Cloud documentation — Document AI overview. https://docs.cloud.google.com/document-ai/docs/overview
-14. Google Cloud documentation — Instrument ADK applications with OpenTelemetry. https://docs.cloud.google.com/stackdriver/docs/instrumentation/ai-agent-adk
-15. Terraform Registry — GoogleCloudPlatform/vertex-ai/google. https://registry.terraform.io/modules/GoogleCloudPlatform/vertex-ai/google/latest
-16. Google Developers Blog — "Agents CLI in Agent Platform: create to production in one CLI". https://developers.googleblog.com/agents-cli-in-agent-platform-create-to-production-in-one-cli/
-17. Google Cloud documentation — RAG infrastructure using Vertex AI and AlloyDB. https://docs.cloud.google.com/architecture/rag-capable-gen-ai-app-using-vertex-ai
-18. InfoQ — "Google Cloud Brings Full OpenTelemetry Support to Cloud Monitoring" (March 2026). https://www.infoq.com/news/2026/03/google-cloud-opentelemetry/
-19. Claude on Vertex AI documentation. https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai
-20. Doolpa — "Google Ironwood TPU GA, TPU 8 Splits Training & Inference" (April 2026). https://doolpa.com/news/google-ironwood-tpu-general-availability-tpu-8-split-cloud-next-april-2026
+1. Google Cloud documentation — Gemini Enterprise Agent Platform. https://docs.cloud.google.com/gemini-enterprise-agent-platform
+2. Google Cloud documentation — Vertex AI. https://docs.cloud.google.com/vertex-ai/docs
+3. Agent Development Kit documentation. https://adk.dev/
+4. Google Cloud documentation — Agent Runtime. https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/runtime
+5. Google Cloud documentation — Agent Gateway overview. https://docs.cloud.google.com/gemini-enterprise-agent-platform/govern/gateways/agent-gateway-overview
+6. Google Cloud documentation — RAG Engine Serverless mode. https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/rag-engine/serverless-mode
+7. Google Cloud documentation — RAG Engine deployment modes. https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/rag-engine/deployment-modes
+8. Google Cloud documentation — Model Armor overview. https://docs.cloud.google.com/model-armor/overview
+9. Google Cloud documentation — Use the BigQuery MCP server. https://docs.cloud.google.com/bigquery/docs/use-bigquery-mcp
+10. Google Cloud documentation — Connect LLMs to BigQuery with MCP Toolbox. https://docs.cloud.google.com/bigquery/docs/pre-built-tools-with-mcp-toolbox
+11. Google Cloud documentation — Model Garden. https://cloud.google.com/model-garden
+12. Google Cloud documentation — Gemini 3.1 Pro. https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/gemini/3-1-pro
+13. Google AI documentation — Gemini API pricing. https://ai.google.dev/gemini-api/docs/pricing
+14. Anthropic documentation — Claude on Vertex AI. https://platform.claude.com/docs/en/build-with-claude/claude-on-vertex-ai
+15. Google Cloud documentation — Get text embeddings. https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/embeddings/get-text-embeddings
+16. Google AI documentation — Embeddings. https://ai.google.dev/gemini-api/docs/embeddings
+17. Google Cloud documentation — RAG Engine metadata search. https://docs.cloud.google.com/gemini-enterprise-agent-platform/build/rag-engine/use-metadata-search
+18. Google Cloud documentation — Model Armor templates. https://docs.cloud.google.com/model-armor/manage-templates
+19. Google Cloud documentation — Cloud Run request timeout. https://docs.cloud.google.com/run/docs/configuring/request-timeout
+20. Terraform Registry — `google_vertex_ai_reasoning_engine`. https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/vertex_ai_reasoning_engine
+21. Google Cloud documentation — Cloud Run memory limits. https://docs.cloud.google.com/run/docs/configuring/services/memory-limits
+22. Google Cloud documentation — Cloud Run GPU support. https://docs.cloud.google.com/run/docs/configuring/services/gpu
+23. Google Cloud documentation — Cloud Run Direct VPC egress. https://docs.cloud.google.com/run/docs/configuring/vpc-direct-vpc
+24. Google Cloud documentation — Document AI overview. https://docs.cloud.google.com/document-ai/docs/overview
+25. Google Cloud documentation — Instrument ADK applications with OpenTelemetry. https://docs.cloud.google.com/stackdriver/docs/instrumentation/ai-agent-adk
+26. Terraform Registry — `google_discovery_engine_search_engine`. https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/discovery_engine_search_engine
+27. Terraform Registry — `google_discovery_engine_data_store`. https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/discovery_engine_data_store
+28. Google Cloud documentation — VPC Service Controls. https://docs.cloud.google.com/vpc-service-controls/docs
+29. Google Cloud documentation — Private Service Connect. https://docs.cloud.google.com/vpc/docs/private-service-connect
+30. Google Cloud documentation — Cloud Audit Logs. https://docs.cloud.google.com/logging/docs/audit
+31. Google Cloud documentation — Service accounts. https://docs.cloud.google.com/iam/docs/service-accounts
+32. Google Cloud blog — Ironwood: The first Google TPU for the age of inference. https://blog.google/innovation-and-ai/infrastructure-and-cloud/google-cloud/ironwood-tpu-age-of-inference/

@@ -4,11 +4,12 @@
 |-------|-------|
 | Created | 2026-05-26 |
 | Last Updated | 2026-05-26 |
-| Version | 1.0 |
+| Version | 1.1 |
 
 ---
 
 - [Executive Summary](#executive-summary)
+- [Source Baseline and Validity Rules](#source-baseline-and-validity-rules)
 - [Platform Architecture: Amazon Bedrock](#platform-architecture-amazon-bedrock)
 - [Model Selection Strategy](#model-selection-strategy)
 - [RAG and Knowledge Retrieval](#rag-and-knowledge-retrieval)
@@ -25,27 +26,40 @@
 - [CI/CD for AI Applications](#cicd-for-ai-applications)
 - [Architecture Patterns by Business Size](#architecture-patterns-by-business-size)
 - [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
+- [Well-Architected and Responsible AI Review Checklist](#well-architected-and-responsible-ai-review-checklist)
 - [References](#references)
 
 ## Executive Summary
 
-AWS's AI platform consolidated significantly through 2025–2026. **Amazon Bedrock** is now the unified foundation for building generative AI applications — providing a model catalogue of 103+ models from 18+ providers, managed RAG (Knowledge Bases), agent orchestration, guardrails, evaluation, and prompt management. At re:Invent 2025, AWS introduced **Amazon Bedrock AgentCore** — a full platform for deploying production agents with managed runtime, identity, gateway, and memory services — alongside the **Strands Agents SDK** (open-source Python SDK for agent development).
+AWS's AI platform consolidated significantly through 2025-2026. **Amazon Bedrock** is now the unified foundation for building generative AI applications on AWS, providing access to foundation models, managed RAG (Knowledge Bases), agent orchestration, guardrails, evaluation, and prompt management. AWS also provides **Amazon Bedrock AgentCore** for deploying and operating agents securely at scale, including runtime, gateway, memory, and identity capabilities.
 
-The most significant 2026 developments:
+The most significant current developments:
 
-1. **OpenAI models on Bedrock** (April 2026) — GPT-5.4, GPT-5.5, and Codex are now available, ending Microsoft's Azure exclusivity. Usage counts toward AWS cloud commitments.
-2. **Amazon S3 Vectors** (GA January 2026) — native vector storage in S3 at up to 90% lower cost than conventional vector databases. Changes the economics of RAG at scale.
-3. **Stateful MCP support** (March 2026) — AgentCore Runtime supports the full MCP protocol including elicitation, sampling, and progress notifications.
-4. **Amazon Nova 2 family** — Nova 2 Lite, Pro, Omni (multimodal in/out), and Sonic (speech-to-speech) with extended thinking capabilities.
-5. **Kiro** — AWS's new spec-driven agentic IDE replacing Amazon Q Developer (end-of-support April 2027).
+1. **OpenAI frontier models on Bedrock** — AWS describes GPT-5.5 and GPT-5.4 availability as preview on Amazon Bedrock. Treat OpenAI frontier model use as preview until your account, Region, model IDs, quotas, and contractual terms are verified in AWS.
+2. **Amazon S3 Vectors** — generally available from December 2, 2025, providing native vector storage and querying in S3 with AWS-stated cost reductions of up to 90% compared with specialized vector database solutions.
+3. **Stateful MCP support in AgentCore Runtime and Gateway** — AgentCore supports stateless and stateful streamable HTTP MCP servers, including elicitation, sampling, and progress notifications for workflows that need them.
+4. **Amazon Nova model family** — Nova models are AWS-native candidates for cost-sensitive, multimodal, and low-latency workloads, subject to current model and Region availability.
+5. **Well-Architected AI guidance** — AWS publishes both the Generative AI Lens and Responsible AI Lens. Use them as the architectural review baseline for production AI workloads.
 
 For contractors building cloud AI systems, the AWS landscape has three tiers:
 
 1. **Pro-code (Bedrock + AgentCore + Strands SDK)** — full control over models, retrieval, orchestration, and deployment. Suitable for enterprise RAG, multi-agent platforms, and custom AI applications.
-2. **Managed (Amazon Q Business)** — rapid deployment of knowledge assistants with 40+ data source connectors and permission-aware responses. Suitable for enterprise search and internal Q&A.
+2. **Managed (Amazon Q Business)** — rapid deployment of knowledge assistants with supported data source connectors, ACL-aware indexing, and permission-aware responses. Suitable for enterprise search and internal Q&A.
 3. **Hybrid** — Q Business for user-facing search with Bedrock Agents providing reasoning backends and custom tool integrations.
 
 This guide covers production best practices across all three, with emphasis on the pro-code path.
+
+---
+
+## Source Baseline and Validity Rules
+
+This playbook is based on current AWS documentation, AWS Architecture Blog / News Blog announcements, and current AWS service pages as of 2026-05-26. For implementation work, verify all time-sensitive details against official AWS sources immediately before design approval:
+
+1. **Model IDs, Regions, and lifecycle** — use Amazon Bedrock "Supported foundation models" and model-specific pages. Do not rely on examples in this document as an availability guarantee.
+2. **Preview features** — do not use preview-only services or models for regulated production workloads without explicit client and risk acceptance.
+3. **Pricing and discounts** — use the Amazon Bedrock pricing page for the target Region and service tier. Cost examples here are planning estimates, not quotes.
+4. **Infrastructure support** — check CloudFormation, CDK, Terraform provider, and service API support for the exact resource type. New Bedrock and AgentCore resources often appear first as CloudFormation/L1 constructs before stable L2 constructs.
+5. **Regional capability** — verify feature availability in AWS Capabilities by Region, the relevant service documentation, and account quotas.
 
 ---
 
@@ -55,7 +69,7 @@ Amazon Bedrock is the serverless foundation model platform on AWS. Unlike Azure'
 
 | Component | Purpose |
 |-----------|---------|
-| **Model Catalogue** | 103+ models from Anthropic, OpenAI, Meta, Mistral, Cohere, Amazon, and others |
+| **Model Catalogue** | Foundation models from Amazon and third-party providers, with availability varying by Region and account access |
 | **Knowledge Bases** | Managed RAG: ingestion, chunking, embedding, indexing, and retrieval |
 | **Agents** | Orchestration runtime with planning, tool calling, memory, and knowledge base integration |
 | **AgentCore** | Production platform: Runtime, Identity, Gateway, Memory services |
@@ -98,30 +112,30 @@ AWS Organization
 
 ## Model Selection Strategy
 
-The Bedrock catalogue spans frontier proprietary models and open-source alternatives across 30+ regions. Model selection should be driven by task requirements and cost constraints.
+The Bedrock catalogue spans frontier proprietary models, AWS-native models, and open-source alternatives, with model and feature availability varying by Region and account access. Model selection should be driven by task requirements, evaluation results, Region availability, and cost constraints.
 
 ### Decision matrix
 
-| Use Case | Recommended Model | Alternative (Open-Source) | Pricing Tier |
-|----------|-------------------|---------------------------|--------------|
-| Complex reasoning / long-context | Claude Opus 4.6 / GPT-5.4 | Llama 4 Maverick | Standard or Priority |
-| High-volume chat / simple Q&A | Claude Haiku 4.5 / Nova 2 Lite | Mistral Small | Standard or Flex |
-| Multimodal (vision + text) | Claude Sonnet 4.6 / Nova 2 Omni | Llama 4 Scout | Standard |
-| Code generation | Claude Opus 4.6 / GPT-5.5 Codex | DeepSeek-V3 | Standard |
-| Embedding | Titan Embeddings V2 | Cohere Embed v4 | Standard |
-| Edge / lightweight | Nova Micro / Nova 2 Lite | Phi-4-mini (SageMaker) | Standard |
-| Structured extraction | Claude Sonnet 4.6 (tool use) | Mistral Large | Standard |
-| Speech-to-speech | Nova 2 Sonic | Whisper (SageMaker) | Standard |
+| Use Case | Candidate Family | Selection Notes |
+|----------|------------------|-----------------|
+| Complex reasoning / long-context | Current frontier reasoning model available in Bedrock | Verify exact model ID, Region, service tier, context length, and preview/GA status before production use. |
+| High-volume chat / simple Q&A | Cost-optimized chat model, such as a small Claude or Nova model where available | Prefer lower-cost models until evaluation data proves a need for larger models. |
+| Multimodal (vision + text/audio/video) | Bedrock multimodal models and Knowledge Bases multimodal retrieval | Verify media-type support per model and per Knowledge Base data source. |
+| Code generation | Current coding-capable model available in Bedrock | Treat preview-only OpenAI frontier/Codex options as preview; use only after account and Region access are confirmed. |
+| Embedding | Titan Embeddings or third-party embedding models available through Bedrock | Match embedding dimensionality, language coverage, cost, and vector store support to the workload. |
+| Edge / lightweight | Small Bedrock model or SageMaker-hosted open model | Use SageMaker or another hosting path when the model is outside the Bedrock catalog. |
+| Structured extraction | Tool-capable LLM plus deterministic schema validation | Evaluate extraction accuracy on domain documents, not generic benchmarks. |
+| Speech / audio | Bedrock-supported audio or speech model where available | Confirm input/output modality, streaming support, and Region availability. |
 
 ### Model selection principles
 
-1. **Start with Claude Haiku or Nova 2 Lite** for cost-efficient prototyping — upgrade to larger models only when evaluation metrics demand it.
-2. **Use Intelligent Prompt Routing** for workloads with mixed complexity — Bedrock dynamically routes between models within a family based on predicted quality (up to 30% cost reduction).
-3. **Pin model versions** in production (use full model IDs like `anthropic.claude-sonnet-4-6-20250514-v1:0`) — auto-upgrades break prompts.
+1. **Start with a cost-optimized model** for prototyping — upgrade to larger models only when evaluation metrics demand it.
+2. **Use Intelligent Prompt Routing where supported** for workloads with mixed complexity — Bedrock can route between models within a family based on the request.
+3. **Pin model versions** in production using the exact model IDs or ARNs from current Bedrock documentation — auto-upgrades and alias changes can break prompts.
 4. **Benchmark on your data** — use Bedrock Model Evaluation or DeepEval to compare models on your actual workload before committing.
 5. **Use cross-region inference profiles** for high-availability — Bedrock routes requests to the optimal region automatically.
-6. **Leverage prompt caching** for repeated context — available on Claude and Nova models, up to 90% cost reduction on cached tokens.
-7. **Consider service tiers** — Priority for latency-critical paths, Standard for everyday use, Flex (50% discount) for background processing.
+6. **Leverage prompt caching** for repeated context where the selected model supports it — caching can reduce latency and input-token cost for stable prompt prefixes.
+7. **Consider service tiers** — Reserved/Priority for mission-critical capacity and latency, Standard for everyday use, and Flex for latency-tolerant work where supported.
 
 ---
 
@@ -129,12 +143,12 @@ The Bedrock catalogue spans frontier proprietary models and open-source alternat
 
 ### Bedrock Knowledge Bases — the managed retrieval layer
 
-Bedrock Knowledge Bases provide end-to-end managed RAG: point at an S3 bucket, and the service handles chunking, embedding, indexing, and retrieval. In 2026, it supports multiple vector store backends and multimodal content.
+Bedrock Knowledge Bases provide end-to-end managed RAG: point at an S3 bucket, and the service handles chunking, embedding, indexing, and retrieval. It supports multiple vector store backends and multimodal content, subject to current Region and parser support.
 
 | Vector Store | When to Use |
 |--------------|-------------|
-| **Amazon S3 Vectors** (GA Jan 2026) | Massive scale, up to 90% cost reduction, serverless, no provisioning. Default for new projects. |
-| **OpenSearch Serverless** | Real-time hybrid search (keyword + vector), full-text capabilities, complex filtering |
+| **Amazon S3 Vectors** (GA Dec 2025) | Cost-sensitive vector storage and semantic search at large scale; strongest fit when full-text / hybrid search is not required. |
+| **OpenSearch Serverless** | Hybrid search (keyword + vector), full-text capabilities, complex filtering, hot indexes, and higher-query-rate retrieval patterns |
 | **Aurora PostgreSQL pgvector** | Teams already on Aurora wanting relational + vector in one database |
 | **Amazon Neptune Analytics** | Graph + vector hybrid queries (knowledge graphs) |
 | **Pinecone / Redis / MongoDB Atlas** | Third-party integrations via Knowledge Bases connectors |
@@ -158,22 +172,22 @@ Query → Embedding → S3 Vectors (ANN search) → Top-K chunks → LLM
 
 **Best practices:**
 
-- **Use S3 Vectors as the default for new projects** unless you need hybrid search (keyword + semantic). It's 90% cheaper than OpenSearch Serverless and requires zero provisioning.
-- **Use OpenSearch Serverless when you need hybrid search** — combining BM25 keyword matching with vector similarity produces better results than either alone for enterprise document corpora.
-- **Use Titan Embeddings V2 (1024 dimensions)** as the default embedding model on AWS — native integration, good quality/cost trade-off.
+- **Use S3 Vectors first for cost-sensitive semantic search** where vector similarity is sufficient and operational simplicity matters. AWS positions S3 Vectors as native S3 vector storage with up to 90% lower cost than specialised vector database solutions.
+- **Use OpenSearch Serverless when you need hybrid search** — combining BM25 keyword matching with vector similarity usually produces better results than either alone for enterprise document corpora. Also choose it for full-text query features, complex filters, and hot/high-QPS retrieval paths.
+- **Use Titan Embeddings or another Bedrock-supported embedding model as the baseline** — verify dimensions, language coverage, retrieval quality, and vector store compatibility before committing.
 - **Enable integrated vectorisation** in Knowledge Bases — let the service handle embedding at both index and query time.
 - **Use metadata filters** to scope retrieval by document type, customer, date range, or access level.
 - **Set retrieval to return 5–10 chunks** — more context doesn't always improve quality and increases token cost.
 
-### Multimodal RAG (re:Invent 2025)
+### Multimodal RAG
 
-Knowledge Bases now support multimodal ingestion:
+Bedrock Knowledge Bases support multimodal data processing through Amazon Bedrock Data Automation and compatible parsers:
 
-- Images and diagrams are processed alongside text.
-- Tables are extracted and preserved as structured content.
-- Charts and figures can be captioned by a vision model during indexing.
+- Documents, images, audio, and video can be processed into searchable text or descriptions where supported.
+- Visual elements in documents can be represented in retrieval context instead of being silently dropped.
+- Multimodal ingestion is useful for corpora containing technical drawings, architecture diagrams, slides, screenshots, scanned forms, or recorded meetings.
 
-Use this for document corpora containing technical drawings, architectural diagrams, or data visualisations.
+Validate the supported file types, parser mode, generated representation, and citation behaviour before relying on multimodal retrieval for regulated use cases.
 
 ### Chunking strategy
 
@@ -188,6 +202,18 @@ Use this for document corpora containing technical drawings, architectural diagr
 ---
 
 ## Document Processing Pipelines
+
+### Amazon Bedrock Data Automation
+
+Amazon Bedrock Data Automation (BDA) is the preferred managed extraction path when the ingestion pipeline needs to handle multimodal content such as documents, images, video, or audio and feed that content into Bedrock workflows or Knowledge Bases.
+
+Use BDA when:
+
+- You want a Bedrock-native multimodal extraction layer.
+- The corpus contains mixed documents, screenshots, slides, diagrams, audio, or video.
+- You need visual descriptions or transcriptions to be available during retrieval.
+
+Use Textract and Comprehend directly when you need lower-level control over OCR, forms, tables, entity extraction, medical text processing, or existing document-processing workflows.
 
 ### Amazon Textract
 
@@ -220,8 +246,8 @@ Comprehend provides NLP capabilities for post-extraction processing:
 Source (S3 Bucket)
   → EventBridge rule (new object notification)
     → Step Functions workflow:
-      1. Textract: extract layout + tables + forms
-      2. Comprehend: classify document type + detect PII
+      1. Bedrock Data Automation or Textract: extract text, layout, tables, forms, visual descriptions, transcripts
+      2. Comprehend / Guardrails / custom classifiers: classify document type + detect PII
       3. Lambda: chunk + embed (Titan Embeddings V2)
       4. Knowledge Base / OpenSearch: index chunks
       5. DynamoDB: store processing status + metadata
@@ -230,11 +256,11 @@ Source (S3 Bucket)
 **Best practices:**
 
 1. **Use Step Functions** (not Lambda chaining) for orchestrating multi-step pipelines — provides retry logic, error handling, parallel processing, and visual debugging.
-2. **Use Textract's Layout API** for documents with complex formatting — it preserves reading order, headings, and structural hierarchy.
+2. **Use Bedrock Data Automation for multimodal ingestion** and Textract's Layout API for OCR-heavy document workflows with complex formatting.
 3. **Process asynchronously** — Textract has rate limits. Use SNS notifications for completion rather than polling.
 4. **Store raw extracted content in S3** alongside the original document — enables re-chunking without re-extraction if your strategy changes.
 5. **Tag each chunk with source metadata** — document ID, page number, section heading, extraction confidence — for citation generation downstream.
-6. **Use Comprehend PII detection** before indexing for regulated workloads — redact or flag sensitive content before it enters the vector store.
+6. **Use Comprehend PII detection, Guardrails PII masking, or a client-approved redaction service** before indexing regulated content — redact or flag sensitive content before it enters the vector store.
 7. **For large corpora (10,000+ documents)**, use Textract batch processing with dedicated throughput and Step Functions distributed map for parallel processing.
 
 ---
@@ -256,14 +282,14 @@ Bedrock Agents provide managed orchestration: a model paired with a planner, act
 | **Guardrails** | Content safety and grounding checks applied per-invocation |
 | **Session** | Conversation state with automatic context management |
 
-### Amazon Bedrock AgentCore (2026)
+### Amazon Bedrock AgentCore
 
 AgentCore is the production platform for deploying and scaling AI agents. It provides:
 
 | Service | Purpose |
 |---------|---------|
 | **AgentCore Runtime** | Serverless, secure hosting with session isolation for thousands of concurrent users |
-| **AgentCore Identity** | Multi-IDP authentication via Cognito integration |
+| **AgentCore Identity** | Identity and authorization support for agents accessing AWS and third-party resources |
 | **AgentCore Gateway** | Centralised MCP server connections, auth, and policy enforcement |
 | **AgentCore Memory** | Short-term, long-term, semantic, episodic, and procedural memory strategies |
 
@@ -276,15 +302,14 @@ Strands is AWS's open-source Python SDK for building agents. It integrates with 
 - Built-in OpenTelemetry instrumentation.
 - Memory management via AgentCore Memory.
 
-### MCP support on AWS (2026)
+### MCP support on AWS
 
-MCP is a first-class citizen on AWS as of 2026:
+MCP is a first-class citizen on AWS:
 
 - **AgentCore Gateway** centralises MCP server connections with OAuth authentication and policy enforcement.
-- **Stateful MCP** (March 2026) — full protocol support including elicitation, sampling, and progress notifications.
-- **Stateful MCP Client** (April 2026) — interactive multi-turn agent workflows.
-- **A2A protocol** support — agents communicate with each other via standard protocol.
-- **AG-UI protocol** (March 2026) — responsive, real-time user-facing agent applications.
+- **Stateful MCP** — AgentCore Runtime supports stateful MCP servers and the streamable HTTP transport, including elicitation, sampling, and progress notifications where implemented by the server/client.
+- **Gateway-managed tools** — expose Lambda functions, OpenAPI targets, and MCP servers through a central Gateway rather than binding every agent directly to every tool.
+- **Protocol choices** — evaluate MCP, A2A, and UI-streaming protocols based on the client experience and governance requirements; do not assume every protocol is supported by every AWS service feature or Region.
 
 ### Agent orchestration patterns
 
@@ -368,12 +393,12 @@ Client → CloudFront (edge caching for repeated prompts)
 
 **Best practices:**
 
-1. **Use REST API (not HTTP API)** for production AI gateways — REST API supports usage plans, API keys, request/response transformation, and WAF integration.
-2. **Implement model routing in Lambda** — classify intent or complexity, then route to the appropriate model tier. Simple queries → Haiku/Nova; complex reasoning → Opus/GPT-5.
+1. **Use REST API when you need mature gateway controls** — usage plans, API keys, request/response transformation, WAF integration, and response streaming are common reasons to choose REST API for an AI gateway. Use HTTP API only when its simpler feature set is sufficient.
+2. **Implement model routing in Lambda** — classify intent or complexity, then route to the appropriate model tier. Simple queries go to cost-optimized models; complex reasoning goes to a verified frontier model.
 3. **Use cross-region inference profiles** for automatic failover — Bedrock handles region routing without custom logic. This is simpler than building your own failover.
 4. **Apply usage plans per API key** — enforce per-tenant rate limits and quotas. Map API keys to customer identifiers for cost attribution.
 5. **Enable request/response logging** to CloudWatch — capture token usage per request for cost tracking.
-6. **Use WebSocket API** for streaming responses — provides a better UX for chat interfaces than polling.
+6. **Use REST response streaming for one-way generated output** and WebSocket API when the client needs bidirectional session updates, tool progress events, or collaborative chat semantics.
 7. **Enable WAF** with rate-based rules — protects against prompt injection at volume and API abuse.
 
 ---
@@ -385,10 +410,10 @@ Client → CloudFront (edge caching for repeated prompts)
 | Workload Characteristic | Recommended Service | Rationale |
 |------------------------|---------------------|-----------|
 | Event-driven, short-lived (<15 min) | Lambda | Scale-to-zero, pay-per-invocation, native Bedrock SDK |
-| Long-running agent sessions (15+ min) | ECS Fargate | No timeout limit, GPU support, per-task IAM roles |
+| Long-running agent sessions (15+ min) | ECS Fargate | No Lambda timeout limit, per-task IAM roles, managed serverless containers |
 | High-throughput API with steady traffic | ECS Fargate (always-on) | Predictable latency, cost-efficient at scale |
-| Custom model hosting (open-source) | SageMaker Endpoints | Managed ML infrastructure, Inferentia/Trainium support |
-| Complex multi-container orchestration | EKS | Full Kubernetes control, KEDA autoscaling, GPU node pools |
+| Custom model hosting (open-source) | SageMaker Endpoints or ECS on EC2/managed instances | Managed ML infrastructure or container hosting with GPU/Inferentia/Trainium support |
+| Complex multi-container orchestration | EKS or ECS on EC2/managed instances | Full orchestration control, autoscaling, GPU node pools or accelerated instances |
 | Frontend (React/Next.js) | Amplify Hosting / CloudFront + S3 | Global CDN, CI/CD integration |
 | Batch processing / evaluation | Step Functions + Lambda | Distributed map for parallelism, no infrastructure |
 
@@ -398,9 +423,9 @@ Lambda is the default compute for Bedrock-backed applications:
 
 - **15-minute timeout** — sufficient for most single-turn LLM interactions and tool-calling loops.
 - **10 GB memory / 6 vCPU** — adequate for request handling (inference runs on Bedrock, not in Lambda).
-- **Streaming responses** — Lambda supports response streaming via function URLs or API Gateway WebSocket.
+- **Streaming responses** — Lambda supports response streaming for supported invocation paths; API Gateway REST response streaming and WebSocket APIs cover different client interaction patterns.
 - **Provisioned concurrency** — eliminates cold starts for latency-sensitive paths.
-- **SnapStart** (Java/Python) — reduces cold start to <200ms.
+- **SnapStart for supported runtimes** — reduces cold starts where the selected runtime and invocation path support it.
 
 **When Lambda isn't enough:**
 
@@ -412,7 +437,7 @@ Lambda is the default compute for Bedrock-backed applications:
 
 - **No timeout limits** — suitable for long-running agent sessions and complex orchestrations.
 - **Per-task IAM roles** — fine-grained access control per container.
-- **GPU support** — run local models (Phi-4, Whisper, embedding models) on GPU instances.
+- **No GPU support on Fargate** — use ECS on EC2/managed instances, EKS, SageMaker, or Bedrock/SageMaker managed inference for GPU or accelerator-backed workloads.
 - **Service Connect** — simplified service-to-service communication for multi-agent architectures.
 - **Auto-scaling** — scale on CPU/memory, custom CloudWatch metrics, or SQS queue depth.
 
@@ -430,9 +455,8 @@ Use SageMaker when you need to host open-source models outside the Bedrock catal
 
 | Chip | Purpose | Instance Type | Key Benefit |
 |------|---------|---------------|-------------|
-| **Trainium3** (2026) | Training + inference | Trn3 | First 3nm AI chip, UltraServer packs 144 chips |
-| **Trainium2** | Training + inference | Trn2 | Production-ready, UltraClusters for large models |
-| **Inferentia2** | Cost-optimised inference | Inf2 | 40–60% savings vs comparable GPUs |
+| **Trainium** | Training + inference | Trn family | AWS accelerator family for large-scale model training and inference; verify current generation and Region support. |
+| **Inferentia** | Cost-optimised inference | Inf family | AWS accelerator family for inference workloads; benchmark against GPU and managed Bedrock/SageMaker options. |
 | **Graviton4** | General compute | C7g/M7g/R7g | Best price/performance for non-GPU workloads |
 
 ---
@@ -441,7 +465,7 @@ Use SageMaker when you need to host open-source models outside the Bedrock catal
 
 ### Network architecture
 
-All production AI deployments on AWS should use **VPC endpoints (PrivateLink)** to ensure traffic never traverses the public internet:
+Production AI deployments that handle sensitive data, regulated workloads, or private backends should use **VPC endpoints (PrivateLink)** so traffic to supported AWS services does not traverse the public internet:
 
 ```
 VPC (AI Workload)
@@ -501,17 +525,17 @@ Guardrails provide multi-layered content safety applied uniformly across ALL mod
 | **Denied topics** | Custom topic definitions that are blocked | Natural language topic descriptions |
 | **PII detection** | Detect and mask/redact personally identifiable information | Per-entity-type configuration (name, SSN, email, etc.) |
 | **Contextual grounding** | Detect hallucinated claims not supported by retrieved context | Grounding score threshold |
-| **Automated Reasoning** (GA 2026) | Formal mathematical verification of compliance claims | Policy rules defined in natural language, verified with 99% accuracy |
+| **Automated Reasoning** (GA since Aug 2025) | Formal mathematical verification of compliance claims | Policy rules defined in natural language; AWS states up to 99% verification accuracy for supported use cases |
 | **Prompt attack detection** | Jailbreak and injection defence heuristics | Enable/disable per guardrail |
 | **Word/phrase filters** | Exact match blocklists | Custom word lists |
 
-### Automated Reasoning checks (new in 2026)
+### Automated Reasoning checks
 
-This is unique to AWS — formal mathematical verification of model outputs against compliance rules:
+AWS makes Automated Reasoning checks available through Bedrock Guardrails for formal verification of model outputs against rules:
 
 - Define policies in natural language (e.g., "employees with less than 1 year of service are entitled to 10 days annual leave").
 - Guardrails mathematically verifies whether the model's output is consistent with the policy.
-- Claims accuracy of 99% — significantly higher than LLM-based grounding checks.
+- AWS states up to 99% verification accuracy for supported Automated Reasoning use cases; validate policies, failure modes, and evaluator coverage with client-specific test cases.
 - Ideal for compliance-critical applications: HR policy, insurance claims, regulatory Q&A.
 
 ### Implementation best practices
@@ -519,7 +543,7 @@ This is unique to AWS — formal mathematical verification of model outputs agai
 1. **Layer your defences** — Guardrails on Bedrock invocations + WAF on API Gateway + application-level output validation.
 2. **Start with MEDIUM thresholds** for content filters — relax only if false positive rate is unacceptable with measured data.
 3. **Always enable prompt attack detection** — jailbreak attempts are common in any user-facing LLM application.
-4. **Use contextual grounding checks** for RAG applications — catches hallucinated claims that aren't supported by the retrieved context.
+4. **Use contextual grounding checks where supported** — AWS documents support for summarisation, paraphrasing, and question-answering workloads; do not assume it is a complete control for every conversational chatbot pattern.
 5. **Use Automated Reasoning** for compliance-critical domains — it's more reliable than LLM-based verification for policy-adherent responses.
 6. **Apply Guardrails to both input and output** — filter harmful inputs before they reach the model, and validate outputs before they reach the user.
 7. **Log all blocked requests** — guardrail violations should trigger alerts, not just silent drops. Use CloudWatch Alarms on block metrics.
@@ -533,27 +557,27 @@ This is unique to AWS — formal mathematical verification of model outputs agai
 
 | Tier | Description | Relative Cost | Best For |
 |------|-------------|---------------|----------|
-| **Priority** | Fastest response times, guaranteed performance | ~75% premium over Standard | Mission-critical, latency-sensitive paths |
+| **Priority** | Fastest response times / prioritized handling where supported | Premium over Standard; verify current pricing | Mission-critical, latency-sensitive paths |
 | **Standard** | Consistent performance for everyday tasks | Baseline (published per-token rates) | General production workloads |
-| **Flex** | Best-effort delivery, higher latency acceptable | ~50% discount vs Standard | Background processing, batch jobs |
-| **Reserved** | Committed capacity with predictable pricing | Volume-based discount | Sustained high-volume workloads |
+| **Flex** | Best-effort / latency-tolerant delivery where supported | Discounted versus Standard; verify current pricing | Background processing, batch jobs |
+| **Reserved** | Committed capacity with predictable pricing | Commitment-based pricing | Sustained high-volume workloads |
 
 ### Additional pricing models
 
 | Model | Discount | Use Case |
 |-------|----------|----------|
-| **Batch Inference** | 50% vs on-demand | Bulk summarisation, evaluation runs, data enrichment |
-| **Provisioned Throughput** | 15–40% at sustained volume | Dedicated capacity with guaranteed performance |
-| **Prompt Caching** | Up to 90% on cached tokens | Repeated system prompts and context prefixes |
-| **Cross-Region Inference** | No premium (capacity routing) | Automatic load distribution for availability |
-| **Intelligent Prompt Routing** | Up to 30% savings | Mixed-complexity workloads routed dynamically |
+| **Batch Inference** | Verify current discount by model and Region | Bulk summarisation, evaluation runs, data enrichment |
+| **Provisioned Throughput** | Commitment-based pricing | Dedicated capacity with predictable performance |
+| **Prompt Caching** | Reduced input-token cost and latency where supported | Repeated system prompts and context prefixes |
+| **Cross-Region Inference** | Verify current pricing and Region behaviour | Automatic load distribution for availability |
+| **Intelligent Prompt Routing** | Verify current pricing and supported model families | Mixed-complexity workloads routed dynamically |
 
 ### Cost optimisation strategies (ordered by implementation priority)
 
-1. **Right-size your model** — Nova 2 Lite / Claude Haiku for classification, routing, extraction. Reserve Opus / GPT-5 for complex reasoning. This is the single biggest lever.
-2. **Intelligent Prompt Routing** — let Bedrock route between model sizes within a family based on query complexity. Up to 30% savings with minimal quality impact.
-3. **Prompt caching** — structure system prompts as a stable prefix (cached) + dynamic suffix (user context). Cached tokens cost up to 90% less.
-4. **Batch Inference for non-real-time work** — evaluation runs, bulk document processing, and data enrichment at 50% discount.
+1. **Right-size your model** — use smaller/cost-optimized models for classification, routing, extraction, and simple Q&A. Reserve frontier reasoning models for tasks where evaluation results justify the cost.
+2. **Intelligent Prompt Routing** — where supported, let Bedrock route between model sizes within a family based on request complexity.
+3. **Prompt caching** — structure system prompts as a stable prefix plus a dynamic suffix. Confirm cache checkpoints, TTLs, and model support in current Bedrock prompt caching docs.
+4. **Batch Inference for non-real-time work** — evaluation runs, bulk document processing, and data enrichment can usually tolerate batch latency and may receive better pricing.
 5. **Service tier selection** — use Flex tier for background processing where latency doesn't matter.
 6. **Cross-region inference** — ensures you're never throttled (which wastes developer time and retry cost).
 7. **Provisioned Throughput** — lock in capacity for sustained high-volume workloads with predictable pricing.
@@ -561,10 +585,12 @@ This is unique to AWS — formal mathematical verification of model outputs agai
 
 ### Cost estimation rules of thumb (May 2026, NZD)
 
+These estimates are planning examples only. Validate against the Amazon Bedrock pricing page for the target Region, selected model, service tier, prompt cache hit rate, vector store, document page count, and evaluation frequency.
+
 | Workload | Monthly Cost Estimate |
 |----------|----------------------|
-| Low-volume RAG chatbot (1K queries/day, Claude Haiku) | $80–200 |
-| Medium-volume RAG chatbot (10K queries/day, Claude Sonnet) | $1,000–2,500 |
+| Low-volume RAG chatbot (1K queries/day, cost-optimized chat model) | $80-200 |
+| Medium-volume RAG chatbot (10K queries/day, higher-quality chat model) | $1,000-2,500 |
 | Enterprise multi-agent platform (50K interactions/day) | $5,000–15,000 (Provisioned recommended) |
 | Document processing pipeline (10K docs/month) | $200–600 (Textract + embedding) |
 | OpenSearch Serverless (vector + keyword, 1M documents) | $500–800/month |
@@ -662,7 +688,7 @@ Build a purpose-built dashboard with:
 
 1. **Build your evaluation dataset from day one** — collect 30–50 representative Q&A pairs during requirements gathering. Expand to 200+ for production baselines.
 2. **Automate evaluation in CI/CD** — every prompt change, model upgrade, or retrieval config change triggers an evaluation run. Gate deployments on threshold pass.
-3. **Use LLM-as-judge for subjective metrics** — Claude Sonnet or GPT-4o as a judge for groundedness and relevance. Pin the judge model version.
+3. **Use LLM-as-judge for subjective metrics carefully** — use a documented evaluator/model, pin the judge version, record evaluator configuration, and periodically calibrate against human review.
 4. **Red-team before launch** — test adversarial inputs (prompt injection, jailbreaks, off-topic queries) as a dedicated evaluation pass.
 5. **Track metrics over time** — quality regressions are gradual. Dashboard your evaluation scores and alert on downward trends.
 6. **Separate retrieval evaluation from generation evaluation** — measure recall@k and precision@k for your retrieval layer independently of the LLM's generation quality.
@@ -672,17 +698,15 @@ Build a purpose-built dashboard with:
 
 ## Infrastructure as Code
 
-### CDK as the default
+### CDK and CloudFormation as AWS-native defaults
 
-AWS CDK (Cloud Development Kit) is the recommended IaC tool for AWS-only AI workloads in 2026. It has first-class L2 constructs for Bedrock, AgentCore, and supporting services.
+AWS CDK is a strong default for AWS-only AI workloads, but support level varies by service maturity. Stable L2 constructs exist for some Bedrock resources, while newer Bedrock and AgentCore capabilities may require CloudFormation resources, L1 CDK constructs, custom resources, or waiting for provider support.
 
 | Tool | Bedrock Support | Best For |
 |------|----------------|----------|
-| **AWS CDK** (TypeScript/Python) | Excellent — L2 constructs for Bedrock, AgentCore, Step Functions | AWS-only shops, developers who want programmatic IaC |
-| **Terraform** (HCL) | Good — aws provider covers Bedrock resources | Multi-cloud organisations, existing Terraform teams |
-| **CloudFormation** (YAML/JSON) | Full support including AgentCore | Compliance-heavy organisations requiring AWS-direct support |
-
-**Note:** CDKTF (CDK for Terraform) is being deprecated — teams using it should migrate to native CDK or native Terraform.
+| **AWS CDK** (TypeScript/Python) | Good, but newer resources may be L1 or alpha | AWS-only shops, developers who want programmatic IaC |
+| **Terraform** (HCL) | Good for mature resources; confirm provider support for newer Bedrock/AgentCore resources | Multi-cloud organisations, existing Terraform teams |
+| **CloudFormation** (YAML/JSON) | AWS-native baseline for many new service resources | Compliance-heavy organisations requiring AWS-direct resource coverage |
 
 ### CDK project structure for AI deployments
 
@@ -713,9 +737,9 @@ infra/
 
 ### Best practices
 
-1. **Use CDK L2 constructs** where available — they encode AWS best practices (encryption, logging, least-privilege IAM) by default.
+1. **Use CDK L2 constructs where stable and available** — otherwise use CloudFormation/L1 constructs with explicit encryption, logging, IAM, and tagging configuration.
 2. **Parameterise environment differences** (model IDs, capacity, network mode) through config files — same constructs across dev/staging/prod.
-3. **Define Bedrock model access as IaC** — Guardrails, model permissions, and Knowledge Base configurations should be in code, not configured through the console.
+3. **Define Bedrock and AgentCore configuration as IaC where supported** — Guardrails, model permissions, Knowledge Base configurations, Gateway targets, and agent runtime settings should not live only in the console.
 4. **Use CDK Aspects** for security compliance — automatically enforce encryption, VPC attachment, and tagging policies across all resources.
 5. **Deploy with CDK Pipelines** — self-mutating CI/CD pipeline that deploys infrastructure changes through environments with approval gates.
 6. **Store reusable constructs in a private package** — publish to CodeArtifact for reuse across engagements.
@@ -770,7 +794,7 @@ Code Push → Lint & Type Check → Unit Tests → CDK Synth → Deploy to Dev
 - name: Run AI Evaluation
   run: |
     python3 -m deepeval test run tests/eval/ \
-      --model bedrock/anthropic.claude-sonnet-4-6 \
+      --model bedrock/<verified-model-id> \
       --threshold groundedness=0.8 \
       --threshold relevancy=0.75
   env:
@@ -790,7 +814,7 @@ Code Push → Lint & Type Check → Unit Tests → CDK Synth → Deploy to Dev
 Amplify Hosting (React frontend)
   → API Gateway (REST)
     → Lambda (Bedrock SDK)
-      → Bedrock: Claude Haiku (inference)
+      → Bedrock: cost-optimized chat model (inference)
       → Knowledge Base + S3 Vectors (retrieval)
       → S3 (document storage)
       → Textract (document processing, on-demand)
@@ -810,8 +834,8 @@ Amplify Hosting (React frontend)
 Amplify Hosting (React frontend)
   → API Gateway (REST + WebSocket for streaming)
     → Lambda (model router + orchestration)
-      → Bedrock: Claude Sonnet (complex queries)
-      → Bedrock: Claude Haiku (simple queries, via Intelligent Prompt Routing)
+      → Bedrock: higher-quality chat model (complex queries)
+      → Bedrock: cost-optimized chat model (simple queries, via routing)
       → Knowledge Base + OpenSearch Serverless (hybrid retrieval)
       → DynamoDB (conversation history, metadata)
       → Step Functions (document ingestion pipeline)
@@ -840,7 +864,7 @@ CloudFront (CDN)
         │   └── AgentCore Gateway → MCP Servers (Lambda)
         └── Compliance Agent (policy verification)
             └── Guardrails (Automated Reasoning)
-      → Bedrock (multi-model: Opus, Sonnet, Haiku via routing)
+      → Bedrock (multi-model routing across verified model tiers)
       → DynamoDB (session state, metadata)
       → ElastiCache Redis (semantic cache)
       → AgentCore Memory (cross-session recall)
@@ -873,33 +897,52 @@ CloudFront (CDN)
 
 ---
 
+## Well-Architected and Responsible AI Review Checklist
+
+Use the AWS Well-Architected Generative AI Lens and Responsible AI Lens as the formal review baseline before production launch.
+
+| Lens Area | What to Check |
+|-----------|---------------|
+| **Operational excellence** | Model/prompt/config changes are versioned; runbooks exist for throttling, guardrail spikes, retrieval outages, and model rollback. |
+| **Security** | IAM least privilege, no application API keys, VPC endpoints where required, guardrails on user-facing invocations, CloudTrail/model invocation logging, and tenant-aware data access. |
+| **Reliability** | Cross-Region inference or fallback paths for critical workloads; queue/batch fallback for non-real-time work; documented quota and throttling strategy. |
+| **Performance efficiency** | Model choice, prompt length, retrieval top-k, reranking, streaming, and caching are measured against latency and quality targets. |
+| **Cost optimization** | Token budgets, prompt caching, batch inference, service tiers, vector-store choice, and per-tenant cost attribution are visible in dashboards. |
+| **Responsible AI** | Human review paths, safety evaluations, adversarial testing, PII handling, provenance/citations, transparency, and appeal/escalation processes are defined. |
+
+---
+
 ## References
 
+- AWS Well-Architected — Generative AI Lens: https://docs.aws.amazon.com/wellarchitected/latest/generative-ai-lens/generative-ai-lens.html
+- AWS Well-Architected — Responsible AI Lens: https://docs.aws.amazon.com/wellarchitected/latest/responsible-ai-lens/responsible-ai-lens.html
+- Amazon Bedrock User Guide — Supported foundation models: https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html
+- Amazon Bedrock — OpenAI models on Bedrock: https://aws.amazon.com/bedrock/openai/
+- Amazon S3 Vectors GA announcement: https://aws.amazon.com/blogs/aws/amazon-s3-vectors-now-generally-available-with-increased-scale-and-performance/
+- Amazon S3 Vectors service page: https://aws.amazon.com/s3/features/vectors/
+- Amazon Bedrock Knowledge Bases: https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html
+- Amazon Bedrock Knowledge Bases multimodal data processing: https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multimodal.html
+- Amazon Bedrock Data Automation: https://docs.aws.amazon.com/bedrock/latest/userguide/bda.html
+- Amazon Bedrock AgentCore documentation: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/what-is-bedrock-agentcore.html
+- Amazon Bedrock AgentCore Runtime MCP support: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-mcp.html
+- Amazon Bedrock AgentCore Gateway: https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html
+- AWS Prescriptive Guidance — Strands Agents: https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-frameworks/strands-agents.html
+- AWS Prescriptive Guidance — Protocol-based tools and MCP: https://docs.aws.amazon.com/prescriptive-guidance/latest/agentic-ai-frameworks/protocol-based-tools-detailed.html
+- Amazon Bedrock Guardrails: https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html
+- Amazon Bedrock Guardrails contextual grounding checks: https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-contextual-grounding-check.html
+- AWS News Blog — Automated Reasoning checks in Bedrock Guardrails: https://aws.amazon.com/blogs/aws/minimize-ai-hallucinations-and-deliver-up-to-99-verification-accuracy-with-automated-reasoning-checks-now-available/
+- Amazon Bedrock model invocation logging: https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html
+- Amazon Bedrock VPC interface endpoints: https://docs.aws.amazon.com/bedrock/latest/userguide/vpc-interface-endpoints.html
+- Amazon Bedrock prompt management: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-management.html
+- Amazon Bedrock prompt caching: https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-caching.html
+- Amazon Bedrock inference profiles: https://docs.aws.amazon.com/bedrock/latest/userguide/inference-profiles.html
+- Amazon Bedrock service tiers: https://aws.amazon.com/bedrock/service-tiers/
+- Amazon Bedrock pricing: https://aws.amazon.com/bedrock/pricing/
 - AWS Architecture Blog — Building an AI Gateway to Amazon Bedrock with Amazon API Gateway: https://aws.amazon.com/blogs/architecture/building-an-ai-gateway-to-amazon-bedrock-with-amazon-api-gateway/
-- AWS — Amazon Bedrock AgentCore Overview: https://cloudvisor.co/amazon-bedrock-agentcore/
-- AWS — Amazon Bedrock AgentCore Stateful MCP Support: https://aws.amazon.com/about-aws/whats-new/2026/03/amazon-bedrock-agentcore-runtime-stateful-mcp/
-- AWS — Amazon Bedrock Cross-Region Inference: https://docs.aws.amazon.com/bedrock/latest/userguide/cross-region-inference.html
-- AWS — Amazon Bedrock Guardrails: https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails.html
-- AWS — Amazon Bedrock Pricing and Service Tiers: https://aws.amazon.com/bedrock/pricing/
-- AWS — Amazon Bedrock Service Tiers: https://aws.amazon.com/bedrock/service-tiers/
-- AWS — Amazon S3 Vectors (GA January 2026): https://aws.amazon.com/blogs/aws/introducing-amazon-s3-vectors-first-cloud-storage-with-native-vector-support-at-scale/
-- AWS — Build AI Agents with AgentCore using CloudFormation: https://aws.amazon.com/blogs/machine-learning/build-ai-agents-with-amazon-bedrock-agentcore-using-aws-cloudformation/
-- AWS — Model Invocation Logging: https://docs.aws.amazon.com/bedrock/latest/userguide/model-invocation-logging.html
-- AWS — OpenAI Models on Bedrock (April 2026): https://aws.amazon.com/about-aws/whats-new/2026/04/bedrock-openai-models-codex-managed-agents/
-- AWS — re:Invent 2025 AI Announcements: https://www.aboutamazon.com/news/aws/aws-re-invent-2025-ai-news-updates
-- AWS — Trainium3 UltraServer: https://www.aboutamazon.com/news/aws/trainium-3-ultraserver-faster-ai-training-lower-cost
-- AWS Samples — AI Gateway for Amazon Bedrock: https://github.com/aws-samples/sample-ai-gateway-for-amazon-bedrock
-- AWS Samples — CloudWatch Generative AI Observability: https://github.com/aws-samples/sample-amazon-cloudwatch-generative-ai-observability
-- AWS Solutions Library — Multi-Agent Orchestration using Bedrock AgentCore: https://github.com/aws-solutions-library-samples/guidance-for-multi-agent-orchestration-using-bedrock-agentcore-on-aws
-- CDK vs Terraform Practical Comparison (2026): https://andrewodendaal.com/aws-cdk-vs-terraform-practical-comparison-2026/
-- Cevo — AWS Vector Store for RAG Beyond OpenSearch: https://cevo.com.au/post/aws-vector-store-for-rag-beyond-opensearch/
-- DeepEval — LLM Evaluation Framework: https://deepeval.com/
-- FutureAGI — AWS Bedrock: The Future of AI Development on AWS: https://futureagi.com/blog/aws-bedrock-the-future-of-ai-development-on-aws/
-- InfoQ — Amazon S3 Vectors GA: https://www.infoq.com/news/2026/01/aws-s3-vectors-ga/
-- InterWorks — Securing Amazon Bedrock (2026): https://interworks.com/blog/2026/03/06/securing-amazon-bedrock-what-enterprises-need-to-get-right/
-- K21 Academy — AWS Generative AI Cost Optimization: https://k21academy.com/aws-aiml/aws-generative-ai-cost-optimization/
-- KMS ITC — AI Gateway as Enterprise Control Plane (2026): https://www.kmsitc.net/insights/ai-gateway-bedrock-enterprise-control-plane-2026
-- OpenAI on AWS announcement: https://openai.com/index/openai-on-aws/
-- OpenObserve — Monitoring AWS Bedrock: https://openobserve.ai/blog/monitoring-aws-bedrock/
-- Strands Agents SDK — Deploy to Bedrock AgentCore: https://strandsagents.com/docs/user-guide/deploy/deploy_to_bedrock_agentcore/
-- Nerova — Stateful MCP on Amazon Bedrock AgentCore: https://nerova.ai/guides/what-is-stateful-mcp-amazon-bedrock-agentcore-2026
+- AWS Lambda response streaming: https://docs.aws.amazon.com/lambda/latest/dg/configuration-response-streaming.html
+- Amazon ECS GPU workloads: https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-gpu.html
+- AWS CDK Amazon Bedrock library: https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_bedrock-readme.html
+- AWS CloudFormation — AWS::Bedrock::KnowledgeBase: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrock-knowledgebase.html
+- AWS CloudFormation — AWS::BedrockAgentCore::Runtime: https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html
+- Amazon Bedrock Evaluations: https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation.html
+- Amazon Q Business connector concepts and ACL crawling: https://docs.aws.amazon.com/amazonq/latest/qbusiness-ug/connector-concepts.html

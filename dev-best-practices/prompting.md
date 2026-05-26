@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-26 |
-| Last Updated | 2026-05-26 |
-| Version | 1.0 |
+| Last Updated | 2026-05-27 |
+| Version | 1.1 |
 
 ---
 
@@ -25,9 +25,9 @@
 
 The practice of prompting foundation models has undergone a paradigm shift in 2025–2026. The field has moved from "prompt engineering" — carefully crafting individual prompts — to **"context engineering"**: the systematic management of what information reaches the model, when, and in what structure. This shift is driven by three developments: (1) frontier models now perform chain-of-thought reasoning internally via API-controlled thinking parameters, making explicit "think step by step" instructions counterproductive; (2) structured output guarantees (JSON schemas, tool calling) have matured across all major providers; and (3) prompts have become production assets requiring the same version control, testing, and deployment rigour as application code.
 
-For professional services companies operating across AWS, Azure, and GCP, the recommended architecture is a **two-tier prompt system**: a reusable core library of model-agnostic prompt templates versioned in Git, with cloud-specific adapter layers that handle provider-specific formatting, caching, and deployment. AWS Bedrock Prompt Management and GCP Vertex AI Prompt Registry are both GA and actively developed; Azure Prompt Flow is being retired (April 2027) and should be avoided for new work. Prompt testing should be automated via PromptFoo or DeepEval in CI/CD pipelines, with evaluation datasets maintained per client engagement.
+For professional services companies operating across AWS, Azure, and GCP, the recommended architecture is a **two-tier prompt system**: a reusable core library of model-agnostic prompt templates versioned in Git, with cloud-specific adapter layers that handle provider-specific formatting, caching, and deployment. AWS Bedrock Prompt Management and GCP Vertex AI Prompt Registry are both GA and actively developed; Azure Prompt Flow is being retired (April 2027) and should be avoided for new work. Evaluation datasets should be maintained per client engagement.
 
-The default recommendation for prompt storage is **file-based in Git alongside application code**, with deviation to database-backed registries only when non-engineering stakeholders need to modify prompts without code deployments, or when the number of prompts exceeds 10–20 per service.
+Prompt testing should be automated in CI/CD pipelines using an evaluation framework suited to the team's stack and evaluation needs (see Finding 7 for a comparison of options). The default recommendation for prompt storage is **file-based in Git alongside application code**, with deviation to database-backed registries only when non-engineering stakeholders need to modify prompts without code deployments, or when the number of prompts exceeds 10–20 per service.
 
 ---
 
@@ -198,19 +198,54 @@ Each prompt file should contain: the template text, variable definitions, model 
 2. **Regression testing** — Given known inputs, does the model produce outputs that pass quality assertions? Use a golden dataset of 20–50 input/expected-output pairs.
 3. **A/B comparison** — When changing a prompt, compare new vs. old on the same inputs. Block merge if quality drops below threshold.
 
-**Recommended tools:**
+**Evaluation framework comparison:**
 
-| Tool | License | Strengths | Notes |
-|---|---|---|---|
-| **PromptFoo** | MIT | CI/CD-native, YAML configs, GitHub Actions, 50+ assertion types | Acquired by OpenAI March 2026; still MIT |
-| **DeepEval** | Apache 2.0 | 50+ metrics, pytest integration, LLM-as-judge | Good for teams already on pytest |
-| **Ragas** | Apache 2.0 | RAG-specific (9 dimensions), context relevance, faithfulness | Use alongside general tools for RAG |
-| **Langfuse** | MIT | Tracing, scoring, prompt management, 27K GitHub stars | Acquired by ClickHouse Jan 2026 |
+| Tool | License | Strengths | Trade-offs | Best For |
+|---|---|---|---|---|
+| **DeepEval** | Apache 2.0 | 50+ metrics, native pytest integration, LLM-as-judge (GEval), regression testing, CI/CD-native via `deepeval test run` | Python-only, relatively new project (Confident AI), commercial cloud platform optional | Python teams wanting pytest-native LLM testing without a separate toolchain |
+| **PromptFoo** | MIT | Config-driven (YAML), model comparison, provider-agnostic, strong CLI, supports any language's test runner | Evaluation logic in YAML config (not code), less flexible for custom metrics | Teams wanting language-agnostic prompt comparison and A/B testing with minimal code |
+| **Ragas** | Apache 2.0 | Purpose-built for RAG (9 dimensions), context relevance, faithfulness, answer correctness | RAG-focused only, less suited for non-retrieval use cases | RAG pipeline evaluation and retrieval quality measurement |
+| **Langfuse** | MIT | Full LLMOps platform: tracing, scoring, prompt management, evaluation, 27K GitHub stars | Heavier dependency (server component for full features), evaluation is one part of a larger platform | Teams wanting combined observability + prompt management + evaluation in one tool |
+| **Azure AI Evaluation SDK** | Proprietary | Native Foundry integration, built-in evaluators, production sampling | Azure-only, less portable across clouds | Azure-native teams using Foundry |
+| **Bedrock Model Evaluation** | Proprietary | Native Bedrock integration, built-in metrics, no extra infra | AWS-only, limited to Bedrock models | AWS-native teams comparing models within Bedrock |
 
-**CI/CD integration pattern:**
+**Selection criteria:**
+
+- **Language/ecosystem fit** — DeepEval and Ragas are Python-native; PromptFoo works across languages via CLI/YAML; cloud-native tools (Azure AI Evaluation, Bedrock Model Evaluation) require their respective platform.
+- **Evaluation complexity** — For simple regression testing (does the output still match expectations?), PromptFoo's config-driven approach is fastest to set up. For complex custom metrics with LLM-as-judge, DeepEval's programmatic approach offers more flexibility.
+- **Cloud portability** — Open-source tools (DeepEval, PromptFoo, Ragas, Langfuse) work across all providers. Cloud-native tools lock evaluation to a single platform.
+- **RAG-specific needs** — Ragas is purpose-built for retrieval evaluation. Use it alongside a general-purpose evaluation tool for RAG pipelines.
+- **Team composition** — If non-engineers need to define evaluation criteria, PromptFoo's YAML and Langfuse's UI are more accessible than code-based frameworks.
+
+**CI/CD integration patterns:**
+
+The core principle is the same regardless of framework: trigger evaluation on prompt/model changes, gate deployment on quality thresholds.
 
 ```yaml
-# .github/workflows/prompt-eval.yml
+# .github/workflows/prompt-eval.yml — DeepEval example (pytest-native)
+name: LLM Regression Test
+on:
+  pull_request:
+    paths: ['prompts/**', 'worker/app/agent/**']
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install deepeval
+      - name: Run prompt regression tests
+        env:
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+        run: deepeval test run tests/test_prompts.py
+```
+
+```yaml
+# .github/workflows/prompt-eval.yml — PromptFoo example (config-driven)
+name: LLM Regression Test
 on:
   pull_request:
     paths: ['prompts/**']
@@ -219,8 +254,54 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: npx promptfoo eval --config prompts/eval.yaml
-      - run: npx promptfoo assert --threshold 0.85
+      - run: npx promptfoo@latest eval --config prompts/promptfooconfig.yaml
+      - run: npx promptfoo@latest eval --config prompts/promptfooconfig.yaml --output results.json
+      - name: Check for regressions
+        run: npx promptfoo@latest eval --config prompts/promptfooconfig.yaml --grader
+```
+
+**Example: DeepEval test (Python, pytest-native):**
+
+```python
+# tests/test_prompts.py
+import pytest
+from deepeval import assert_test
+from deepeval.metrics import GEval
+from deepeval.test_case import LLMTestCase, SingleTurnParams
+from deepeval.dataset import EvaluationDataset
+
+dataset = EvaluationDataset()
+dataset.add_test_cases_from_json_file("tests/golden/generation_cases.json")
+
+@pytest.mark.parametrize("test_case", dataset.test_cases)
+def test_generation_quality(test_case: LLMTestCase):
+    correctness = GEval(
+        name="Correctness",
+        criteria="Output is factually correct and relevant",
+        evaluation_params=[SingleTurnParams.ACTUAL_OUTPUT, SingleTurnParams.EXPECTED_OUTPUT],
+        threshold=0.7,
+    )
+    assert_test(test_case, [correctness])
+```
+
+**Example: PromptFoo config (YAML, language-agnostic):**
+
+```yaml
+# prompts/promptfooconfig.yaml
+prompts:
+  - file://prompts/tasks/summarise.yaml
+providers:
+  - id: azureopenai:chat:gpt-4o
+  - id: anthropic:messages:claude-sonnet-4-6
+tests:
+  - vars:
+      input: "Summarise this quarterly report..."
+    assert:
+      - type: llm-rubric
+        value: "Summary covers key financials and is under 200 words"
+      - type: similar
+        value: "Revenue grew 15% year-over-year..."
+        threshold: 0.7
 ```
 
 ### Finding 8: Professional Services Patterns
@@ -296,19 +377,23 @@ class PromptResolver:
 | Tool | Category | Stars | License | Key Feature |
 |---|---|---|---|---|
 | **Langfuse** | Observability + Prompts | 27K | MIT | Full LLMOps platform; prompt management, tracing, scoring |
-| **PromptFoo** | Testing/Eval | 13K+ | MIT | CI/CD-native eval; assertion framework; red-teaming |
+| **DeepEval** | Testing/Eval | ~4K | Apache 2.0 | pytest-native LLM unit testing; 50+ metrics; GEval; regression testing; LLM-as-judge |
+| **PromptFoo** | Testing/Eval | ~22K | MIT (acquired by OpenAI, May 2026) | Config-driven prompt comparison and regression testing; language-agnostic; strong CLI |
 | **MLflow Prompt Registry** | Enterprise Registry | — | Apache 2.0 | Databricks Unity Catalog integration; enterprise governance |
 | **Agenta** | Prompt Management | ~3K | MIT | Git-like versioning; playground; deployment |
-| **Pezzo** | Prompt Management | ~2K | Apache 2.0 | Version control; analytics; caching |
-| **DeepEval** | Evaluation | ~4K | Apache 2.0 | 50+ metrics; pytest native; LLM-as-judge |
 | **Ragas** | RAG Evaluation | ~8K | Apache 2.0 | 9-dimension RAG quality; faithfulness; relevance |
 
-**Recommended stack for professional services:**
-- **Observability:** Langfuse (self-hosted for client isolation)
-- **Testing:** PromptFoo in CI/CD + DeepEval for pytest-native teams
-- **Prompt management:** Git-based (default) or Langfuse (when non-engineers need access)
-- **RAG evaluation:** Ragas
-- **Enterprise governance:** MLflow (if already on Databricks)
+**Stack selection for professional services:**
+
+The right combination depends on team language ecosystem, evaluation complexity, and cloud strategy:
+
+| Concern | Options | Selection criteria |
+|---|---|---|
+| **Observability** | Langfuse (self-hosted for client isolation), cloud-native tools (Azure App Insights, AWS CloudWatch, GCP Cloud Trace) | Self-hosted when multi-cloud or strict data isolation is required; cloud-native when already on one platform |
+| **Prompt testing in CI** | DeepEval (Python, pytest-native), PromptFoo (YAML config, language-agnostic), cloud-native (Azure AI Evaluation SDK, Bedrock Model Evaluation) | Choose by language ecosystem and whether you need code-based or config-based test definitions |
+| **Prompt management** | Git-based (default), Langfuse (when non-engineers need access), cloud-native (AWS Bedrock Prompt Management, GCP Vertex AI Prompt Registry) | Git for engineering-only; UI-based tools for mixed teams; cloud-native when deeply committed to one platform |
+| **RAG evaluation** | Ragas (purpose-built), DeepEval RAG metrics, PromptFoo with custom assertions | Ragas for dedicated RAG quality work; general eval tools when RAG is one dimension of broader testing |
+| **Enterprise governance** | MLflow (if already on Databricks), Langfuse (broader LLMOps), cloud-native registries | Align with existing MLOps investment |
 
 ### Finding 10: Anti-Patterns to Avoid in 2026
 
@@ -330,7 +415,7 @@ class PromptResolver:
 ## Areas of Uncertainty
 
 - **Azure AI Foundry maturity:** As the successor to Prompt Flow, Azure AI Foundry's prompt management capabilities are still evolving. Specific feature parity timelines are unclear.
-- **PromptFoo post-acquisition direction:** Following OpenAI's acquisition (March 2026), it remains MIT-licensed, but long-term governance and neutrality are uncertain.
+- **DeepEval long-term governance:** DeepEval is Apache 2.0 licensed and actively maintained by Confident AI. The commercial platform (Confident AI Cloud) is optional — the core framework runs entirely locally. Long-term independence is not guaranteed but the permissive licence mitigates lock-in risk.
 - **Optimal prompt caching strategies across providers:** Cache invalidation behaviour differs significantly between AWS (explicit TTL), Azure (automatic), and GCP (implicit + explicit). The optimal caching strategy for multi-model, multi-cloud deployments is still being established.
 - **Open-weight model thinking APIs:** Whether Llama 5 and Qwen 4 will offer API-level thinking control (like proprietary models) is unknown as of May 2026.
 - **Regulatory requirements for prompt auditability:** The EU AI Act's requirements around prompt documentation and auditability for high-risk systems are not yet fully clarified in implementation guidance.
@@ -362,8 +447,11 @@ class PromptResolver:
 11. [Anthropic — Extended Thinking Documentation](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
 12. [OpenAI — Prompt Engineering Guide](https://platform.openai.com/docs/guides/prompt-engineering)
 13. [Langfuse Documentation](https://langfuse.com/docs)
-14. [PromptFoo Documentation](https://promptfoo.dev/docs/intro)
+14. [DeepEval Documentation](https://deepeval.com/docs/getting-started)
 15. [MLflow — Prompt Registry](https://mlflow.org/docs/latest/llms/prompt-registry/)
 16. [Microsoft — .prompty File Format](https://prompty.ai)
 17. [DeepEval Documentation](https://docs.confident-ai.com/)
 18. [Ragas Documentation](https://docs.ragas.io/)
+19. [PromptFoo Documentation](https://www.promptfoo.dev/docs/intro/)
+20. [Azure AI Evaluation SDK](https://learn.microsoft.com/en-us/azure/foundry/concepts/evaluation-evaluators/general-purpose-evaluators)
+21. [Amazon Bedrock Model Evaluation](https://docs.aws.amazon.com/bedrock/latest/userguide/model-evaluation.html)

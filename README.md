@@ -16,7 +16,8 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [Agentic Coding: Claude Code vs OpenAI Codex](agentic-coding-claude-vs-openai.md) — Best-in-class models, benchmark comparison, architecture differences, and consistency analysis for Claude Code and OpenAI Codex
 - [Current Best Frontier LLMs](current-best-frontier-llms.md) — Quick-reference list of the best models from Anthropic, OpenAI, and Google as of May 2026
 - [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) — Open-source VLMs for image identification, interpretation, and detailed description running on local hardware
-- [Prompting Best Practices](prompting-best-practices.md) — Prompting techniques, prompt storage patterns, CI/CD testing, and multi-cloud management for professional services
+- [Prompting Best Practices](dev-best-practices/prompting.md) — Prompting techniques, prompt storage patterns, CI/CD testing, and multi-cloud management for professional services
+- [Azure AI Development Best Practices](dev-best-practices/azure-ai-development.md) — Platform architecture, RAG, agents, security, cost management, and evaluation for building AI systems on Azure in 2026
 
 ## Reference designs
 

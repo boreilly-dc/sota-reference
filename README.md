@@ -18,6 +18,7 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) — Open-source VLMs for image identification, interpretation, and detailed description running on local hardware
 - [Prompting Best Practices](dev-best-practices/prompting.md) — Prompting techniques, prompt storage patterns, CI/CD testing, and multi-cloud management for professional services
 - [Azure AI Development Best Practices](dev-best-practices/azure-ai-development.md) — Platform architecture, RAG, agents, security, cost management, and evaluation for building AI systems on Azure in 2026
+- [AWS AI Development Best Practices](dev-best-practices/aws-ai-development.md) — Bedrock platform, RAG (Knowledge Bases + S3 Vectors), AgentCore, Guardrails, cost management, and evaluation for building AI systems on AWS in 2026
 
 ## Reference designs
 

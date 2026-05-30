@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-04 |
-| Last Updated | 2026-05-04 |
-| Version | 1.0 |
+| Last Updated | 2026-05-30 |
+| Version | 1.2 |
 
 ---
 
@@ -20,6 +20,7 @@
 - [10. Hyperscaler Managed-Service Mappings](#10-hyperscaler-managed-service-mappings)
 - [11. Evaluation Methodology](#11-evaluation-methodology)
 - [12. When to Deviate from This Design](#12-when-to-deviate-from-this-design)
+- [13. Engineering Readiness Pack](#13-engineering-readiness-pack)
 - [References](#references)
 
 This is the canonical reference design for a retrieval-augmented generation (RAG) knowledge base that must serve a large number of documents of widely varying sizes (single-page memos through 600+ page technical manuals) without per-document tuning. It consolidates the production design validated through 14 evaluation iterations on the `doc-agent` branch of the ba-ai-discovery codebase, with the broader open-source landscape as fallback options. The design is platform-neutral; hyperscaler equivalents are listed in §10.
@@ -119,7 +120,7 @@ Route documents by type at upload:
 | Input | Parser |
 |---|---|
 | Clean digital PDF (extractable text) | `pymupdf` / `pypdf` |
-| Scanned PDF, complex layout, tables | VLM-based: **Docling** (IBM, Apache 2.0) or **MinerU 2.5** |
+| Scanned PDF, complex layout, tables | VLM-based: **Docling** (Apache 2.0) or **MinerU** (Apache 2.0) |
 | Office (DOCX, PPTX) | `python-docx`, `python-pptx` |
 | Markdown, plain text | Pass through |
 | HTML | `trafilatura` or `readability-lxml` for main-content extraction |
@@ -130,7 +131,7 @@ For complex/scanned documents, invest in VLM parsing. The accuracy gap between T
 
 ### 3.2 Knowledge distillation
 
-Before chunking, send the first ~12,000 characters and detected headings to a fast LLM (Claude Haiku, GPT-5-mini, Gemini Flash). It returns:
+Before chunking, send the first ~12,000 characters and detected headings to an approved fast LLM from the deployment's verified model shortlist. It returns:
 
 - Document **title**, **type**, and a **3–5 sentence summary**
 - **Section hierarchy** with titles, levels, and per-section summaries
@@ -178,7 +179,7 @@ This is a lighter version of Anthropic's contextual retrieval (which prepends an
 
 **Open-source default:** **BGE-M3** (BAAI, MIT licence, 1024-dim) — the strongest general-purpose open-source embedding model that supports dense, sparse, and ColBERT-style multi-vector outputs from a single forward pass.
 
-**Other validated options:** `nomic-embed-text-v1.5` (Apache 2.0, 768-dim, fully open weights/data/training), `jina-embeddings-v3` (Apache 2.0, supports late chunking).
+**Other validated options:** `nomic-embed-text-v1.5` (Apache 2.0, 768-dim, fully open weights/data/training), `jina-embeddings-v3` (CC BY-NC 4.0 — commercial licence required for production use; supports late chunking and task-specific LoRA adapters).
 
 **Critical pgvector detail.** pgvector 0.8.x caps HNSW and IVFFlat indexes at **2000 dimensions**. For 3072-dim Gemini embeddings, either:
 
@@ -369,11 +370,11 @@ Send the assembled context plus the user's question to the answer LLM with a sys
 
 | Tier | Recommendation |
 |---|---|
-| Frontier (default) | Claude Haiku 4.5 — outperformed Gemini Flash by +1.8 average judge points in evaluation, and answer-model quality matters more than any single retrieval change. |
+| Frontier (default) | Use the best latency/cost/quality model from the organisation's verified model shortlist. Internal evals showed answer-model quality mattered more than any single retrieval change. |
 | Open-source | Llama 3.3 70B Instruct or Qwen 2.5 72B Instruct — competitive with frontier mid-tier models, deployable on a single H100 or via vLLM. |
-| Cost-sensitive | Gemini Flash, GPT-5-mini, Claude Haiku 3.5 — acceptable quality drop in exchange for ~5× cost reduction. |
+| Cost-sensitive | Use a cheaper approved model only after measuring the quality drop on the target eval set. |
 
-**Note on chain-of-thought prompting:** Helpful for some answer models (+1.6 for Gemini Flash in evaluation), no help for others (+0.2 for Claude Haiku 4.5). Test on your own eval before adding it as a standard prompt feature — modern reasoning models do not need it.
+**Note on chain-of-thought prompting:** Helpful for some answer models in internal evaluation and neutral for others. Test on your own eval before adding it as a standard prompt feature; do not expose hidden reasoning or require chain-of-thought in user-facing outputs.
 
 ---
 
@@ -391,7 +392,7 @@ Send the assembled context plus the user's question to the answer LLM with a sys
 | Rerank candidates | 20 | Top-20 from RRF → reranker → top-5. |
 | Final top-k | 5 | Top-10 added only +0.1 avg judge score at 2× token cost. |
 | Context window | ±1 chunks | Provides continuity without bloat. |
-| Answer model | Claude Haiku 4.5 (or open-source equivalent) | Single biggest single-component impact on answer quality. |
+| Answer model | Verified approved model for the deployment | Single biggest single-component impact on answer quality in internal evals. |
 
 These defaults are validated across documents from 10 to 600 pages without per-document tuning. If your eval shows regressions on a specific document size, change one parameter at a time and re-evaluate.
 
@@ -421,15 +422,15 @@ These were tested and rejected during evaluation. Do not adopt without strong ev
 | Layer | Choice | Licence |
 |---|---|---|
 | Document parsing (text PDFs) | `pymupdf`, `pypdf` | AGPL / BSD |
-| Document parsing (scanned/complex) | **Docling** (IBM) or **MinerU 2.5** | Apache 2.0 |
+| Document parsing (scanned/complex) | **Docling** (docling-project, originally IBM) or **MinerU** | Apache 2.0 |
 | Markdown / heading parsing | `mistune`, `markdown-it-py` | BSD / MIT |
 | Chunking | LangChain `RecursiveCharacterTextSplitter` | MIT |
-| Embeddings | **BGE-M3** (BAAI), nomic-embed-text-v1.5, jina-embeddings-v3 | MIT / Apache 2.0 |
+| Embeddings | **BGE-M3** (BAAI), nomic-embed-text-v1.5 | MIT / Apache 2.0 |
 | Vector + full-text store | **PostgreSQL + pgvector** | PostgreSQL Licence |
 | Reranker | **BGE-reranker-v2-m3** (BAAI) | Apache 2.0 |
 | LLM proxy | **LiteLLM** | MIT |
 | LLM (answer) | Llama 3.3 70B Instruct, Qwen 2.5 72B Instruct, Mistral Large | Llama Licence / Apache 2.0 / MRL |
-| LLM (distillation, fast) | Llama 3.3 8B, Qwen 2.5 7B | Llama Licence / Apache 2.0 |
+| LLM (distillation, fast) | Llama 3.1 8B Instruct, Qwen 2.5 7B Instruct | Llama Licence / Apache 2.0 |
 | Evaluation framework | **RAGAS**, DeepEval, custom LLM-as-judge | Apache 2.0 |
 | Orchestration (optional) | Direct Python — no framework needed for the reference design |
 
@@ -521,16 +522,83 @@ For deeper coverage of these alternatives and when each is appropriate, see [`la
 
 ---
 
+## 13. Engineering Readiness Pack
+
+This design is closest to implementation-ready, but production use still requires source traceability, concrete contracts, and reproducible evaluation artefacts.
+
+### Evidence and claim ledger
+
+Maintain a `claim-ledger.md` with `claim`, `section`, `source`, `source type`, `last verified`, `confidence`, `owner`, and `recheck trigger`.
+
+| Claim class | Current status | Required handling |
+|---|---|---|
+| Internal 14-iteration evaluation results | Internal benchmark | Store raw eval set, run logs, prompts, model versions, and scorer rubric with the implementation. |
+| Model-specific recommendations | High churn | Revalidate against current model cards/pricing before deployment. |
+| pgvector dimensional/index limits | Source-linked technical claim | Verify against the exact pgvector and PostgreSQL versions used. |
+| RAG method papers and vendor claims | External research | Keep as supporting evidence, not proof of target-corpus performance. |
+| Cost/latency targets | Design targets | Replace with measured p50/p95 latency and cost on target infrastructure. |
+
+### Implementation artefacts
+
+Required before handoff:
+
+- C4 context/container/deployment diagrams showing ingestion workers, parser service, metadata distiller, embedding service, PostgreSQL/pgvector, retrieval API, reranker, answer service, eval runner, and observability.
+- DDL/migration files for documents, sections, chunks, eval cases, retrieval traces, feedback, and model/version metadata.
+- API contracts for ingest, re-ingest, delete, query, feedback, eval run, and citation lookup.
+- Parser contract specifying supported MIME types, failure modes, metadata extraction, OCR confidence, and layout/table handling.
+- ADRs for pgvector vs vector DB, embedding model, reranker, chunk size, RRF settings, and answer model.
+- Data-retention and tenant-isolation model, including row-level security if multiple tenants or permission domains share one database.
+
+### Anti-hallucination controls
+
+The answer model must only answer from retrieved, authorised, current source chunks.
+
+Controls:
+
+- Server-side context builder with immutable source IDs; the model cannot invent citation IDs or source URLs.
+- Citation validator that maps every citation to a chunk and checks answer sentences for source support.
+- No-answer/refusal path when retrieval confidence is low or the corpus does not contain the answer.
+- Source freshness and access-control filters applied before retrieval and again before context assembly.
+- Retrieval trace stored with dense hits, BM25 hits, RRF ranking, reranker scores, selected chunks, neighbour expansion, and final citations.
+- Prompt-injection tests in source documents; retrieved text is treated as untrusted data.
+
+### Threat model
+
+| Threat | Control |
+|---|---|
+| Prompt injection in indexed documents | Content sanitisation, instruction isolation, and adversarial eval corpus. |
+| Citation fabrication | Server-side citation mapping and validation. |
+| Stale or unauthorised chunk retrieval | Metadata filters, RLS, source freshness, and audit logs. |
+| Low OCR quality causes false answer | OCR confidence propagation and refusal/escalation below threshold. |
+| Reranker degradation | Score-spread monitoring and held-out eval smoke tests before model changes. |
+| Silent retrieval regression | CI evals on recall@k, citation accuracy, hallucination, and no-answer behaviour. |
+
+### Evaluation and acceptance gates
+
+Minimum production gate:
+
+- 50+ curated eval questions before pilot; 150+ before broad production if the corpus is high-risk.
+- Test buckets for direct lookup, acronyms/proper nouns, multi-hop synthesis, long-document middle answers, visual/OCR content, permission filtering, and no-answer refusal.
+- Metrics: recall@40 before rerank, recall@5 after rerank, citation precision, answer faithfulness, refusal correctness, latency, and cost.
+- Hold-out set for model/retriever changes; no promotion if the change improves aggregate score but regresses a critical query class.
+- Human review of every hallucination or false refusal in the eval report before release.
+
+### Operational runbook
+
+Runbooks must cover parser failure, partial ingest rollback, embedding provider outage, index rebuild, vector dimension migration, source deletion/right-to-erasure, reranker rollback, tenant permission incident, and eval-gate failure.
+
+---
+
 ## References
 
 - Anthropic (2024). *Introducing Contextual Retrieval.* https://www.anthropic.com/news/contextual-retrieval
 - Cormack, G. V., Clarke, C. L. A., & Büttcher, S. (2009). *Reciprocal rank fusion outperforms Condorcet and individual rank learning methods.* SIGIR. https://dl.acm.org/doi/10.1145/1571941.1572114
-- Liu, N. F. et al. (2024). *Lost in the Middle: How Language Models Use Long Contexts.* TACL. https://arxiv.org/abs/2307.03172
+- Liu, N. F. et al. (2023). *Lost in the Middle: How Language Models Use Long Contexts.* TACL. https://arxiv.org/abs/2307.03172
 - Microsoft Research (2024). *GraphRAG.* https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-datasets/
 - Sarthi, P. et al. (2024). *RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval.* https://github.com/parthsarthi03/raptor
 - Chen, T. et al. (2024). *Dense X Retrieval: What Retrieval Granularity Should We Use?* EMNLP. https://aclanthology.org/2024.emnlp-main.845/
 - BAAI. *BGE-M3 and BGE-Reranker-v2-m3.* https://huggingface.co/BAAI/bge-m3 · https://huggingface.co/BAAI/bge-reranker-v2-m3
-- IBM. *Docling.* https://github.com/DS4SD/docling
+- Docling Project (originally IBM). *Docling.* https://github.com/docling-project/docling
 - OpenDataLab. *MinerU.* https://github.com/opendatalab/MinerU
 - Jina AI (2024). *Late Chunking in Long-Context Embedding Models.* https://jina.ai/news/late-chunking-in-long-context-embedding-models/
 - Faysse, M. et al. (2024). *ColPali: Efficient Document Retrieval with Vision Language Models.* https://arxiv.org/abs/2407.01449
@@ -542,4 +610,9 @@ For deeper coverage of these alternatives and when each is appropriate, see [`la
 - Google Cloud. *Vertex AI RAG Engine.* https://docs.cloud.google.com/vertex-ai/generative-ai/docs/rag-engine/retrieval-and-ranking
 - IBM. *watsonx.ai Granite Embedding Models.* https://www.ibm.com/granite/docs/models/embedding
 - Oracle. *AI Vector Search in Oracle Database 23ai.* https://docs.oracle.com/en/database/oracle/oracle-database/23/vecse/retrieval-augmented-generation1.html
+- Zhang, J. et al. (2025). *OCR Hinders RAG: Evaluating the Cascading Impact of OCR on Retrieval-Augmented Generation.* ICCV 2025. https://arxiv.org/abs/2412.02592
 - Internal: ba-ai-discovery `doc-agent` branch. RAG Pipeline Engineering Summary and 14-iteration evaluation history (rag-pipeline-engineering-summary.md, doc-agent-summary.md, .scripts/research-rag-retrieval-methods-2026-03-19.md).
+- NIST AI Risk Management Framework and Generative AI Profile. https://www.nist.gov/itl/ai-risk-management-framework
+- OWASP Top 10 for LLM Applications 2025. https://owasp.org/www-project-top-10-for-large-language-model-applications/
+- OpenAI Evals and graders documentation. https://platform.openai.com/docs/guides/evals
+- Azure Well-Architected Framework for AI workloads. https://learn.microsoft.com/en-us/azure/well-architected/ai/

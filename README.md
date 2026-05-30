@@ -21,10 +21,19 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [AWS AI Development Best Practices](dev-best-practices/aws-ai-development.md) — Bedrock platform, RAG (Knowledge Bases + S3 Vectors), AgentCore, Guardrails, cost management, and evaluation for building AI systems on AWS in 2026
 - [GCP AI Development Best Practices](dev-best-practices/gcp-ai-development.md) — Gemini Enterprise Agent Platform, ADK, Agent Runtime, RAG Engine / search / AlloyDB AI, security, cost management, and evaluation for building AI systems on Google Cloud in 2026
 - [Modern AI Observability](ai-observability.md) — LLM observability concepts, OpenTelemetry GenAI conventions, agentic/swarm tracing, open-source tools, and hyperscaler services
+- [DAG Workflows](dev-best-practices/dag-workflows.md) — DAG orchestration tools (Airflow, Prefect, Dagster, Temporal, Flyte, Argo, Kestra), design patterns, anti-patterns, testing, lineage, and managed services
+- [Real-Time Voice LLMs](real-time-voice-llms.md) — Voice-to-voice models for assistants: architectures, local vs cloud deployment, latency, expressiveness, tool use, and open-source options
 
 ## Reference designs
 
 - [RAG Knowledge Base for Mixed Document Sizes](reference-designs/rag-knowledge-base-mixed-document-sizes.md) — Production RAG pipeline for collections spanning 1- to 600-page documents (hybrid retrieval + RRF + reranking on pgvector)
+- [Edge-First AI Clinical Documentation](reference-designs/edge-first-clinical-documentation.md) — Edge-compute AI processing for clinical documentation in disconnected environments with clinician-in-the-loop approval and EHR integration
+- [Copilot MCP Integration (Azure)](reference-designs/copilot-mcp-integration-azure.md) — Microsoft 365 Copilot enterprise backend integration via Azure AI Foundry, MCP servers, and API Management with OBO/ACL/gateway patterns
+- [Conversational AI with Tiered Semantic Routing](reference-designs/conversational-ai-semantic-routing.md) — Tiered routing architecture that bypasses the full agentic planner for high-confidence single-intent requests using embedding similarity and slot guards
+- [RAG Compliance Assistant (Small-Scale Azure)](reference-designs/rag-compliance-assistant-azure.md) — Serverless RAG architecture for 100-500 document compliance/advisory Q&A with cited copy-pasteable answers and DeepEval CI/CD quality gates
+- [AI-Assisted OIA/FOI Processing Pipeline](reference-designs/oia-foi-processing-pipeline.md) — Eight-stage AI-assisted pipeline for Official Information Act and Freedom of Information request processing with mandatory human-in-the-loop at every decision point
+- [Automated Multi-Step AI Research Pipeline](reference-designs/ai-investment-research-pipeline.md) — Workflow engine for chaining LLM calls across structured analytical processes with state management, context budgeting, and human checkpoints
+- [AI-Assisted Change Impact Assessment for Mega-Projects](reference-designs/ai-change-impact-assessment-megaproject.md) — Agentic AI for assessing change request impacts against regulatory and compliance document baselines on $1B+ infrastructure projects
 
 ## Model Elo Timeline
 

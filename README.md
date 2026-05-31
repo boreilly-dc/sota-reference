@@ -23,6 +23,7 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [Modern AI Observability](ai-observability.md) — LLM observability concepts, OpenTelemetry GenAI conventions, agentic/swarm tracing, open-source tools, and hyperscaler services
 - [DAG Workflows](dev-best-practices/dag-workflows.md) — DAG orchestration tools (Airflow, Prefect, Dagster, Temporal, Flyte, Argo, Kestra), design patterns, anti-patterns, testing, lineage, and managed services
 - [Real-Time Voice LLMs](real-time-voice-llms.md) — Voice-to-voice models for assistants: architectures, local vs cloud deployment, latency, expressiveness, tool use, and open-source options
+- [Best Local LLMs for Consumer Hardware](local-llms-consumer-hardware.md) — Open-source models (Gemma 4, Qwen 3.5/3.6, Llama 4, Phi-4, Mistral) for local inference on GPUs and Apple Silicon with benchmarks, VRAM tiers, quantisation, and framework comparison
 
 ## Reference designs
 

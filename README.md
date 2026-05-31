@@ -48,6 +48,12 @@ LMArena (Chatbot Arena) Elo ratings for frontier AI models over time, coloured b
 
 ![Model Elo Timeline - Last 2 Years](images/model-elo-timeline.png)
 
+## Open-Source Model Elo Timeline
+
+LMArena Elo ratings for open-weight models over time, showing the progression of each model family.
+
+![Open-Source Model Elo Timeline](images/local-model-elo-timeline.png)
+
 ## Tool Use Benchmarks
 
 Scores across BFCL V4 (structured function calling) and Tau²-bench domains (airline, retail, telecom agent tool use).

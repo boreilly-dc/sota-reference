@@ -25,6 +25,7 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [Real-Time Voice LLMs](real-time-voice-llms.md) — Voice-to-voice models for assistants: architectures, local vs cloud deployment, latency, expressiveness, tool use, and open-source options
 - [Best Local LLMs for Consumer Hardware](local-llms-consumer-hardware.md) — Open-source models (Gemma 4, Qwen 3.5/3.6, Llama 4, Phi-4, Mistral) for local inference on GPUs and Apple Silicon with benchmarks, VRAM tiers, quantisation, and framework comparison
 - [Open Models for Coding Agents](open-models-coding-agents.md) — Best open models for coding agents vs frontier closed models across SWE-bench, Aider, LiveCodeBench, and Terminal-Bench, with consumer-hardware and large-model tiers
+- [OCR in 2026](ocr-models.md) — Multimodal LLMs vs specialist and traditional OCR: benchmarks, when non-LLM solutions win, reliability, hybrid pipelines, cost, and hyperscaler services
 
 ## Reference designs
 

@@ -28,6 +28,7 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [OCR in 2026](ocr-models.md) — Multimodal LLMs vs specialist and traditional OCR: benchmarks, when non-LLM solutions win, reliability, hybrid pipelines, cost, and hyperscaler services
 - [Local Audio Language Models](local-audio-language-models.md) — Open-source audio LLMs (Qwen-Omni, Audio Flamingo, Kimi-Audio, Phi-4-mm, MiniCPM-o) for audio understanding and reasoning: model landscape, architecture, benchmarks (MMAU/MMAR), VRAM/inference, quantisation, licensing, and hyperscaler services
 - [Molmo2 Capabilities Overview](models/molmo2.md) — Ai2's fully-open vision-language family (4B/8B/7B-O): image captioning, OCR/scene-text and document text extraction, video understanding and dense captioning, and best-in-class spatio-temporal grounding (pointing/tracking)
+- [Facial Recognition: Deepfake & Impersonation Detection](facial-recognition-deepfake-impersonation-detection.md) — Modern face recognition plus the trust layers that defend it: PAD/liveness, injection detection, deepfake detection (foundation-model SOTA & the generalisation problem), morphing attack detection (NIST FATE MORPH), provenance (C2PA), demographic bias, hyperscaler liveness services, and standards/regulation (ISO 30107, FIDO, EU AI Act, BIPA)
 
 ## Reference designs
 

@@ -35,6 +35,10 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [Creating Deepfakes: Models, Hardware & Accessibility](deepfake-creation-models-and-accessibility.md) — The offence-and-accessibility counterpart to the detection article: how face-swap/talking-head/voice-clone/real-time pipelines work, the open-source toolkit (FaceFusion, Deep-Live-Cam, F5-TTS, etc.) and no-skill SaaS path, hardware/cost tiers, a calibrated threat model (voice & one-way video vs interactive real-time), the Arup/WPP/Ferrari incidents, and the process controls that actually defeat executive impersonation
 - [turbovec — TurboQuant Vector Quantisation](turbovec-vector-quantization.md) — Rust ANN index (+Python bindings) implementing Google's data-oblivious TurboQuant quantiser: 2/4-bit compression, online ingest, in-kernel filtered search, SIMD (NEON/AVX-512) scoring, and recall/speed claims vs FAISS
 
+## Frameworks
+
+- [Agentic Harnesses](frameworks/agentic-harnesses.md) — Survey of frameworks for building agentic systems across Python, JS/TS, Go, and C#/.NET: agent application frameworks, vendor agent SDKs, coding-agent harnesses, durable-execution engines, hyperscaler managed runtimes, and interoperability protocols (MCP, A2A, AGNTCY), with a decision guide and anti-patterns
+
 ## Reference designs
 
 - [RAG Knowledge Base for Mixed Document Sizes](reference-designs/rag-knowledge-base-mixed-document-sizes.md) — Production RAG pipeline for collections spanning 1- to 600-page documents (hybrid retrieval + RRF + reranking on pgvector)

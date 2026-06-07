@@ -30,6 +30,7 @@ Research articles on state-of-the-art topics in AI and software engineering.
 - [Gemma 4 12B Overview](models/gemma-4-12b.md) — Google's encoder-free multimodal 12B (native audio, 256K context, 16 GB laptop-ready): architecture, full Gemma 4 family benchmark comparison, and how it sits between E4B and the 26B MoE
 - [Molmo2 Capabilities Overview](models/molmo2.md) — Ai2's fully-open vision-language family (4B/8B/7B-O): image captioning, OCR/scene-text and document text extraction, video understanding and dense captioning, and best-in-class spatio-temporal grounding (pointing/tracking)
 - [Facial Recognition: Deepfake & Impersonation Detection](facial-recognition-deepfake-impersonation-detection.md) — Modern face recognition plus the trust layers that defend it: PAD/liveness, injection detection, deepfake detection (foundation-model SOTA & the generalisation problem), morphing attack detection (NIST FATE MORPH), provenance (C2PA), demographic bias, hyperscaler liveness services, and standards/regulation (ISO 30107, FIDO, EU AI Act, BIPA)
+- [turbovec — TurboQuant Vector Quantisation](turbovec-vector-quantization.md) — Rust ANN index (+Python bindings) implementing Google's data-oblivious TurboQuant quantiser: 2/4-bit compression, online ingest, in-kernel filtered search, SIMD (NEON/AVX-512) scoring, and recall/speed claims vs FAISS
 
 ## Reference designs
 
@@ -71,3 +72,9 @@ Scores across BFCL V4 (structured function calling) and Tau²-bench domains (air
 Tool use performance for models that can run locally, with frontier model reference lines. Covers BFCL V4, Docker's practical tool calling eval, and Tau²-bench Retail.
 
 ![Tool Use - Local Models](images/tool-use-local-models.png)
+
+## Gemma 4 Family Benchmarks
+
+Official Google model-card scores across the Gemma 4 family, including the new **12B** (released ~3 June 2026). The 12B nears the 26B A4B MoE on reasoning, coding and agentic (Tau²) tasks at under half the memory. See the [Gemma 4 12B overview](models/gemma-4-12b.md).
+
+![Gemma 4 Family Benchmarks](images/gemma4-family-benchmarks.png)

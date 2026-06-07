@@ -4,7 +4,7 @@
 |-------|-------|
 | Created | 2026-03-17 |
 | Last Updated | 2026-06-08 |
-| Version | 2.8 |
+| Version | 2.9 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data pulled on 11 May 2026. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/Hard, Aider Polyglot, BFCL V4, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
+This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo and the Best Overall / Agentic Coding / Tool Use sections were refreshed on 8 June 2026 (Arena snapshot of 7 June 2026; Claude Opus 4.8 and Gemma 4 12B added); other sections retain their May 2026 pull. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
 
 Each model entry includes origin, release date, model lineage, licence, parameter count, context window, and throughput data where known.
 
@@ -57,35 +57,38 @@ Composite ranking across SWE-Bench Verified, SWE-Bench Pro, Terminal-Bench 2.0, 
 
 | # | Model | Origin | Released | Predecessor | Successor | Licence | Params | Context | tok/s | TTFT |
 |---|-------|--------|----------|-------------|-----------|---------|--------|---------|-------|------|
-| 1 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
-| 2 | **GPT-5.5** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
-| 3 | **GPT-5.4 Pro** | OpenAI | 2026-03-06 | GPT-5.3 Codex | GPT-5.5 | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
-| 4 | **Gemini 3.1 Pro** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
-| 5 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
-| 6 | **Claude Sonnet 4.6** | Anthropic | 2026-02-17 | Claude Sonnet 4.5 | Incumbent | Proprietary | Undisclosed | 1M | ~80-100 | ~1-3 s |
-| 7 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | Open weights (Modified MIT) | ~1T / 32B active (MoE) | 256K | Unknown | Unknown |
-| 8 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | Open weights | 230B (MoE) | 204K | ~100 | Unknown |
-| 9 | **GLM-4.7** | Zhipu AI | Q1 2026 | GLM-4.6 | Incumbent | Open-source | Undisclosed (MoE) | 128K | Unknown | Unknown |
+| 1 | **Claude Opus 4.8** | Anthropic | 2026-05-28 | Claude Opus 4.7 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 (2.5× fast mode) | ~2-5 s |
+| 2 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Claude Opus 4.8 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 3 | **GPT-5.5** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
+| 4 | **GPT-5.4 Pro** | OpenAI | 2026-03-06 | GPT-5.3 Codex | GPT-5.5 | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
+| 5 | **Gemini 3.1 Pro** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
+| 6 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 7 | **Claude Sonnet 4.6** | Anthropic | 2026-02-17 | Claude Sonnet 4.5 | Incumbent | Proprietary | Undisclosed | 1M | ~80-100 | ~1-3 s |
+| 8 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | Open weights (Modified MIT) | ~1T / 32B active (MoE) | 256K | Unknown | Unknown |
+| 9 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | Open weights | 230B (MoE) | 204K | ~100 | Unknown |
+| 10 | **GLM-4.7** | Zhipu AI | Q1 2026 | GLM-4.6 | Incumbent | Open-source | Undisclosed (MoE) | 128K | Unknown | Unknown |
 
 **Benchmark scores (where available):**
 
-| Model | SWE-Bench Verified | SWE-Bench Pro | Terminal-Bench 2.0 | Terminal-Bench Hard | Aider Polyglot |
+| Model | SWE-Bench Verified | SWE-Bench Pro | Terminal-Bench | Terminal-Bench Hard | Aider Polyglot |
 |-------|-------------------|--------------|--------------------|--------------------|---------------|
-| Claude Opus 4.7 | 82.0% | 64.3% | — | — | — |
-| GPT-5.5 | — | 58.6% | 82.7% | — | — |
+| Claude Opus 4.8 | 88.6% | **69.2%** | 74.6% (TB 2.1) | — | — |
+| Claude Opus 4.7 | 87.6% | 64.3% | 66.1% (TB 2.1) | — | — |
+| GPT-5.5 | 88.7% | 58.6% | 82.7% (TB 2.0) | — | — |
 | GPT-5.4 Pro | 86.0% | — | — | — | — |
 | GPT-5.4 | 78.2% | 57.7% | — | 58% | — |
-| Gemini 3.1 Pro | 78.8% | 54.2% | 78.4% | 54% | — |
-| Claude Opus 4.6 | 80.8% | — | 74.7% | 53% | — |
+| Gemini 3.1 Pro | 80.6% | 54.2% | 78.4% | 54% | — |
+| Claude Opus 4.6 | 80.8% | — | 74.7% (TB 2.0) | 53% | — |
 | Claude Sonnet 4.6 | 79.6% | — | — | 49% | — |
-| Kimi K2.6 | — | 58.6% | — | — | — |
+| Kimi K2.6 | 80.2% | 58.6% | — | — | — |
 | MiniMax M2.5 | 80.2% | — | — | — | — |
 | GLM-4.7 | 73.8% | — | — | — | — |
 
 **Key observations:**
-- **Claude Opus 4.7 leads SWE-Bench Pro at 64.3%** — a 6.6-point jump over the previous leader (GPT-5.4 at 57.7%). This is the hardest agentic coding benchmark and the clearest differentiator between frontier models.
+- **Claude Opus 4.8 (released 28 May 2026) now leads SWE-Bench Pro at 69.2%** — a ~5-point jump over Opus 4.7 (64.3%) on the hardest agentic coding benchmark. It also edges Opus 4.7 on SWE-Bench Verified (88.6% vs 87.6%) and Terminal-Bench 2.1 (74.6% vs 66.1%).
+- On SWE-Bench Verified, **Opus 4.8 (88.6%) and GPT-5.5 (88.7%) are effectively tied** at the top (both vendor-reported). Independent harnesses (vals.ai, mini-swe-agent) run 5-7 points lower across the board.
+- **Terminal-Bench is harness-sensitive**: GPT-5.5 reaches 83.4% on OpenAI's Codex CLI harness but ~78% on the public Terminus-2 harness; Opus 4.8's 74.6% is on Terminus-2 (TB 2.1). Compare only within the same harness.
 - GPT-5.4 Pro retains the highest SWE-Bench Verified score at 86.0%, though this appears scaffold-dependent — vals.ai lists GPT-5.4 at 78.2% on the same benchmark with a different harness.
-- **GPT-5.5** (released 23 April 2026) leads Terminal-Bench 2.0 at 82.7% and debuts on SWE-Bench Pro at 58.6%.
 - **Kimi K2.6** (Moonshot AI, 20 April 2026) matches GPT-5.5 on SWE-Bench Pro at 58.6% — the strongest open-weights coding result. Supports 12-hour autonomous coding sessions and 300-agent swarms.
 - Claude Mythos Preview (gated, ~50 companies via "Project Glasswing") scored 93.9% on SWE-Bench Verified — not publicly available but signals the ceiling for agentic coding.
 - The scaffold/harness effect remains large: the same model can swing 22+ points depending on the agent framework used.
@@ -105,21 +108,30 @@ Ranked by the Berkeley Function Calling Leaderboard V4 (BFCL V4, last updated 12
 | 7 | **Gemini 2.5 Pro** | Google DeepMind | 2025-03 | Gemini 2.0 Pro | Gemini 3 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-2 s |
 | 8 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Incumbent | Proprietary | Undisclosed | 1M (beta) | ~50-60 | ~2-5 s |
 
-**BFCL V4 scores:**
+**BFCL V4 — current top entries (overall accuracy):**
 
-| Model | Overall Accuracy |
-|-------|-----------------|
-| GLM-4.5 (FC) | 70.9% |
-| Claude Opus 4.1 | 70.4% |
-| Claude Sonnet 4 | 70.3% |
-| Llama 3.1 405B | ~68% (est.) |
-| GPT-5 (high) | 59.2% |
+| Model | Overall Accuracy | Licence |
+|-------|-----------------|---------|
+| Qwen3.7 Max | 75.0% | Proprietary (preview) |
+| Qwen3.5-397B-A17B | 72.9% | Apache 2.0 |
+| Qwen3.5-122B-A10B | 72.2% | Apache 2.0 |
+| GLM-4.5 (FC) | 70.9% | Open-source (MIT) |
+| Claude Opus 4.1 | 70.4% | Proprietary |
+| Claude Sonnet 4 | 70.3% | Proprietary |
+| Qwen3.5-27B | 68.5% | Apache 2.0 |
+
+**Tau²-bench — current per-domain leaders:**
+
+| Domain | Leader | Score |
+|--------|--------|-------|
+| Airline | Claude Sonnet 4.5 | 70.0% |
+| Retail | Claude Opus 4.6 | 91.9% |
+| Telecom | Claude Opus 4.6 | 99.3% |
 
 **Key observations:**
-- GLM-4.5 from Zhipu AI is both the overall BFCL V4 leader (70.9%) and fully open-source (MIT).
-- GPT-5 scores a surprisingly low 59.2% on structured function calling, suggesting OpenAI optimised for other capabilities.
-- Kimi K2.5 (Moonshot AI) leads Tau2-bench for telecom/customer-service tool use — a different axis of tool-calling competence.
-- The BFCL V4 leaderboard was updated on 12 April 2026 but still lacks evaluations for the newest models (Claude Opus 4.7, GPT-5.5, Kimi K2.6). Gemini 3.1 Pro and Claude Opus 4.6 now score ~99.3% on tool-calling sub-metrics per llm-stats.com rankings.
+- **Qwen now dominates structured function calling**: Qwen3.7 Max (preview) leads BFCL V4 at 75.0%, with three more Qwen 3.5 variants in the top eight. **GLM-4.5 (Zhipu AI, MIT) is the best fully-open model at 70.9%.**
+- On the multi-turn business-agent axis, Anthropic leads Tau²-bench: Claude Opus 4.6 tops retail (91.9%) and telecom (99.3%), and Claude Sonnet 4.5 tops airline (70.0%).
+- **Both leaderboards are stale.** BFCL V4 has not been updated since 12 April 2026 and Tau²-bench lacks the newest releases — neither has evaluated Claude Opus 4.7/4.8, GPT-5.5, Gemini 3.1 Pro, or Kimi K2.6. Anthropic and OpenAI do not publish BFCL/Tau² figures for their latest models, so the strongest agentic-coding models are absent from the public tool-calling boards. Treat this section as a lagging indicator and cross-reference the [Agentic Coding](#agentic-coding) section.
 
 ## Visual Understanding
 
@@ -216,7 +228,7 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 **Key observations:**
 - **GLM-5.1** (Zhipu AI, April 2026) takes the open-source crown from GLM-5, reaching Arena Elo 1475. GLM-5 (744B MoE) originally unseated DeepSeek in February 2026. Native support for 14+ Asian languages including Tamil, Hindi, and Telugu.
 - **Kimi K2.6** (Moonshot AI, 20 April 2026) is the strongest new open-weights entry. Artificial Analysis Intelligence Index of 54 — the highest for any open-weight model — with SWE-Bench Pro 58.6% matching GPT-5.5. Supports 12-hour autonomous coding sessions and 300-agent coordinated swarms. $0.60/M input, $2.50/M output.
-- **Gemma 4** (Google DeepMind, April 2, 2026) is a major open-source entry. The 31B dense model ranks #4 among all open models on Arena AI's text leaderboard (Elo ~1451). Apache 2.0 licence — a significant shift from Gemma 3's more restrictive Gemma Licence. Four sizes: E2B (2.3B active), E4B (4B active), 26B MoE (4B active), 31B dense.
+- **Gemma 4** (Google DeepMind, April 2, 2026) is a major open-source entry. The 31B dense model ranks among the top open models on Arena AI's text leaderboard (Elo ~1451; the 26B A4B MoE sits at ~1438). Apache 2.0 licence — a significant shift from Gemma 3's more restrictive Gemma Licence. Originally four sizes (E2B, E4B, 26B A4B MoE, 31B dense); a fifth — the **Gemma 4 12B** dense model with native audio — was added ~3 June 2026 as the 16 GB-laptop sweet spot (see the [Gemma 4 12B overview](models/gemma-4-12b.md)). The family has passed 150M downloads.
 - **GLM-4.7** (Zhipu AI) is a notable coding-focused release with thinking capabilities: AIME 2025 95.7%, SWE-bench Verified 73.8%, HLE 42.8% (+12.4% over GLM-4.6).
 - Every top open-source model at the frontier tier uses MoE architecture (Gemma 4 31B dense is the exception, ranking via raw parameter density).
 - Apache 2.0 dominates licensing, with Meta's Llama Community Licence the main exception.
@@ -229,19 +241,20 @@ Models with 20B or fewer total parameters (or, for MoE models, 20B or fewer acti
 | # | Model | Origin | Released | Predecessor | Successor | Total Params | Active Params | Context | Licence | Standout Capability |
 |---|-------|--------|----------|-------------|-----------|-------------|---------------|---------|---------|---------------------|
 | 1 | **Qwen3.5-9B (Reasoning)** | Alibaba | Q1 2026 | Qwen3-8B | Incumbent | 9B | 9B (dense) | 128K | Apache 2.0 | Intelligence Index 32 — most intelligent model under 10B |
-| 2 | **Qwen3-14B** | Alibaba | 2025-04-29 | Qwen 2.5-14B | Qwen3.5-14B | 14.8B | 14.8B (dense) | 131K | Apache 2.0 | 119 languages, hybrid thinking |
-| 3 | **Mistral 3 (Ministral) 14B** | Mistral AI | 2025-12-02 | Mistral Small 3.1 | Incumbent | 14B | 14B (dense) | 256K | Apache 2.0 | Multimodal (vision), reasoning variant available |
-| 4 | **Gemma 4 26B (MoE)** | Google DeepMind | 2026-04-02 | Gemma 3 27B | Incumbent | 26B (MoE) | 4B | 256K | Apache 2.0 | Multimodal (text/image/video/audio), function calling, only 4B active params |
-| 5 | **Llama 4 Scout** | Meta | 2025-04-05 | Llama 3.2-3B | Incumbent | 109B (16 experts) | 17B | 10M | Llama Community | Natively multimodal, fits single H100 |
-| 6 | **Phi-4-mini** | Microsoft | 2025-02-27 | Phi-3.5-mini | Phi-4-multimodal | 3.8B | 3.8B (dense) | 128K | MIT | Matches models 2x its size on maths/code, function calling |
-| 7 | **Mistral 3 (Ministral) 8B** | Mistral AI | 2025-12-02 | Mistral Nemo 12B | Incumbent | 8B | 8B (dense) | 256K | Apache 2.0 | Multimodal vision, distilled from Mistral Small 3.1 |
+| 2 | **Gemma 4 12B** | Google DeepMind | 2026-06-03 | Gemma 4 E4B | Incumbent | 11.95B | 11.95B (dense) | 256K | Apache 2.0 | Only mid-sized Gemma 4 with native audio; MMLU-Pro 77.2, AIME 2026 77.5, GPQA 78.8; runs in ~16 GB |
+| 3 | **Qwen3-14B** | Alibaba | 2025-04-29 | Qwen 2.5-14B | Qwen3.5-14B | 14.8B | 14.8B (dense) | 131K | Apache 2.0 | 119 languages, hybrid thinking |
+| 4 | **Mistral 3 (Ministral) 14B** | Mistral AI | 2025-12-02 | Mistral Small 3.1 | Incumbent | 14B | 14B (dense) | 256K | Apache 2.0 | Multimodal (vision), reasoning variant available |
+| 5 | **Gemma 4 26B (MoE)** | Google DeepMind | 2026-04-02 | Gemma 3 27B | Incumbent | 26B (MoE) | 4B | 256K | Apache 2.0 | Multimodal (text/image/video), function calling, only 4B active params |
+| 6 | **Llama 4 Scout** | Meta | 2025-04-05 | Llama 3.2-3B | Incumbent | 109B (16 experts) | 17B | 10M | Llama Community | Natively multimodal, fits single H100 |
+| 7 | **Phi-4-mini** | Microsoft | 2025-02-27 | Phi-3.5-mini | Phi-4-multimodal | 3.8B | 3.8B (dense) | 128K | MIT | Matches models 2x its size on maths/code, function calling |
 | 8 | **Gemma 4 E4B** | Google DeepMind | 2026-04-02 | Gemma 3 4B | Incumbent | 4B | 4B (dense) | 256K | Apache 2.0 | Multimodal (text/image/video/audio), function calling, 256K context in a 4B model |
 | 9 | **Qwen3.5-4B (Reasoning)** | Alibaba | Q1 2026 | Qwen3-4B | Incumbent | 4B | 4B (dense) | 32K | Apache 2.0 | Intelligence Index 27 — most intelligent model under 5B, rivals Qwen2.5-72B on some tasks |
 | 10 | **Gemma 4 E2B** | Google DeepMind | 2026-04-02 | Gemma 3 2B | Incumbent | 2.3B | 2.3B (dense) | 256K | Apache 2.0 | Smallest Gemma 4, multimodal, 256K context, mobile/edge deployment |
 
 **Key observations:**
 - Qwen dominates the small-model tier on reasoning. Qwen3.5-9B achieves Intelligence Index 32, and the 4B variant (Index 27) rivals models 18x its size on select benchmarks.
-- **Gemma 4** (April 2026) brings three entries to this tier: the 26B MoE (only 4B active — remarkably efficient), the E4B dense, and the E2B dense. All feature 256K context, multimodal capabilities, native function calling, and Apache 2.0 licensing. The MoE variant is particularly notable for fitting frontier-class capabilities into 4B active parameters.
+- **Gemma 4 12B** (released ~3 June 2026) is the newest entry and the family's "16 GB laptop sweet spot": an 11.95B dense model that, per Google's model card, nears the 26B A4B MoE on agentic (Tau² 69.0 vs 68.2), coding and long-context tasks while using under half the memory — and it is the **only mid-sized Gemma 4 with native audio**. See the dedicated [Gemma 4 12B overview](models/gemma-4-12b.md). It is too new to appear on LMArena or the public tool-calling leaderboards yet.
+- **Gemma 4** (April 2026) also brings the 26B MoE (only 4B active — remarkably efficient), the E4B dense, and the E2B dense. All feature 256K context, multimodal capabilities, native function calling, and Apache 2.0 licensing. The MoE variant is particularly notable for fitting frontier-class capabilities into 4B active parameters.
 - All top small models are dense (not MoE), with the exception of Gemma 4 26B and Llama 4 Scout.
 - All are open-source with permissive licences (Apache 2.0 or MIT).
 - Hardware: 7-14B dense models fit in 14-28 GB VRAM at FP16, or 4-8 GB quantised (Q4). A consumer RTX 4090 (24 GB) handles all of these.
@@ -252,16 +265,17 @@ Output token generation speed measured by Artificial Analysis (tested every 8 ho
 
 ### Artificial Analysis Intelligence Index
 
-The Intelligence Index is a composite score across multiple benchmarks. As of late April 2026:
+The Intelligence Index is a composite score across multiple benchmarks. As of early June 2026:
 
 | # | Model | Score | Notes |
 |---|-------|-------|-------|
-| 1 | **GPT-5.5** | 60 | New #1, broke the three-way tie at 57 |
-| 2 | **Claude Opus 4.7** | 57 | |
-| 3 | **Gemini 3.1 Pro Preview** | 57 | |
-| 4 | **GPT-5.4** | 57 | |
-| 5 | **Kimi K2.6** | 54 | Strongest open-weight model |
-| 6 | **Claude Opus 4.6** | 53 | |
+| 1 | **Claude Opus 4.8** | 61.4 | New #1 (released 28 May 2026) |
+| 2 | **GPT-5.5** | 60 | Broke the previous three-way tie at 57 |
+| 3 | **Claude Opus 4.7** | 57 | |
+| 4 | **Gemini 3.1 Pro Preview** | 57 | |
+| 5 | **GPT-5.4** | 57 | |
+| 6 | **Kimi K2.6** | 54 | Strongest open-weight model |
+| 7 | **Claude Opus 4.6** | 53 | |
 
 ### Model Speed Rankings (via default API provider)
 

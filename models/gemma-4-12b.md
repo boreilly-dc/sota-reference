@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-05 |
-| Last Updated | 2026-06-05 |
-| Version | 1.0 |
+| Last Updated | 2026-06-08 |
+| Version | 1.1 |
 
 ---
 
@@ -105,6 +105,8 @@ Gemma 4 12B uses a **unified, encoder-free architecture**. Where traditional mul
 ## Benchmark performance: full family comparison
 
 These are the **official numbers from the Hugging Face model card** (`google/gemma-4-12B`). Gemma 3 27B (no-think) is included as Google's previous-generation reference point. Higher is better unless marked ↓.
+
+![Gemma 4 family benchmark comparison](../images/gemma4-family-benchmarks.png)
 
 | Benchmark | 31B Dense | 26B A4B | **12B Unified** | E4B | E2B | Gemma 3 27B |
 |-----------|:---------:|:-------:|:---------------:|:---:|:---:|:-----------:|

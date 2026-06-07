@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-05-31 |
-| Version | 2.7 |
+| Last Updated | 2026-06-08 |
+| Version | 2.8 |
 
 ---
 
@@ -32,23 +32,24 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 
 | # | Model | Origin | Released | Predecessor | Successor | Licence | Params | Context | tok/s | TTFT |
 |---|-------|--------|----------|-------------|-----------|---------|--------|---------|-------|------|
-| 1 | **Claude Opus 4.7 (thinking)** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
-| 2 | **Claude Opus 4.6 (thinking)** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
-| 3 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
-| 4 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 1 | **Claude Opus 4.6 (thinking)** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 2 | **Claude Opus 4.7 (thinking)** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Claude Opus 4.8 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 3 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
+| 4 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Claude Opus 4.8 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
 | 5 | **Muse Spark** | Meta | 2026-04 | — | Incumbent | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
 | 6 | **Gemini 3.1 Pro Preview** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
 | 7 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
-| 8 | **Grok 4.20 Beta** | xAI | 2026-02-17 | Grok 4.1 | Incumbent | Proprietary | ~500B (MoE, "small" variant) | 256K-2M | Unknown | Unknown |
-| 9 | **GPT-5.5** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
+| 8 | **Claude Opus 4.8 (thinking)** | Anthropic | 2026-05-28 | Claude Opus 4.7 | Incumbent | Proprietary | Undisclosed | 1M | ~50-60 (2.5× fast mode) | ~2-5 s |
+| 9 | **GPT-5.5 (high)** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
 | 10 | **GPT-5.4 High** | OpenAI | 2026-03-05 | GPT-5.3 Codex | GPT-5.5 | Proprietary | Undisclosed | 1M | ~187 | ~1.2 s |
 
-**Key observations:**
-- Anthropic holds the top four Arena spots. Claude Opus 4.7 (thinking) leads at Elo 1504, with Opus 4.6 (thinking) close behind at 1502 — roughly +14 over the nearest non-Anthropic model. Claude Opus 4.7 was released 16 April 2026.
-- **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Arena Elo is still stabilising. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
-- **Muse Spark** (Meta) is a new entrant in the Arena top 5 at Elo ~1490. Details are limited.
+**Key observations (LMArena Elo refreshed to the 7 June 2026 snapshot):**
+- Anthropic holds the top of the Arena. **Claude Opus 4.6 (thinking) leads at Elo 1504**, with Opus 4.7 (thinking) just behind at 1501 — roughly +13 over the nearest non-Anthropic model (Muse Spark at 1489). Note the lineage is *non-monotonic on the text arena*: the newer Opus 4.7 and Opus 4.8 score slightly below Opus 4.6 here, even though they lead on agentic coding and tool-use benchmarks.
+- **Claude Opus 4.8** (released 28 May 2026) is the current flagship, entering the Arena at Elo 1482 (thinking) / 1479 (base). It posts the strongest agentic-coding and computer-use results of the Opus line (SWE-Bench Pro 69.2%), with a 2.5× fast mode now ~3× cheaper than on Opus 4.7, at unchanged $5/$25 per 1M pricing.
+- **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Its best Arena variant (high) sits at Elo 1482. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
+- **Muse Spark** (Meta) holds a place in the Arena top 5 at Elo 1489. Details are limited.
 - GPT-5.4 Pro still leads BenchLM's overall composite at 92/100 (#1 of 225+ models evaluated); GPT-5.5 follows at 91/100.
-- GLM-5.1 (Zhipu AI, Elo 1474) is now the highest-ranked open-source model — see the [Open Source](#open-source) section.
+- GLM-5.1 (Zhipu AI, Elo 1475) is the highest-ranked open-source model — see the [Open Source](#open-source) section.
 
 ## Agentic Coding
 
@@ -201,8 +202,8 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 
 | # | Model | Origin | Released | Predecessor | Successor | Params (total / active) | Architecture | Context | Licence | Key Scores |
 |---|-------|--------|----------|-------------|-----------|------------------------|-------------|---------|---------|------------|
-| 1 | **GLM-5.1** | Zhipu AI | 2026-04-08 | GLM-5 | Incumbent | Undisclosed | MoE | 128K | Apache 2.0 | Arena Elo 1474, successor to GLM-5 |
-| 2 | **GLM-5** | Zhipu AI | 2026-02-11 | GLM-4.5 (355B) | GLM-5.1 | 744B / ~40B | MoE | 128K | Apache 2.0 | Arena Elo 1457, Quality Index 49.6, MMLU-Pro 89.7%, HumanEval 92.1% |
+| 1 | **GLM-5.1** | Zhipu AI | 2026-04-08 | GLM-5 | Incumbent | Undisclosed | MoE | 128K | Apache 2.0 | Arena Elo 1475, successor to GLM-5 |
+| 2 | **GLM-5** | Zhipu AI | 2026-02-11 | GLM-4.5 (355B) | GLM-5.1 | 744B / ~40B | MoE | 128K | Apache 2.0 | Arena Elo 1456, Quality Index 49.6, MMLU-Pro 89.7%, HumanEval 92.1% |
 | 3 | **DeepSeek V3.2** | DeepSeek | 2026-02-15 | DeepSeek V3.1 | Incumbent | 685B / 37B | MoE (DeepSeekMoE + MLA) | 128K | DeepSeek Licence | Quality Index 41.2, LiveCodeBench 86-90%, AIME 92%, SWE-Bench 72.8% |
 | 4 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | ~1T / 32B | MoE | 256K | Open weights (Modified MIT) | Intelligence Index 54, SWE-Bench Pro 58.6%, 300-agent swarm coding |
 | 5 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | 230B / undisclosed | MoE | 204K | Open weights | Quality Index 42.0, SWE-Bench Verified 80.2% (#1 open-weights coding) |
@@ -213,13 +214,13 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 | 10 | **Mistral Large 3** | Mistral AI | 2025-12-02 | Mistral Large 2 (123B) | Incumbent | 675B / 41B | MoE | 256K | Apache 2.0 | Multimodal, strong European compliance |
 
 **Key observations:**
-- **GLM-5.1** (Zhipu AI, April 2026) takes the open-source crown from GLM-5, reaching Arena Elo 1474. GLM-5 (744B MoE) originally unseated DeepSeek in February 2026. Native support for 14+ Asian languages including Tamil, Hindi, and Telugu.
+- **GLM-5.1** (Zhipu AI, April 2026) takes the open-source crown from GLM-5, reaching Arena Elo 1475. GLM-5 (744B MoE) originally unseated DeepSeek in February 2026. Native support for 14+ Asian languages including Tamil, Hindi, and Telugu.
 - **Kimi K2.6** (Moonshot AI, 20 April 2026) is the strongest new open-weights entry. Artificial Analysis Intelligence Index of 54 — the highest for any open-weight model — with SWE-Bench Pro 58.6% matching GPT-5.5. Supports 12-hour autonomous coding sessions and 300-agent coordinated swarms. $0.60/M input, $2.50/M output.
 - **Gemma 4** (Google DeepMind, April 2, 2026) is a major open-source entry. The 31B dense model ranks #4 among all open models on Arena AI's text leaderboard (Elo ~1451). Apache 2.0 licence — a significant shift from Gemma 3's more restrictive Gemma Licence. Four sizes: E2B (2.3B active), E4B (4B active), 26B MoE (4B active), 31B dense.
 - **GLM-4.7** (Zhipu AI) is a notable coding-focused release with thinking capabilities: AIME 2025 95.7%, SWE-bench Verified 73.8%, HLE 42.8% (+12.4% over GLM-4.6).
 - Every top open-source model at the frontier tier uses MoE architecture (Gemma 4 31B dense is the exception, ranking via raw parameter density).
 - Apache 2.0 dominates licensing, with Meta's Llama Community Licence the main exception.
-- The gap to proprietary models continues to narrow: GLM-5.1 at Arena Elo 1472 vs Claude Opus 4.7 (thinking) at 1503 — a ~31 Elo gap, down from ~200+ a year ago.
+- The gap to proprietary models continues to narrow: GLM-5.1 at Arena Elo 1475 vs the Arena leader Claude Opus 4.6 (thinking) at 1504 — a ~29 Elo gap, down from ~200+ a year ago.
 
 ## Best Models <= 20B Parameters
 

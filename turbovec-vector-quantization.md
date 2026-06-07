@@ -1,5 +1,22 @@
 # turbovec — TurboQuant vector quantisation for ANN search
 
+| Field | Value |
+|-------|-------|
+| Created | 2026-06-08 |
+| Last Updated | 2026-06-08 |
+| Version | 1.0 |
+
+---
+
+- [What it is](#what-it-is)
+- [How the algorithm works](#how-the-algorithm-works)
+- [Key features](#key-features)
+- [Repo layout](#repo-layout)
+- [Claimed performance](#claimed-performance-100k-vectors-k64-median-of-5-runs)
+- [Maturity](#maturity)
+- [Build](#build)
+- [References](#references)
+
 **Source:** https://github.com/RyanCodrai/turbovec (cloned to `~/experiments/turbovec/repo/`, 2026-06-08)
 **Crate:** crates.io `turbovec` v0.8.0 · **PyPI:** `turbovec` v0.7.0 · MIT licence
 **Algorithm paper:** [TurboQuant: Online Vector Quantization with Near-optimal Distortion Rate](https://arxiv.org/abs/2504.19874) (ICLR 2026)

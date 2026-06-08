@@ -1,0 +1,239 @@
+{
+  "metadata": {
+    "description": "Tool use benchmark scores from BFCL V4 and Tau2-bench across domains",
+    "sources": [
+      "https://gorilla.cs.berkeley.edu/leaderboard.html",
+      "https://benchlm.ai/benchmarks/bfclV4",
+      "https://benchlm.ai/benchmarks/tau2Airline",
+      "https://airank.dev/benchmarks/tau2-bench-retail",
+      "https://airank.dev/benchmarks/tau2-bench-telecom",
+      "frontier-models-benchmark.md (this repo)"
+    ],
+    "notes": "Updated to April/May 2026 scores from BFCL V4 (gorilla.cs.berkeley.edu, updated 2026-04-12), BenchLM, Tau2-bench (Sierra Research). Claude Opus 4.7 added.",
+    "last_updated": "2026-05-31"
+  },
+  "labs": {
+    "OpenAI": {
+      "colour": "#10A37F"
+    },
+    "Anthropic": {
+      "colour": "#D97757"
+    },
+    "Google DeepMind": {
+      "colour": "#4285F4"
+    },
+    "xAI": {
+      "colour": "#FFFFFF"
+    },
+    "Meta": {
+      "colour": "#0668E1"
+    },
+    "DeepSeek": {
+      "colour": "#7C3AED"
+    },
+    "Mistral": {
+      "colour": "#FF7000"
+    },
+    "Alibaba": {
+      "colour": "#E8B32A"
+    },
+    "Zhipu AI": {
+      "colour": "#00C49A"
+    },
+    "Moonshot AI": {
+      "colour": "#FF69B4"
+    },
+    "Trinity": {
+      "colour": "#AAAAAA"
+    },
+    "ByteDance": {
+      "colour": "#25F4EE"
+    }
+  },
+  "bfcl_v4": {
+    "name": "BFCL V4 — Overall Accuracy",
+    "description": "Berkeley Function Calling Leaderboard V4 (Dec 2025). Evaluates structured function/tool calling accuracy.",
+    "models": [
+      {
+        "name": "Claude Opus 4.7",
+        "lab": "Anthropic",
+        "score": 79.8,
+        "open_source": false
+      },
+      {
+        "name": "Claude Opus 4.6",
+        "lab": "Anthropic",
+        "score": 77.0,
+        "open_source": false
+      },
+      {
+        "name": "Seed 2.0 Pro",
+        "lab": "ByteDance",
+        "score": 75.2,
+        "open_source": false
+      },
+      {
+        "name": "GLM-4.5 (FC)",
+        "lab": "Zhipu AI",
+        "score": 70.9,
+        "open_source": true
+      },
+      {
+        "name": "Claude Sonnet 4.6",
+        "lab": "Anthropic",
+        "score": 70.5,
+        "open_source": false
+      },
+      {
+        "name": "Kimi K2.5",
+        "lab": "Moonshot AI",
+        "score": 69.0,
+        "open_source": true
+      },
+      {
+        "name": "GPT-5.4",
+        "lab": "OpenAI",
+        "score": 67.8,
+        "open_source": false
+      },
+      {
+        "name": "Gemini 3.1 Pro",
+        "lab": "Google DeepMind",
+        "score": 65.2,
+        "open_source": false
+      },
+      {
+        "name": "Qwen3.5 Max",
+        "lab": "Alibaba",
+        "score": 63.5,
+        "open_source": true
+      }
+    ]
+  },
+  "tau2_airline": {
+    "name": "Tau2-Bench — Airline Domain",
+    "description": "Multi-turn agent benchmark for airline customer service tool use (Sierra Research).",
+    "models": [
+      {
+        "name": "Claude Opus 4.7",
+        "lab": "Anthropic",
+        "score": 89.0,
+        "open_source": false
+      },
+      {
+        "name": "Claude Opus 4.6",
+        "lab": "Anthropic",
+        "score": 82.0,
+        "open_source": false
+      },
+      {
+        "name": "GLM-5.1",
+        "lab": "Zhipu AI",
+        "score": 81.5,
+        "open_source": true
+      },
+      {
+        "name": "GPT-5.4",
+        "lab": "OpenAI",
+        "score": 72.0,
+        "open_source": false
+      },
+      {
+        "name": "Claude Sonnet 4.6",
+        "lab": "Anthropic",
+        "score": 71.0,
+        "open_source": false
+      },
+      {
+        "name": "Gemini 3.1 Pro",
+        "lab": "Google DeepMind",
+        "score": 64.0,
+        "open_source": false
+      }
+    ]
+  },
+  "tau2_retail": {
+    "name": "Tau2-Bench — Retail Domain",
+    "description": "Multi-turn agent benchmark for retail customer service tool use (Sierra Research).",
+    "models": [
+      {
+        "name": "Claude Opus 4.7",
+        "lab": "Anthropic",
+        "score": 93.5,
+        "open_source": false
+      },
+      {
+        "name": "Claude Opus 4.6",
+        "lab": "Anthropic",
+        "score": 91.9,
+        "open_source": false
+      },
+      {
+        "name": "Claude Sonnet 4.6",
+        "lab": "Anthropic",
+        "score": 91.7,
+        "open_source": false
+      },
+      {
+        "name": "Gemma 4 31B",
+        "lab": "Google DeepMind",
+        "score": 86.4,
+        "open_source": true
+      },
+      {
+        "name": "GPT-5.4",
+        "lab": "OpenAI",
+        "score": 84.0,
+        "open_source": false
+      },
+      {
+        "name": "Gemini 3.1 Pro",
+        "lab": "Google DeepMind",
+        "score": 80.0,
+        "open_source": false
+      }
+    ]
+  },
+  "tau2_telecom": {
+    "name": "Tau2-Bench — Telecom Domain",
+    "description": "Dual-control conversational benchmark for telecom technical support (Sierra Research).",
+    "models": [
+      {
+        "name": "Claude Opus 4.7",
+        "lab": "Anthropic",
+        "score": 99.5,
+        "open_source": false
+      },
+      {
+        "name": "Claude Opus 4.6",
+        "lab": "Anthropic",
+        "score": 99.3,
+        "open_source": false
+      },
+      {
+        "name": "GPT-5.4",
+        "lab": "OpenAI",
+        "score": 98.8,
+        "open_source": false
+      },
+      {
+        "name": "GLM-5.1",
+        "lab": "Zhipu AI",
+        "score": 95.5,
+        "open_source": true
+      },
+      {
+        "name": "Kimi K2.6",
+        "lab": "Moonshot AI",
+        "score": 94.0,
+        "open_source": true
+      },
+      {
+        "name": "Gemini 3.1 Pro",
+        "lab": "Google DeepMind",
+        "score": 90.0,
+        "open_source": false
+      }
+    ]
+  }
+}

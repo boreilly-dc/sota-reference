@@ -53,8 +53,8 @@ A consistent caution runs through this article: **benchmark scores are not cross
 
 This article covers **generation** — producing new audio from text, reference audio, video, or other conditioning. It is the counterpart to two companion articles that cover the *input* side of audio AI:
 
-- [`local-audio-language-models.md`](local-audio-language-models.md) — audio *understanding* (taking audio in, reasoning about it).
-- [`real-time-voice-llms.md`](real-time-voice-llms.md) — full-duplex *voice assistants* and speech-to-speech conversational pipelines.
+- [`local-audio-language-models.md`](../multimodal/local-audio-language-models.md) — audio *understanding* (taking audio in, reasoning about it).
+- [`real-time-voice-llms.md`](../multimodal/real-time-voice-llms.md) — full-duplex *voice assistants* and speech-to-speech conversational pipelines.
 
 There is deliberate overlap at the edges: a conversational speech model like Sesame CSM or Kyutai Moshi both *understands* and *generates*, and an "omni" LLM does everything. Where a model is primarily a voice assistant, this article references it but defers depth to the companion articles.
 
@@ -271,7 +271,7 @@ For self-hosting open models, all five clouds rent the GPUs in the [hardware tie
 | If you need… | Proprietary best | Open-source best | Notes |
 |---|---|---|---|
 | Expressive TTS, many voices | ElevenLabs v3 | Orpheus / Chatterbox | Chatterbox (MIT) is commercially safe |
-| Lowest-latency realtime voice | Cartesia Sonic 4 (~40 ms) | Qwen3-TTS / Orpheus | See [`real-time-voice-llms.md`](real-time-voice-llms.md) |
+| Lowest-latency realtime voice | Cartesia Sonic 4 (~40 ms) | Qwen3-TTS / Orpheus | See [`real-time-voice-llms.md`](../multimodal/real-time-voice-llms.md) |
 | Cheapest high-volume TTS | hyperscaler WaveNet ($4/1M) | **Kokoro** (~$0.50/1M self-hosted) | Break-even ~5M chars/month |
 | Edge / offline TTS | — | **Piper** / Kokoro (CPU) | <100 MB to <1 GB |
 | Voice cloning, permissive licence | ElevenLabs / Cartesia | Fish Speech (base), Dia2, OpenVoice v2 | Avoid F5-TTS/XTTS for commercial (NC) |
@@ -294,7 +294,7 @@ For self-hosting open models, all five clouds rent the GPUs in the [hardware tie
 
 - **Source mix.** Primary sources (arXiv papers, official model cards, vendor docs) anchor the technical and architectural claims. Market/pricing/ranking figures lean on comparison blogs (CodeSOTA, presenc.ai, SpeakEasy, FutureAGI, gudz.ai, neuronad) that have commercial interests; these were cross-checked against primary sources where possible and should be reverified before procurement decisions.
 - **"Open" is not always free-to-use.** Several widely-used models carry **non-commercial** (F5-TTS CC-BY-NC, XTTS CPML, MusicGen/AudioGen weights CC-BY-NC), **community/tiered** (Stable Audio), or **research-only** (VibeVoice) licences. Verify the exact licence — and training-data provenance — before commercial deployment.
-- **Watermarking & provenance.** Some open models (Chatterbox, VibeVoice) watermark output; proprietary music/voice tools increasingly embed provenance signals. This matters for both detection and authenticity claims — see [`deepfake-creation-models-and-accessibility.md`](deepfake-creation-models-and-accessibility.md) and [`facial-recognition-deepfake-impersonation-detection.md`](facial-recognition-deepfake-impersonation-detection.md) for the misuse and detection angle of synthetic voice.
+- **Watermarking & provenance.** Some open models (Chatterbox, VibeVoice) watermark output; proprietary music/voice tools increasingly embed provenance signals. This matters for both detection and authenticity claims — see [`deepfake-creation-models-and-accessibility.md`](deepfake-creation-models-and-accessibility.md) and [`facial-recognition-deepfake-impersonation-detection.md`](../multimodal/facial-recognition-deepfake-impersonation-detection.md) for the misuse and detection angle of synthetic voice.
 - **Recency.** All figures reflect a June 2026 snapshot. The web searches behind the SFX and codec sections hit some rate-limiting, so a few models named in the brief (Make-An-Audio, Higgs Audio, IndexTTS, MeloTTS, Zonos) are under-covered here rather than absent from the field.
 - **Geographic/language coverage.** Most quality and latency claims are English-centric; multilingual performance varies and is generally weaker for low-resource languages.
 

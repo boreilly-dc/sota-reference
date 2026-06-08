@@ -1,0 +1,219 @@
+{
+  "metadata": {
+    "description": "Tool use benchmark scores for local/open-source models <= 30B parameters",
+    "sources": [
+      "https://gorilla.cs.berkeley.edu/leaderboard.html",
+      "https://www.docker.com/blog/local-llm-tool-calling-a-practical-evaluation/",
+      "https://haimaker.ai/blog/best-local-models-for-openclaw/",
+      "https://dev.to/om_shree_0709/google-gemma-4-everything-developers-need-to-know-3daf",
+      "https://docs.bswen.com/blog/2026-04-03-gemma-4-vs-qwen-35b-tool-calling/",
+      "https://techie007.substack.com/p/qwen-35-the-complete-guide-benchmarks"
+    ],
+    "notes": "Docker F1 = tool selection F1 from Docker's practical local LLM eval. BFCL V4 = Berkeley Function Calling Leaderboard V4 (Dec 2025). Tau2-Retail = Sierra Research agent benchmark. Some models lack scores on certain benchmarks.",
+    "last_updated": "2026-05-31"
+  },
+  "labs": {
+    "Alibaba": {
+      "colour": "#E8B32A"
+    },
+    "Google DeepMind": {
+      "colour": "#4285F4"
+    },
+    "Meta": {
+      "colour": "#0668E1"
+    },
+    "Microsoft": {
+      "colour": "#00BCF2"
+    },
+    "Mistral": {
+      "colour": "#FF7000"
+    },
+    "Zhipu AI": {
+      "colour": "#00C49A"
+    }
+  },
+  "bfcl_v4": {
+    "name": "BFCL V4 — Overall Accuracy",
+    "description": "Berkeley Function Calling Leaderboard V4. Best frontier reference: Claude Opus 4.6 at 77%.",
+    "frontier_ref": {
+      "name": "Claude Opus 4.7",
+      "score": 79.8
+    },
+    "models": [
+      {
+        "name": "Qwen 3.6-27B",
+        "lab": "Alibaba",
+        "score": 74.5,
+        "params": "27B dense"
+      },
+      {
+        "name": "Qwen3.5-27B",
+        "lab": "Alibaba",
+        "score": 72.2,
+        "params": "27B dense"
+      },
+      {
+        "name": "Gemma 4 31B",
+        "lab": "Google DeepMind",
+        "score": 68.5,
+        "params": "31B dense"
+      },
+      {
+        "name": "Qwen3-30B (MoE)",
+        "lab": "Alibaba",
+        "score": 63.5,
+        "params": "30B / 3B active"
+      },
+      {
+        "name": "Qwen3-14B",
+        "lab": "Alibaba",
+        "score": 60.0,
+        "params": "14B dense"
+      },
+      {
+        "name": "Mistral Small 3.1",
+        "lab": "Mistral",
+        "score": 57.0,
+        "params": "24B dense"
+      }
+    ]
+  },
+  "docker_f1": {
+    "name": "Docker Tool Calling F1",
+    "description": "Practical tool selection F1 from Docker's local LLM evaluation. Tests real-world tool calling with Ollama. Reference: GPT-4 at 0.974.",
+    "frontier_ref": {
+      "name": "GPT-5.4",
+      "score": 97.8
+    },
+    "models": [
+      {
+        "name": "Qwen3 14B",
+        "lab": "Alibaba",
+        "score": 97.1,
+        "params": "14B dense"
+      },
+      {
+        "name": "Qwen3 8B",
+        "lab": "Alibaba",
+        "score": 93.3,
+        "params": "8B dense"
+      },
+      {
+        "name": "Gemma 4 E4B",
+        "lab": "Google DeepMind",
+        "score": 88.0,
+        "params": "4.5B dense"
+      },
+      {
+        "name": "Qwen 2.5 14B",
+        "lab": "Alibaba",
+        "score": 85.0,
+        "params": "14B dense"
+      },
+      {
+        "name": "Llama 3.1 8B",
+        "lab": "Meta",
+        "score": 78.0,
+        "params": "8B dense"
+      },
+      {
+        "name": "Gemma 4 E2B",
+        "lab": "Google DeepMind",
+        "score": 72.0,
+        "params": "2.3B dense"
+      }
+    ]
+  },
+  "tau2_retail": {
+    "name": "Tau²-Bench — Retail Domain",
+    "description": "Multi-turn agent benchmark for retail customer service. Reference: Claude Opus 4.6 at 91.9%.",
+    "frontier_ref": {
+      "name": "Claude Opus 4.7",
+      "score": 93.5
+    },
+    "models": [
+      {
+        "name": "Gemma 4 31B",
+        "lab": "Google DeepMind",
+        "score": 86.4,
+        "params": "31B dense"
+      },
+      {
+        "name": "Gemma 4 26B-A4B",
+        "lab": "Google DeepMind",
+        "score": 85.5,
+        "params": "26B / 4B active"
+      },
+      {
+        "name": "Qwen 3.6-27B",
+        "lab": "Alibaba",
+        "score": 80.0,
+        "params": "27B dense"
+      },
+      {
+        "name": "Qwen3.5-27B",
+        "lab": "Alibaba",
+        "score": 78.0,
+        "params": "27B dense"
+      },
+      {
+        "name": "Mistral Small 3.1",
+        "lab": "Mistral",
+        "score": 64.0,
+        "params": "24B dense"
+      }
+    ]
+  },
+  "local_vs_frontier": {
+    "benchmarks": [
+      {
+        "name": "BFCL V4",
+        "best_local": {
+          "name": "Qwen 3.6-27B",
+          "score": 74.5
+        },
+        "best_frontier": {
+          "name": "Claude Opus 4.7",
+          "score": 79.8
+        },
+        "gap": 5.3
+      },
+      {
+        "name": "Docker F1",
+        "best_local": {
+          "name": "Qwen3 14B",
+          "score": 97.1
+        },
+        "best_frontier": {
+          "name": "GPT-5.4",
+          "score": 97.8
+        },
+        "gap": 0.7
+      },
+      {
+        "name": "Tau²-Retail",
+        "best_local": {
+          "name": "Gemma 4 31B",
+          "score": 86.4
+        },
+        "best_frontier": {
+          "name": "Claude Opus 4.7",
+          "score": 93.5
+        },
+        "gap": 7.1
+      },
+      {
+        "name": "Tau²-Telecom",
+        "best_local": {
+          "name": "GLM-5.1*",
+          "score": 95.5
+        },
+        "best_frontier": {
+          "name": "Claude Opus 4.7",
+          "score": 99.5
+        },
+        "gap": 4.0
+      }
+    ]
+  }
+}

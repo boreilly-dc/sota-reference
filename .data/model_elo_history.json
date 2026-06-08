@@ -1,0 +1,585 @@
+{
+  "metadata": {
+    "description": "LMArena (Chatbot Arena) Elo ratings for major AI models, compiled from arena.ai leaderboard snapshots",
+    "sources": [
+      "https://arena.ai/leaderboard/text",
+      "https://lmarena.ai",
+      "frontier-models-benchmark.md (this repo)"
+    ],
+    "notes": "Elo scale was recalibrated several times by LMSYS/LMArena. Models with plot:true have confirmed current arena scores; plot:false models retain their last-known score but are excluded from charts. For models with multiple variants (e.g. -high, -thinking), the best-performing variant is used.",
+    "last_updated": "2026-06-08"
+  },
+  "labs": {
+    "OpenAI": {
+      "colour": "#10A37F"
+    },
+    "Anthropic": {
+      "colour": "#D97757"
+    },
+    "Google DeepMind": {
+      "colour": "#4285F4"
+    },
+    "xAI": {
+      "colour": "#FFFFFF"
+    },
+    "Meta": {
+      "colour": "#0668E1"
+    },
+    "DeepSeek": {
+      "colour": "#7C3AED"
+    },
+    "Mistral": {
+      "colour": "#FF7000"
+    },
+    "Alibaba": {
+      "colour": "#E8B32A"
+    },
+    "Zhipu AI": {
+      "colour": "#00C49A"
+    }
+  },
+  "families": {
+    "GPT (base)": [
+      "GPT-4",
+      "GPT-4 Turbo",
+      "GPT-4o",
+      "GPT-5",
+      "GPT-5.2",
+      "GPT-5.4",
+      "GPT-5.5"
+    ],
+    "GPT (pro)": [
+      "GPT-5.2 Pro",
+      "GPT-5.4 Pro"
+    ],
+    "Claude Opus": [
+      "Claude 3 Opus",
+      "Claude Opus 4",
+      "Claude Opus 4.5",
+      "Claude Opus 4.6",
+      "Claude Opus 4.7",
+      "Claude Opus 4.8"
+    ],
+    "Claude Sonnet": [
+      "Claude 3.5 Sonnet",
+      "Claude 3.5 Sonnet v2",
+      "Claude Sonnet 4",
+      "Claude Sonnet 4.5",
+      "Claude Sonnet 4.6"
+    ],
+    "Gemini Pro": [
+      "Gemini 1.0 Pro",
+      "Gemini 1.5 Pro",
+      "Gemini 2.5 Pro",
+      "Gemini 3 Pro",
+      "Gemini 3.1 Pro Preview"
+    ],
+    "Gemini Flash": [
+      "Gemini 2.0 Flash"
+    ],
+    "Grok": [
+      "Grok 2",
+      "Grok 3",
+      "Grok 4.1",
+      "Grok 4.20 Beta"
+    ],
+    "Llama": [
+      "Llama 3 70B",
+      "Llama 3.1 405B",
+      "Llama 4 Maverick"
+    ],
+    "DeepSeek V": [
+      "DeepSeek V2",
+      "DeepSeek V3",
+      "DeepSeek V3.2-Exp",
+      "DeepSeek V4 Pro"
+    ],
+    "DeepSeek R": [
+      "DeepSeek R1"
+    ],
+    "Mistral Large": [
+      "Mistral Large",
+      "Mistral Large 2",
+      "Mistral Large 3"
+    ],
+    "Qwen": [
+      "Qwen 2.5-72B",
+      "Qwen3-235B"
+    ],
+    "GLM": [
+      "GLM-4",
+      "GLM-4.5",
+      "GLM-5",
+      "GLM-5.1"
+    ],
+    "GLM (coding)": [
+      "GLM-4.5",
+      "GLM-4.7"
+    ],
+    "Gemma": [
+      "Gemma 3 27B",
+      "Gemma 4 31B"
+    ]
+  },
+  "models": [
+    {
+      "name": "GPT-5.2",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2025-12-11",
+      "elo": 1476,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "GPT-5.4",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2026-03-05",
+      "elo": 1479,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Opus 4",
+      "lab": "Anthropic",
+      "family": "Claude 4",
+      "release_date": "2025-06-25",
+      "elo": 1449,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Sonnet 4.5",
+      "lab": "Anthropic",
+      "family": "Claude 4",
+      "release_date": "2025-09-29",
+      "elo": 1453,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Opus 4.5",
+      "lab": "Anthropic",
+      "family": "Claude 4",
+      "release_date": "2025-10-15",
+      "elo": 1473,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Sonnet 4.6",
+      "lab": "Anthropic",
+      "family": "Claude 4.6",
+      "release_date": "2026-02-17",
+      "elo": 1464,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Opus 4.6",
+      "lab": "Anthropic",
+      "family": "Claude 4.6",
+      "release_date": "2026-02-05",
+      "elo": 1504,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Gemini 3 Pro",
+      "lab": "Google DeepMind",
+      "family": "Gemini 3",
+      "release_date": "2026-01-15",
+      "elo": 1486,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Gemini 3.1 Pro Preview",
+      "lab": "Google DeepMind",
+      "family": "Gemini 3",
+      "release_date": "2026-02-19",
+      "elo": 1488,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Grok 4.1",
+      "lab": "xAI",
+      "family": "Grok",
+      "release_date": "2025-11-15",
+      "elo": 1469,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Grok 4.20 Beta",
+      "lab": "xAI",
+      "family": "Grok",
+      "release_date": "2026-02-17",
+      "elo": 1474,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Qwen3-235B",
+      "lab": "Alibaba",
+      "family": "Qwen",
+      "release_date": "2025-04-29",
+      "elo": 1450,
+      "open_source": true,
+      "plot": true
+    },
+    {
+      "name": "GLM-5",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2026-02-11",
+      "elo": 1456,
+      "open_source": true,
+      "plot": true
+    },
+    {
+      "name": "GLM-5.1",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2026-04-08",
+      "elo": 1475,
+      "open_source": true,
+      "plot": true
+    },
+    {
+      "name": "GPT-5.4 Pro",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2026-03-06",
+      "elo": 1483,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Gemma 4 31B",
+      "lab": "Google DeepMind",
+      "family": "Gemma",
+      "release_date": "2026-04-02",
+      "elo": 1451,
+      "open_source": true,
+      "plot": true
+    },
+    {
+      "name": "Claude Opus 4.7",
+      "lab": "Anthropic",
+      "family": "Claude 4.6",
+      "release_date": "2026-04-16",
+      "elo": 1501,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "GPT-5.5",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2026-04-23",
+      "elo": 1482,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Opus 4.8",
+      "lab": "Anthropic",
+      "family": "Claude 4.6",
+      "release_date": "2026-05-28",
+      "elo": 1482,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Muse Spark",
+      "lab": "Meta",
+      "family": "Muse",
+      "release_date": "2026-04-10",
+      "elo": 1489,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "DeepSeek V4 Pro",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2026-04-20",
+      "elo": 1463,
+      "open_source": true,
+      "plot": true
+    },
+    {
+      "name": "GPT-4",
+      "lab": "OpenAI",
+      "family": "GPT-4",
+      "release_date": "2023-03-14",
+      "elo": 1275,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "GPT-4 Turbo",
+      "lab": "OpenAI",
+      "family": "GPT-4",
+      "release_date": "2024-04-09",
+      "elo": 1324,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "GPT-4o",
+      "lab": "OpenAI",
+      "family": "GPT-4",
+      "release_date": "2024-05-13",
+      "elo": 1346,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "GPT-5",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2025-08-07",
+      "elo": 1434,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "GPT-5.2 Pro",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2025-12-11",
+      "elo": 1473,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Claude 3 Opus",
+      "lab": "Anthropic",
+      "family": "Claude 3",
+      "release_date": "2024-03-04",
+      "elo": 1322,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Claude 3.5 Sonnet",
+      "lab": "Anthropic",
+      "family": "Claude 3",
+      "release_date": "2024-06-20",
+      "elo": 1342,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Claude 3.5 Sonnet v2",
+      "lab": "Anthropic",
+      "family": "Claude 3",
+      "release_date": "2024-10-22",
+      "elo": 1372,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Claude Sonnet 4",
+      "lab": "Anthropic",
+      "family": "Claude 4",
+      "release_date": "2025-06-25",
+      "elo": 1389,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Gemini 1.0 Pro",
+      "lab": "Google DeepMind",
+      "family": "Gemini 1",
+      "release_date": "2023-12-06",
+      "elo": 1222,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Gemini 1.5 Pro",
+      "lab": "Google DeepMind",
+      "family": "Gemini 1",
+      "release_date": "2024-02-15",
+      "elo": 1351,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Gemini 2.0 Flash",
+      "lab": "Google DeepMind",
+      "family": "Gemini 2",
+      "release_date": "2024-12-11",
+      "elo": 1361,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Gemini 2.5 Pro",
+      "lab": "Google DeepMind",
+      "family": "Gemini 2",
+      "release_date": "2025-03-25",
+      "elo": 1448,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Grok 2",
+      "lab": "xAI",
+      "family": "Grok",
+      "release_date": "2024-08-13",
+      "elo": 1336,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Grok 3",
+      "lab": "xAI",
+      "family": "Grok",
+      "release_date": "2025-02-17",
+      "elo": 1412,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Llama 3 70B",
+      "lab": "Meta",
+      "family": "Llama",
+      "release_date": "2024-04-18",
+      "elo": 1276,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "Llama 3.1 405B",
+      "lab": "Meta",
+      "family": "Llama",
+      "release_date": "2024-07-23",
+      "elo": 1335,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "Llama 4 Maverick",
+      "lab": "Meta",
+      "family": "Llama",
+      "release_date": "2025-04-05",
+      "elo": 1417,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "DeepSeek V2",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2024-05-07",
+      "elo": 1179,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "DeepSeek V3",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2024-12-26",
+      "elo": 1395,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "DeepSeek R1",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2025-01-20",
+      "elo": 1422,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "DeepSeek V3.2-Exp",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2026-01-15",
+      "elo": 1423,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "Mistral Large",
+      "lab": "Mistral",
+      "family": "Mistral",
+      "release_date": "2024-02-26",
+      "elo": 1242,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Mistral Large 2",
+      "lab": "Mistral",
+      "family": "Mistral",
+      "release_date": "2024-07-24",
+      "elo": 1314,
+      "open_source": false,
+      "plot": false
+    },
+    {
+      "name": "Mistral Large 3",
+      "lab": "Mistral",
+      "family": "Mistral",
+      "release_date": "2025-12-02",
+      "elo": 1415,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "Qwen 2.5-72B",
+      "lab": "Alibaba",
+      "family": "Qwen",
+      "release_date": "2024-09-19",
+      "elo": 1303,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "GLM-4",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2024-01-16",
+      "elo": 1273,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "GLM-4.5",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2025-07-28",
+      "elo": 1412,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "GLM-4.7",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2026-03-01",
+      "elo": 1443,
+      "open_source": true,
+      "plot": false
+    },
+    {
+      "name": "Gemma 3 27B",
+      "lab": "Google DeepMind",
+      "family": "Gemma",
+      "release_date": "2025-03-12",
+      "elo": 1366,
+      "open_source": true,
+      "plot": false
+    }
+  ]
+}

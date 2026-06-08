@@ -25,7 +25,7 @@
 
 This is the canonical reference design for a retrieval-augmented generation (RAG) knowledge base that must serve a large number of documents of widely varying sizes (single-page memos through 600+ page technical manuals) without per-document tuning. It consolidates the production design validated through 14 evaluation iterations on the `doc-agent` branch of the ba-ai-discovery codebase, with the broader open-source landscape as fallback options. The design is platform-neutral; hyperscaler equivalents are listed in §10.
 
-For background and surveys of the field, see [`rag-and-context-engineering.md`](../rag-and-context-engineering.md) and [`large-document-llm-methods.md`](../large-document-llm-methods.md).
+For background and surveys of the field, see [`rag-and-context-engineering.md`](../rag/rag-and-context-engineering.md) and [`large-document-llm-methods.md`](../rag/large-document-llm-methods.md).
 
 ---
 
@@ -518,7 +518,7 @@ This reference design is the **default starting point**. Deviate when measuremen
 | Same query asked thousands of times against a small static corpus | Consider Cache-Augmented Generation (CAG): preload corpus into model context. |
 | Reasoning over the entire document is required, not retrieval | Use long-context models (Gemini 2.5 Pro 1M, Qwen2.5-1M, Llama 4 Scout 10M) — RAG is the wrong tool. |
 
-For deeper coverage of these alternatives and when each is appropriate, see [`large-document-llm-methods.md`](../large-document-llm-methods.md) and [`rag-and-context-engineering.md`](../rag-and-context-engineering.md).
+For deeper coverage of these alternatives and when each is appropriate, see [`large-document-llm-methods.md`](../rag/large-document-llm-methods.md) and [`rag-and-context-engineering.md`](../rag/rag-and-context-engineering.md).
 
 ---
 

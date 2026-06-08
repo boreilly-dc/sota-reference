@@ -47,7 +47,7 @@ For the user's core question — *is there ever a better non-LLM solution?* — 
 
 The practical 2026 consensus is therefore **not "VLMs replace OCR"** but **tiered, hybrid pipelines**: cheap deterministic engines handle the ~80% of clean pages, specialist VLMs handle structured/complex pages, and frontier VLMs are reserved for the hardest documents — often with a traditional-OCR cross-check to catch hallucinations. [13][15]
 
-> Related articles in this repository: [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) (running VLMs locally), [Large Document LLM Methods](large-document-llm-methods.md) (processing long documents), and [RAG & Context Engineering](rag-and-context-engineering.md) (OCR as a pipeline stage).
+> Related articles in this repository: [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) (running VLMs locally), [Large Document LLM Methods](../rag/large-document-llm-methods.md) (processing long documents), and [RAG & Context Engineering](../rag/rag-and-context-engineering.md) (OCR as a pipeline stage).
 
 ---
 
@@ -199,7 +199,7 @@ The single biggest reason *not* to default to a VLM is reliability. Traditional 
 - **Complete fabrication under stress.** On degraded or unusual inputs, some models generate output with near-zero relationship to the source (the Grok 4.1 Fast case: 1–4% similarity). [14]
 - **Silent omission.** VLMs can skip content (a paragraph, a column, a page) without any error signal. Formal measurement of omission rates is still sparse as of mid-2026. [13]
 - **Non-determinism.** The same page can yield different transcriptions across runs at temperature > 0 — a problem for audit and reproducibility.
-- **Visual prompt injection.** Because a VLM *reads and may act on* text inside an image, instructions embedded in a document (a "screenshot jailbreak") can bypass text-only safety filters. This is an attack surface that traditional OCR simply does not have, and it matters for any pipeline that processes untrusted documents. [30] See also [Preventing Topic Hijacking](chatbot-topic-hijacking-prevention.md).
+- **Visual prompt injection.** Because a VLM *reads and may act on* text inside an image, instructions embedded in a document (a "screenshot jailbreak") can bypass text-only safety filters. This is an attack surface that traditional OCR simply does not have, and it matters for any pipeline that processes untrusted documents. [30] See also [Preventing Topic Hijacking](../evaluation/chatbot-topic-hijacking-prevention.md).
 
 **Mitigation patterns (2026 best practice):**
 

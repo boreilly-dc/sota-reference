@@ -508,8 +508,8 @@ Primary sources (official docs, repositories, vendor blogs, standards bodies) ar
 
 ### Related SOTA Reference articles
 
-- [Frameworks for Research Agents](../frameworks-research-agents.md) — deeper dive on research-agent-specific patterns.
-- [Agentic Coding: Claude Code vs OpenAI Codex](../agentic-coding-claude-vs-openai.md)
-- [Open Models for Coding Agents](../open-models-coding-agents.md)
-- [MCP Alternatives and Tool-Calling Strategies](../mcp-alternatives-and-tool-calling-strategies.md)
-- [Modern AI Observability](../ai-observability.md)
+- [Frameworks for Research Agents](frameworks-research-agents.md) — deeper dive on research-agent-specific patterns.
+- [Agentic Coding: Claude Code vs OpenAI Codex](agentic-coding-claude-vs-openai.md)
+- [Open Models for Coding Agents](open-models-coding-agents.md)
+- [MCP Alternatives and Tool-Calling Strategies](mcp-alternatives-and-tool-calling-strategies.md)
+- [Modern AI Observability](../evaluation/ai-observability.md)

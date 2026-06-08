@@ -1,0 +1,238 @@
+{
+  "metadata": {
+    "description": "LMArena Elo ratings for open-source/open-weight models that can run on consumer hardware, from arena.ai leaderboard snapshots",
+    "sources": [
+      "https://arena.ai/leaderboard/text",
+      "https://botmonster.com/ai/gemma-4-vs-qwen-3-5-vs-llama-4-open-model-comparison-2026/",
+      "https://codersera.com/blog/open-source-llms-landscape-2026/"
+    ],
+    "notes": "Only models with open weights included. Elo values from best-performing variant (thinking, etc.) where applicable. Models ordered by release date within families.",
+    "last_updated": "2026-06-08"
+  },
+  "labs": {
+    "Google DeepMind": {
+      "colour": "#4285F4"
+    },
+    "Alibaba": {
+      "colour": "#E8B32A"
+    },
+    "Meta": {
+      "colour": "#0668E1"
+    },
+    "DeepSeek": {
+      "colour": "#7C3AED"
+    },
+    "Mistral": {
+      "colour": "#FF7000"
+    },
+    "Zhipu AI": {
+      "colour": "#00C49A"
+    },
+    "Moonshot AI": {
+      "colour": "#FF6B6B"
+    },
+    "Xiaomi": {
+      "colour": "#FF8C00"
+    },
+    "Microsoft": {
+      "colour": "#00BCF2"
+    },
+    "TII": {
+      "colour": "#8B5E3C"
+    }
+  },
+  "families": {
+    "Gemma": [
+      "Gemma 3 27B",
+      "Gemma 4 26B-A4B",
+      "Gemma 4 31B"
+    ],
+    "Qwen": [
+      "Qwen 2.5-72B",
+      "Qwen3-235B-A22B",
+      "Qwen 3.5-397B-A17B"
+    ],
+    "Llama": [
+      "Llama 3 70B",
+      "Llama 3.1 405B",
+      "Llama 4 Maverick"
+    ],
+    "DeepSeek": [
+      "DeepSeek V3",
+      "DeepSeek R1",
+      "DeepSeek V3.2-Exp",
+      "DeepSeek V4 Pro"
+    ],
+    "GLM": [
+      "GLM-4.5",
+      "GLM-5",
+      "GLM-5.1"
+    ],
+    "Mistral": [
+      "Mistral Large 2",
+      "Mistral Large 3"
+    ]
+  },
+  "models": [
+    {
+      "name": "Gemma 3 27B",
+      "lab": "Google DeepMind",
+      "family": "Gemma",
+      "release_date": "2025-03-12",
+      "elo": 1366,
+      "params": "27B dense"
+    },
+    {
+      "name": "Gemma 4 26B-A4B",
+      "lab": "Google DeepMind",
+      "family": "Gemma",
+      "release_date": "2026-04-02",
+      "elo": 1438,
+      "params": "25.2B / 3.8B active MoE"
+    },
+    {
+      "name": "Gemma 4 31B",
+      "lab": "Google DeepMind",
+      "family": "Gemma",
+      "release_date": "2026-04-02",
+      "elo": 1451,
+      "params": "31B dense"
+    },
+    {
+      "name": "Qwen 2.5-72B",
+      "lab": "Alibaba",
+      "family": "Qwen",
+      "release_date": "2024-09-19",
+      "elo": 1303,
+      "params": "72B dense"
+    },
+    {
+      "name": "Qwen3-235B-A22B",
+      "lab": "Alibaba",
+      "family": "Qwen",
+      "release_date": "2025-04-29",
+      "elo": 1423,
+      "params": "235B / 22B active MoE"
+    },
+    {
+      "name": "Qwen 3.5-397B-A17B",
+      "lab": "Alibaba",
+      "family": "Qwen",
+      "release_date": "2026-02-16",
+      "elo": 1450,
+      "params": "397B / 17B active MoE"
+    },
+    {
+      "name": "Llama 3 70B",
+      "lab": "Meta",
+      "family": "Llama",
+      "release_date": "2024-04-18",
+      "elo": 1276,
+      "params": "70B dense"
+    },
+    {
+      "name": "Llama 3.1 405B",
+      "lab": "Meta",
+      "family": "Llama",
+      "release_date": "2024-07-23",
+      "elo": 1335,
+      "params": "405B dense"
+    },
+    {
+      "name": "Llama 4 Maverick",
+      "lab": "Meta",
+      "family": "Llama",
+      "release_date": "2025-04-05",
+      "elo": 1417,
+      "params": "400B / 17B active MoE"
+    },
+    {
+      "name": "DeepSeek V3",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2024-12-26",
+      "elo": 1395,
+      "params": "671B / 37B active MoE"
+    },
+    {
+      "name": "DeepSeek R1",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2025-01-20",
+      "elo": 1422,
+      "params": "671B / 37B active MoE"
+    },
+    {
+      "name": "DeepSeek V3.2-Exp",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2026-01-15",
+      "elo": 1423,
+      "params": "685B / 37B active MoE"
+    },
+    {
+      "name": "DeepSeek V4 Pro",
+      "lab": "DeepSeek",
+      "family": "DeepSeek",
+      "release_date": "2026-04-24",
+      "elo": 1463,
+      "params": "1.6T / 49B active MoE"
+    },
+    {
+      "name": "GLM-4.5",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2025-07-28",
+      "elo": 1412,
+      "params": "355B MoE"
+    },
+    {
+      "name": "GLM-5",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2026-02-11",
+      "elo": 1456,
+      "params": "744B / ~40B active MoE"
+    },
+    {
+      "name": "GLM-5.1",
+      "lab": "Zhipu AI",
+      "family": "GLM",
+      "release_date": "2026-04-08",
+      "elo": 1475,
+      "params": "~754B / ~40B active MoE"
+    },
+    {
+      "name": "Mistral Large 2",
+      "lab": "Mistral",
+      "family": "Mistral",
+      "release_date": "2024-07-24",
+      "elo": 1314,
+      "params": "123B dense"
+    },
+    {
+      "name": "Mistral Large 3",
+      "lab": "Mistral",
+      "family": "Mistral",
+      "release_date": "2025-12-02",
+      "elo": 1415,
+      "params": "675B / 41B active MoE"
+    },
+    {
+      "name": "Kimi K2.6",
+      "lab": "Moonshot AI",
+      "family": "Kimi",
+      "release_date": "2026-04-20",
+      "elo": 1462,
+      "params": "~1T / 32B active MoE"
+    },
+    {
+      "name": "MiMo-V2.5-Pro",
+      "lab": "Xiaomi",
+      "family": "MiMo",
+      "release_date": "2026-04-22",
+      "elo": 1464,
+      "params": "1.02T / 42B active MoE"
+    }
+  ]
+}

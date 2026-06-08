@@ -176,7 +176,7 @@ Gemma 4 12B is **open-weights under Apache 2.0**, with pre-trained and instructi
 
 The Transformers API exposes it as a multimodal image-text-to-text model (`AutoProcessor` + `AutoModelForImageTextToText` / `AutoModelForMultimodalLM`), with audio and video added to prompts by reference. Google also released an official **Gemma Skills repository** to help agents build with Gemma models.
 
-> **Local-model note:** Per house guidance, the 12B is the recommended Gemma 4 size for a 16 GB machine; step down to E4B only if memory is tighter, and up to the 26B A4B MoE or 31B Dense if you have the VRAM and need the extra reasoning headroom. See also the repo's [Best Local LLMs for Consumer Hardware](../local-llms-consumer-hardware.md) article.
+> **Local-model note:** Per house guidance, the 12B is the recommended Gemma 4 size for a 16 GB machine; step down to E4B only if memory is tighter, and up to the 26B A4B MoE or 31B Dense if you have the VRAM and need the extra reasoning headroom. See also the repo's [Best Local LLMs for Consumer Hardware](local-llms-consumer-hardware.md) article.
 
 ---
 

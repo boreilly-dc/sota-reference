@@ -7,7 +7,7 @@
       "frontier-models-benchmark.md (this repo)"
     ],
     "notes": "Elo scale was recalibrated several times by LMSYS/LMArena. Models with plot:true have confirmed current arena scores; plot:false models retain their last-known score but are excluded from charts. For models with multiple variants (e.g. -high, -thinking), the best-performing variant is used.",
-    "last_updated": "2026-06-08"
+    "last_updated": "2026-06-15"
   },
   "labs": {
     "OpenAI": {
@@ -66,6 +66,9 @@
       "Claude Sonnet 4",
       "Claude Sonnet 4.5",
       "Claude Sonnet 4.6"
+    ],
+    "Claude Fable": [
+      "Claude Fable 5"
     ],
     "Gemini Pro": [
       "Gemini 1.0 Pro",
@@ -127,7 +130,7 @@
       "lab": "OpenAI",
       "family": "GPT-5",
       "release_date": "2025-12-11",
-      "elo": 1476,
+      "elo": 1475,
       "open_source": false,
       "plot": true
     },
@@ -154,7 +157,7 @@
       "lab": "Anthropic",
       "family": "Claude 4",
       "release_date": "2025-09-29",
-      "elo": 1453,
+      "elo": 1456,
       "open_source": false,
       "plot": true
     },
@@ -172,7 +175,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-02-17",
-      "elo": 1464,
+      "elo": 1471,
       "open_source": false,
       "plot": true
     },
@@ -199,7 +202,7 @@
       "lab": "Google DeepMind",
       "family": "Gemini 3",
       "release_date": "2026-02-19",
-      "elo": 1488,
+      "elo": 1487,
       "open_source": false,
       "plot": true
     },
@@ -208,7 +211,7 @@
       "lab": "xAI",
       "family": "Grok",
       "release_date": "2025-11-15",
-      "elo": 1469,
+      "elo": 1466,
       "open_source": false,
       "plot": true
     },
@@ -235,7 +238,7 @@
       "lab": "Zhipu AI",
       "family": "GLM",
       "release_date": "2026-02-11",
-      "elo": 1456,
+      "elo": 1457,
       "open_source": true,
       "plot": true
     },
@@ -271,7 +274,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-04-16",
-      "elo": 1501,
+      "elo": 1502,
       "open_source": false,
       "plot": true
     },
@@ -280,7 +283,7 @@
       "lab": "OpenAI",
       "family": "GPT-5",
       "release_date": "2026-04-23",
-      "elo": 1482,
+      "elo": 1481,
       "open_source": false,
       "plot": true
     },
@@ -289,7 +292,16 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-05-28",
-      "elo": 1482,
+      "elo": 1486,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Claude Fable 5",
+      "lab": "Anthropic",
+      "family": "Claude 5",
+      "release_date": "2026-06-09",
+      "elo": 1510,
       "open_source": false,
       "plot": true
     },
@@ -298,7 +310,7 @@
       "lab": "Meta",
       "family": "Muse",
       "release_date": "2026-04-10",
-      "elo": 1489,
+      "elo": 1487,
       "open_source": false,
       "plot": true
     },
@@ -307,7 +319,7 @@
       "lab": "DeepSeek",
       "family": "DeepSeek",
       "release_date": "2026-04-20",
-      "elo": 1463,
+      "elo": 1457,
       "open_source": true,
       "plot": true
     },

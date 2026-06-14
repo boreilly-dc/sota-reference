@@ -32,6 +32,9 @@ SLUG_MAP = {
     "gpt-5.5":                        "GPT-5.5",
     "gpt-5.5-high":                   "GPT-5.5",
     "gpt-5.5-instant":                None,  # skip — separate variant we don't track
+    "gpt-5.1-high":                   None,  # GPT-5.1 not tracked
+    "gpt-5.3-chat-latest":            None,  # GPT-5.3 not tracked
+    "gpt-5.4-mini-high":              None,  # mini variant not tracked
 
     # Anthropic
     "claude-3-opus":                  "Claude 3 Opus",
@@ -48,6 +51,9 @@ SLUG_MAP = {
     "claude-opus-4-7-thinking":       "Claude Opus 4.7",
     "claude-opus-4-8":                "Claude Opus 4.8",
     "claude-opus-4-8-thinking":       "Claude Opus 4.8",
+    "claude-fable-5":                 "Claude Fable 5",
+    "claude-fable-5-thinking":        "Claude Fable 5",
+    "claude-mythos-5":                None,  # restricted-access sibling, not on public arena
 
     # Google DeepMind
     "gemini-1.0-pro":                 "Gemini 1.0 Pro",
@@ -98,19 +104,29 @@ SLUG_MAP = {
     # Baidu — not tracked
     "ernie-5.1":                      None,
     "ernie-5.1-preview":              None,
+    "ernie-5.0-preview-1203":         None,
 
     # Moonshot — not tracked in elo history
     "kimi-k2.6":                      None,
+    "kimi-k2.5-thinking":             None,
 
     # Xiaomi — not tracked in elo history
     "mimo-v2.5-pro":                  None,
+    "mimo-v2-pro":                    None,
 
     # Alibaba preview — not tracked
     "qwen3.5-max-preview":            None,
+    "qwen3.6-max-preview":            None,
     "qwen3.7-max-preview":            None,
 
     # Google — Gemini 3.5 Flash not tracked yet
     "gemini-3.5-flash":               None,
+
+    # Bytedance — not tracked
+    "dola-seed-2.0-pro":              None,
+
+    # MiniMax — not tracked
+    "minimax-m3":                     None,
 }
 
 # Patterns that match arena slugs not in the exact map above.

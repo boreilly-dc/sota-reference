@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-31 |
-| Last Updated | 2026-05-31 |
-| Version | 1.0 |
+| Last Updated | 2026-06-16 |
+| Version | 1.1 |
 
 ---
 
@@ -26,17 +26,17 @@
 
 ## Executive Summary
 
-As of May 2026, the gap between open and closed models for coding agents has narrowed dramatically on some benchmarks while remaining substantial on others. The picture depends heavily on which benchmark you trust:
+As of June 2026, the gap between open and closed models for coding agents has narrowed dramatically on some benchmarks while remaining substantial on others. The picture depends heavily on which benchmark you trust:
 
-- **LiveCodeBench** (algorithmic coding): open models are within 1–3 points of closed (DeepSeek V4 Pro at 87.5% vs Gemini 3.1 Pro at 88.5%).
-- **SWE-bench Verified** (repository-level bug fixes): open models reach 71–80% vs closed at 79–89%, but this benchmark has known contamination issues.
-- **SWE-bench Pro** (contamination-resistant): the gap widens — Claude Opus 4.7 at 64.3% vs Qwen3.7 Max at 60.6%.
-- **Aider Polyglot** (multi-language editing): a 14-point gap persists — GPT-5 at 88.0% vs DeepSeek-V3.2-Exp Reasoner at 74.2%.
-- **Terminal-Bench 2.0** (hard real-world tasks): the gap is enormous — closed agents at 60–90% vs open at 25–40%.
+- **LiveCodeBench** (algorithmic coding): open models are within 2–3 points of the closed ceiling (DeepSeek V4 Pro at 87.5% vs Claude Fable 5 at 89.8% on the Vals.ai standardised harness).
+- **SWE-bench Verified** (repository-level bug fixes): open models reach 72–81% vs closed at 79–95%. **OpenAI retired this benchmark in February 2026** citing ~59% flawed tests; treat all Verified numbers as inflated and increasingly deprecated.
+- **SWE-bench Pro** (contamination-resistant): now the headline benchmark, but split into two regimes. **Vendor-reported**: Claude Fable 5 at 80.3% vs the best open model (MiniMax M3) at 59.0%. **Scale SEAL standardised** (much harsher): GPT-5.4 at 59.1% vs the only open entrant, Qwen3-Coder-480B, at 38.7%. The two regimes differ by 15–30 points for the same model.
+- **Aider Polyglot** (multi-language editing): a ~14-point gap persists — GPT-5 at 88.0% vs DeepSeek-V3.2-Exp Reasoner at 74.2% — **but this leaderboard is now stale** (not updated with mid-2026 models).
+- **Terminal-Bench 2.0** (hard real-world tasks): the gap remains large — closed agents at 75–85% vs open at 24–52% (best open: GLM-5 at 52.4% via Terminus 2).
 
-The best large open models (DeepSeek V4 Pro Max, Kimi K2.6, GLM-5) now rival Claude Opus 4.5/4.6 on SWE-bench Verified while costing 20–35× less. For consumer hardware, Qwen 3.6-27B (16.8 GB at Q4_K_M) and Qwen 3.6-35B-A3B (MoE, 101 tok/s on RTX 3090) represent a breakthrough — claiming 73–77% SWE-bench scores from a single GPU.
+The best large open models (DeepSeek V4 Pro, Kimi K2.6, MiniMax M3, GLM-5/5.1) now rival Claude Opus 4.5/4.6 on SWE-bench Verified while costing 20–60× less. June 2026 brought a wave of new open releases: **MiniMax M3** (1 Jun — 59.0% SWE-bench Pro vendor, beating GPT-5.5; 1M context, multimodal), **NVIDIA Nemotron 3 Ultra** (4 Jun — the first competitive *Western* open coding model, 71.9% Verified, free on OpenRouter), and **GLM-5.2** (13 Jun — 1M context, weights release pending). On the closed side, **Claude Fable 5** (9 Jun) reset the ceiling to 95.0% Verified / 80.3% SWE-bench Pro. For consumer hardware, Qwen 3.6-27B (≈18.9 GB at Q4_K_M) and Qwen 3.6-35B-A3B (MoE, 101 tok/s on RTX 3090) remain the standout single-GPU picks, claiming 73–77% SWE-bench Verified — though these scores are still vendor-reported and not independently reproduced.
 
-However, on the hardest agentic benchmarks (Terminal-Bench 2.0, SWE-bench Pro) and in real-world multi-step coding chains, closed models maintain a significant lead. The agent scaffold matters as much as the model: the same model can vary by 20+ percentage points depending on the framework used.
+However, on the hardest agentic benchmarks (Terminal-Bench 2.0, Scale SEAL SWE-bench Pro) and in real-world multi-step coding chains, closed models maintain a significant lead. The agent scaffold matters as much as the model: the same model can vary by 15–20+ percentage points depending on the framework used.
 
 ## Benchmark Landscape in 2026
 
@@ -44,29 +44,42 @@ However, on the hardest agentic benchmarks (Terminal-Bench 2.0, SWE-bench Pro) a
 
 | Benchmark | What It Tests | Contamination Risk | Gap Indicator |
 |-----------|--------------|-------------------|---------------|
-| **SWE-bench Verified** | Fix real GitHub issues (500 instances) | High (known contamination) | Narrow (8 pp) |
-| **SWE-bench Pro** | Same tasks, contamination-resistant | Low | Medium (4–15 pp) |
-| **LiveCodeBench** | Fresh competitive-programming problems | Low (rolling updates) | Minimal (1–3 pp) |
-| **Aider Polyglot** | Multi-language code editing (225 exercises) | Low | Significant (14 pp) |
-| **Terminal-Bench 2.0** | Complex real-world terminal tasks (89 tasks) | Very low | Massive (40–50 pp) |
+| **SWE-bench Verified** | Fix real GitHub issues (500 instances) | High — **retired by OpenAI (Feb 2026)** | Narrow but unreliable |
+| **SWE-bench Pro** | Decontaminated repo tasks | Low | Medium (two regimes — see below) |
+| **LiveCodeBench** | Fresh competitive-programming problems | Low (rolling updates) | Minimal (2–3 pp) |
+| **Aider Polyglot** | Multi-language code editing (225 exercises) | Low | Significant (14 pp), **but stale** |
+| **Terminal-Bench 2.0** | Complex real-world terminal tasks (89 tasks) | Very low | Large (25–60 pp), harness-dependent |
 | **BigCodeBench Hard** | Complex function-level coding | Low | Stale (not updated for 2026 models) |
 
-SWE-bench Verified scores are the most widely reported but also the most inflated. Vendor-reported numbers are typically 5–7 points higher than standardised evaluations (e.g., Vals.ai). SWE-bench Pro and Terminal-Bench 2.0 are more reliable indicators of genuine agentic capability.
+**SWE-bench Verified is now effectively deprecated.** OpenAI withdrew it in February 2026 after analysis found roughly 59% of its tests were flawed (under-specified, broken, or solvable by trivial means). Vendor-reported Verified numbers are typically 5–7 points higher than standardised evaluations (e.g., Vals.ai) and are increasingly omitted from serious comparisons.
+
+**SWE-bench Pro now has two distinct score regimes that must not be conflated:**
+
+1. **Vendor-reported** — each lab uses its own agent scaffold. Generous: e.g. Claude Fable 5 at 80.3%, MiniMax M3 at 59.0%.
+2. **Scale SEAL standardised** — a fixed, decontaminated scaffold applied uniformly. Far harsher: the top score is GPT-5.4 at 59.1%, and the *only* open model with a public SEAL entry is Qwen3-Coder-480B at 38.7%. SEAL's commercial (private-code) split drops scores another ~10 points.
+
+Vendor and SEAL numbers for the same model can differ by 15–30 points. **Aider Polyglot has not been refreshed** with mid-2026 models (no GPT-5.2+, Claude Fable 5, DeepSeek V4, or MiniMax M3), so its rankings are now lagging. SWE-bench Pro (SEAL) and Terminal-Bench 2.0 remain the most reliable indicators of genuine agentic capability.
 
 ## Frontier Closed Models: The Ceiling
 
 These represent the performance ceiling that open models are measured against.
 
-| Model | SWE-bench Verified | SWE-bench Pro | LiveCodeBench | Aider Polyglot | Terminal-Bench 2.0 |
-|-------|-------------------|---------------|---------------|----------------|-------------------|
-| GPT-5.5 | 88.7% | — | 85.3% | 88.0% (high) | 82.2% (Codex CLI) |
-| Claude Opus 4.7 | 87.6% | 64.3% | 87.8% | 72.0% (32k think) | 90.2% (vix agent) |
-| Gemini 3.1 Pro | 80.6% | 54.2% | 88.5% | 83.1% (06-05) | 80.2% (TongAgents) |
-| Claude Opus 4.6 | 80.8% | 51.9% | — | — | 79.8% (ForgeCode) |
-| GPT-5.3 Codex | 85.0% | 56.8% | 87.3% | — | — |
-| Claude Sonnet 4.6 | 79.6% | — | — | 61.3% (32k think) | — |
+Scores are vendor-reported SWE-bench Pro unless noted. SWE-bench Verified is shown for continuity but is deprecated.
 
-**Vals.ai standardised harness** (fair cross-model comparison using mini-SWE-agent): GPT-5.5: 82.6%, Claude Opus 4.7: 82.0%, Gemini 3.1 Pro: 78.8%. These are ~5–7 points below vendor-reported maxes.
+| Model | Released | SWE-bench Verified | SWE-bench Pro (vendor) | LiveCodeBench | Terminal-Bench 2.0 (best harness) |
+|-------|----------|-------------------|------------------------|---------------|-------------------|
+| **Claude Fable 5** | 9 Jun 2026 | 95.0% | 80.3% | 89.8% | — |
+| Claude Mythos (preview) | Jun 2026 | 93.9% | 77.8% | — | — |
+| Claude Opus 4.8 | 27 May 2026 | 88.6% | 69.2% | 87.8% | — |
+| Claude Opus 4.7 | 16 Apr 2026 | 87.6% | 64.3% | 85.1% | 80.2% (WOZCODE) |
+| GPT-5.5 | 23 Apr 2026 | 88.7% / 82.6%† | 58.6% | 85.3% | 84.7% (NexAU-AHE) |
+| GPT-5.3 Codex | — | 85.0% | 56.8% | 87.3% | 78.4% (SageAgent) |
+| Gemini 3.1 Pro | 19 Feb 2026 | 80.6% / 78.8%† | 54.2% | 88.5% | 80.2% (TongAgents) |
+| Claude Opus 4.6 | — | 80.8% | 51.9% | — | 76.4% (Meta-Harness) |
+
+†Second figure is the Vals.ai standardised harness (mini-SWE-agent), ~5–7 points below vendor-reported maxes.
+
+**Vals.ai standardised harness** (fair cross-model comparison): GPT-5.5 82.6%, Claude Opus 4.7 82.0%, Gemini 3.1 Pro 78.8%. **Claude Fable 5** (9 Jun) is the new frontier ceiling on most coding metrics; the contemporaneous "Mythos" preview is a research-tier model not generally available.
 
 ## Large Open Models (Cloud/Multi-GPU)
 
@@ -74,15 +87,28 @@ These models require multi-GPU setups or cloud API access but approach frontier 
 
 ### Tier 1: Frontier-Competitive (>75% SWE-bench Verified)
 
-| Model | Params (Total/Active) | Architecture | SWE-bench Verified | LiveCodeBench | Aider Polyglot | Licence | API Cost (input/output per M tokens) |
-|-------|----------------------|--------------|-------------------|---------------|----------------|---------|--------------------------------------|
-| **DeepSeek V4 Pro Max** | 1.6T / 49B | MoE | 80.6% | 93.5 | — | MIT | $0.44 / $0.87 |
-| **Kimi K2.6** (Moonshot) | >1T / — | — | 80.2% | 86.8 | — | Open-weight | — |
-| **MiniMax M2.5** | — | — | 80.2% | — | — | Open-weight | Free tier available |
-| **MiMo-V2-Pro** (Xiaomi) | 1T / — | — | 78.0% | — | — | Open-weight | — |
-| **GLM-5** (Zhipu AI) | 744B / — | — | 77.8% | — | — | MIT | — |
-| **Kimi K2.5** (Moonshot) | >1T / — | — | 76.8% | 85.0 | — | Open-weight | — |
-| **Qwen3.6 Plus** (Alibaba) | — | — | ~78.8% | 86.0 | — | Apache 2.0 | — |
+SWE-bench Pro figures here are **vendor-reported** (each lab's own scaffold) — directly comparable to the closed-model vendor column above, but 15–30 points above Scale SEAL standardised numbers. LiveCodeBench is the Vals.ai standardised score where available.
+
+| Model | Released | Params (Total/Active) | Arch | SWE-bench Verified | SWE-bench Pro (vendor) | LiveCodeBench | Licence | API $/M (in / out) |
+|-------|----------|----------------------|------|-------------------|------------------------|---------------|---------|--------------------|
+| **DeepSeek V4 Pro** | 24 Apr | 1.6T / 49B | MoE | 80.6% | 55.4% | 87.5 | MIT | $0.44 / $0.87 |
+| **MiniMax M3** | 1 Jun | undisclosed | MoE (MSA) | 80.5% | **59.0%** | 82.2 | Open-weight‡ | $0.60 / $2.40 |
+| **Kimi K2.6** (Moonshot) | 20 Apr | 1T / 32B | MoE | 80.2% | 58.6% | 86.8 | Modified MIT | — / $4.00 |
+| **GLM-5.1** (Z.ai/Zhipu) | 1 Apr | 754B / 40B | MoE | ~78% | 58.4% | 81.4 | MIT | — / $3.20 |
+| **MiMo V2.5 Pro** (Xiaomi) | 27 Apr | 1.0T / 42B | MoE | 78.0% | 57.2% | — | MIT | — / $0.87 |
+| **GLM-5** (Z.ai/Zhipu) | 11 Feb | 744B / 40B | MoE | 77.8% | — | 81.9 | MIT | — / $3.20 |
+| **Kimi K2.5** (Moonshot) | — | 1T / 32B | MoE | 76.8% | — | 83.9 | Modified MIT | — / $2.00 |
+| **DeepSeek V4 Flash** | 24 Apr | 284B / 13B | MoE | 79.0% | 52.6% | — | MIT | $0.14 / $0.28 |
+| **Nemotron 3 Ultra** (NVIDIA) | 4 Jun | 550B / 55B | MoE | 71.9% | — | 86.0 | OpenMDW-1.1 | Free (OpenRouter) |
+
+‡ MiniMax M3 was announced open-weight with the weights release promised within ~10 days of the 1 Jun launch; confirm availability before relying on self-hosting.
+
+**Newest entrants (June 2026):**
+
+- **MiniMax M3** (1 Jun) is the standout: its **vendor-reported 59.0% on SWE-bench Pro edges out GPT-5.5 (58.6%)**, with a 1M-token context via MiniMax Sparse Attention (MSA), native multimodal input, and ~15.6× faster decoding than M2 at 1M context — at $0.60/$2.40 per M tokens.
+- **NVIDIA Nemotron 3 Ultra** (4 Jun) is the first genuinely competitive **Western** open coding model in this tier (550B/55B MoE, 71.9% Verified, 86.0 LiveCodeBench), and is free to use on OpenRouter. It partially breaks the Chinese-lab monopoly noted under Limitations.
+- **GLM-5.2** (13 Jun) extends the GLM-5 line to a 1M-token context (up from 200K) with a coding-first focus and works inside Claude Code with a config change. Weights were slated for release the week of 13 Jun; **no independent benchmarks were available at the time of writing**, so it is not yet scored here.
+- **DeepSeek V4 Flash** (284B/13B) delivers near-frontier coding at the cheapest frontier-class price on the market ($0.28/M output). Note that "**DeepSeek V4 Pro Max**" is not a separate model — it refers to V4 Pro running in *Think Max* reasoning mode.
 
 ### Tier 2: Strong (60–75% SWE-bench Verified)
 
@@ -122,18 +148,18 @@ These models run on a single consumer GPU (RTX 3090/4090/5090) or Apple Silicon 
 
 ### Top Picks by VRAM Budget
 
-| Model | Type | VRAM (Q4_K_M) | SWE-bench | HumanEval | Speed (RTX 4090) | Best For |
-|-------|------|--------------|-----------|-----------|-------------------|----------|
-| **Qwen 3.6-27B** | Dense | 16.8 GB | 77.2%† | 92.1% | ~35 tok/s | Best all-round coding |
-| **Qwen 3.6-35B-A3B** | MoE (3B active) | 22 GB (Q4) / 17 GB (Q3) | 73.4%† | — | ~85–101 tok/s | Speed + quality balance |
-| **Qwen3-Coder-Next** | MoE (80B/3B active) | ~24 GB (Q4) | 70.6% | ~94% | ~18–22 tok/s | Agentic coding |
-| **Devstral Small 2** (Mistral) | Dense 24B | 14 GB | 56.4%–68.0% | 90.1% | ~40 tok/s | Multi-file refactoring |
+| Model | Type | VRAM (Q4_K_M) | SWE-bench Verified | HumanEval | Speed (RTX 4090) | Best For |
+|-------|------|--------------|-------------------|-----------|-------------------|----------|
+| **Qwen 3.6-27B** | Dense | ~18.9 GB (Q6_K ≈22.5 GB) | 77.2%† | 92.1% | ~35 tok/s (≈78 with DFlash on 3090) | Best all-round coding |
+| **Qwen 3.6-35B-A3B** | MoE (3B active) | 22.1 GB (Q4) / 16.6 GB (Q3) | 73.4%† | — | ~85–101 tok/s (RTX 3090) | Speed + quality balance |
+| **Devstral Small 2** (Mistral) | Dense 24B | 14.5 GB | 68.0% | 90.1% | ~40 tok/s | Agentic multi-file refactoring |
+| **GLM-4.7** (Zhipu) | Dense 9B | ~6 GB | not reported | 94.2% | ~90 tok/s | Punches far above its size on code-gen |
 | **Qwen 3 Coder 30B-A3B** | MoE (3B active) | 17 GB | 60.4% (EntroPO) | ~90% | ~85 tok/s | Fast agentic loops |
 | **DeepSeek R1 Distill 14B** | Dense 14B | 8 GB | ~18% | ~80% | ~60 tok/s | Reasoning/debugging (8GB cards) |
 | **Codestral 25.12** (Mistral) | Dense 22B | 16 GB | ~42% | 89.7% | — | Inline completion/autocomplete |
-| **Gemma 4 26B-A4B** (Google) | MoE (3.8B active) | 14 GB | ~38.6% | 84.9% | ~600 tok/s (vLLM) | Maximum speed |
+| **Gemma 4 26B-A4B** (Google) | MoE (3.8B active) | ~15–17 GB | ~38.6% | 84.9% | ~149 tok/s (up to 600 with vLLM batching) | Maximum speed |
 
-†Qwen 3.6-27B's 77.2% SWE-bench claim is vendor-reported and not yet independently verified on the official SWE-bench leaderboard. Treat as an upper bound.
+†**Verification status (June 2026):** Qwen 3.6-27B's 77.2% and 3.6-35B-A3B's 73.4% SWE-bench Verified scores remain **vendor-reported** using Qwen's own agent scaffold. Multiple independent reviewers report the numbers "line up directionally," but no full third-party SWE-bench reproduction outside Qwen's scaffold has been published, and real-world users note tool-use drift in long agent loops (repeating failed actions). Treat as an upper bound. A purported **"Qwen3-Coder-Next" (80B/3B active, ~70.6% SWE-bench)** appears in some aggregator tables and an arXiv preprint, but two of three independent searches could not confirm it as a released, consumer-deployable model — it has been removed from this table pending confirmation (see Areas of Uncertainty).
 
 ### Inference Speed by Hardware
 
@@ -153,59 +179,107 @@ GLM-4.7 with only 9B parameters achieves 84.9 on LiveCodeBench and 94.2% on Huma
 
 ## Head-to-Head Comparison Tables
 
-### SWE-bench Verified (Official Leaderboard, May 2026)
+### LiveCodeBench (Vals.ai Standardised, June 2026)
 
-| Rank | Model | Score | Type |
-|------|-------|-------|------|
-| 1 | Sonar Foundation + Claude 4.5 Opus | 79.2% | Closed |
-| 2 | TRAE + Doubao-Seed-Code | 78.8% | Closed |
-| 3 | Live-SWE-agent + Gemini 3 Pro | 77.4% | Closed |
-| 6 | Lingxi v1.5 × Kimi K2 | 71.2% | **Open** |
-| 7 | GLM-5 | 69.7% | **Open** |
-| 8 | OpenHands + Qwen3-Coder-480B | 69.6% | **Open** |
-| 9 | Minimax 2.5 | 68.3% | **Open** |
-| 13 | Qwen3-Coder-30B-A3B (EntroPO) | 60.4% | **Open** |
-| 18 | Devstral Small (24B) | 56.4% | **Open** |
+The open–closed gap on pure algorithmic coding is now negligible — open models sit within ~2 points of the closed ceiling.
 
-### Aider Polyglot Leaderboard (May 2026)
+| Model | Score | Type |
+|-------|-------|------|
+| Claude Fable 5 | 89.78% | Closed |
+| Gemini 3.1 Pro Preview | 88.48% | Closed |
+| GPT-5.2 Codex | 87.99% | Closed |
+| Claude Opus 4.8 | 87.82% | Closed |
+| Gemini 3.5 Flash | 87.60% | Closed |
+| **DeepSeek V4 Pro** | **87.48%** | **Open** |
+| GPT-5.3 Codex | 87.31% | Closed |
+| **Qwen3.7 Max** | **87.06%** | Closed (proprietary) |
+| **Kimi K2.6** | **86.77%** | **Open** |
+| **Nemotron 3 Ultra** | **85.98%** | **Open** |
+| **Qwen3.6 Plus** | **85.95%** | **Open** |
+| **GLM-4.7** | **82.23%** | **Open** |
+| **MiniMax M3** | **82.15%** | **Open** |
+| **GLM-5 / 5.1** | **81.4–81.9%** | **Open** |
+
+### SWE-bench Pro — Vendor-Reported (June 2026)
+
+Each lab's own scaffold. Comparable across vendors but inflated relative to Scale SEAL.
+
+| Model | Score | Type |
+|-------|-------|------|
+| Claude Fable 5 | 80.3% | Closed |
+| Claude Mythos (preview) | 77.8% | Closed |
+| Claude Opus 4.8 | 69.2% | Closed |
+| Claude Opus 4.7 | 64.3% | Closed |
+| Qwen3.7 Max | 60.6% | Closed (proprietary) |
+| **MiniMax M3** | **59.0%** | **Open** |
+| GPT-5.5 / **Kimi K2.6** | **58.6%** | Closed / **Open** |
+| **GLM-5.1** | **58.4%** | **Open** |
+| **MiMo V2.5 Pro** | **57.2%** | **Open** |
+| **MiniMax M2.7** | **56.2%** | **Open** |
+| **DeepSeek V4 Pro** | **55.4%** | **Open** |
+| Gemini 3.1 Pro | 54.2% | Closed |
+| **DeepSeek V4 Flash** | **52.6%** | **Open** |
+
+### SWE-bench Pro — Scale SEAL Standardised (June 2026)
+
+A fixed, decontaminated scaffold applied uniformly. Far harsher; **only one open model has a public entry.**
+
+| Model | Score | Type |
+|-------|-------|------|
+| GPT-5.4 (xHigh) | 59.1% | Closed |
+| Claude Opus 4.6 (thinking) | 51.9% | Closed |
+| Gemini 3.1 Pro (thinking) | 46.1% | Closed |
+| Claude Opus 4.5 | 45.9% | Closed |
+| GPT-5 (High) | 41.8% | Closed |
+| GPT-5.2 Codex | 41.0% | Closed |
+| **Qwen3-Coder-480B** | **38.7%** | **Open** |
+
+### Terminal-Bench 2.0 (Official Leaderboard, June 2026)
+
+Harness-dependent; the best harness per model is shown. The open–closed gap is the largest of any benchmark here.
+
+| Model (harness) | Score | Type |
+|-----------------|-------|------|
+| GPT-5.5 (NexAU-AHE) | 84.7% | Closed |
+| GPT-5.5 (Codex CLI) | 82.2% | Closed |
+| Claude Opus 4.7 (WOZCODE) | 80.2% | Closed |
+| Gemini 3.1 Pro (TongAgents) | 80.2% | Closed |
+| **GLM-5 (Terminus 2)** | **52.4%** | **Open** |
+| **MiniMax M2.7 (IndusAGI)** | **45.1%** | **Open** |
+| **Kimi K2.5 (Terminus 2)** | **43.2%** | **Open** |
+| **DeepSeek V3.2 (Terminus 2)** | **39.6%** | **Open** |
+| **Qwen3-Coder-480B (Terminus 2)** | **23.9%** | **Open** |
+
+Note: MiniMax M3 (66.0% on Terminal-Bench 2.1), Kimi K2.6 (66.7%) and Qwen 3.7 Plus (70.3%) report much higher *vendor* Terminal-Bench figures than the official-harness open scores above — another illustration of the 15–25-point scaffold gap.
+
+### Aider Polyglot Leaderboard (stale — last refreshed early 2026)
+
+This leaderboard has **not** been updated with mid-2026 models (no GPT-5.2+, Claude Fable 5, DeepSeek V4, MiniMax M3, or Qwen 3.6/3.7). Retained for historical reference only.
 
 | Rank | Model | Score | Type |
 |------|-------|-------|------|
 | 1 | GPT-5 (high) | 88.0% | Closed |
-| 2 | GPT-5 (medium) | 86.7% | Closed |
 | 4 | Gemini 2.5 Pro (32k think) | 83.1% | Closed |
-| 12 | **DeepSeek-V3.2-Exp Reasoner** | **74.2%** | **Open** |
-| 16 | **DeepSeek R1 (0528)** | **71.4%** | **Open** |
-| 18 | **DeepSeek-V3.2-Exp Chat** | **70.2%** | **Open** |
-| 14 | Claude Opus 4 (32k thinking) | 72.0% | Closed |
-| 25 | **Qwen3 235B** | **59.6%** | **Open** |
-| 30 | **DeepSeek V3 (0324)** | **55.1%** | **Open** |
-| 44 | **Qwen3 32B** | **40.0%** | **Open** |
-| 61 | **Llama 4 Maverick** | **15.6%** | **Open** |
-
-### LiveCodeBench (Vals.ai Standardised, May 2026)
-
-| Model | Score | Type |
-|-------|-------|------|
-| Gemini 3.1 Pro Preview | 88.49% | Closed |
-| GPT 5.2 Codex | 87.99% | Closed |
-| Claude Opus 4.8 | 87.82% | Closed |
-| **DeepSeek V4 Pro** | **87.48%** | **Open** |
-| GPT 5.3 Codex | 87.31% | Closed |
-| **Kimi K2.6** | **86.77%** | **Open** |
-| **Qwen3.6 Plus** | **85.95%** | **Open** |
+| — | **DeepSeek-V3.2-Exp Reasoner** | **74.2%** | **Open** |
+| — | Claude Opus 4 (32k thinking) | 72.0% | Closed |
+| — | **DeepSeek R1 (0528)** | **71.4%** | **Open** |
+| — | **DeepSeek-V3.2-Exp Chat** | **70.2%** | **Open** |
+| — | **Qwen3 235B** | **59.6%** | **Open** |
+| — | **Llama 4 Maverick** | **15.6%** | **Open** |
 
 ## The Open–Closed Gap: Benchmark by Benchmark
 
 | Benchmark | Best Closed | Best Open | Gap | Trend |
 |-----------|------------|-----------|-----|-------|
 | HumanEval | ~95% | ~95% | **0 pp** | Saturated |
-| LiveCodeBench | 88.5% | 87.5% | **1 pp** | Effectively closed |
-| SWE-bench Verified (vendor) | 88.7% | 80.6% | **8 pp** | Narrowing fast |
-| SWE-bench Verified (standardised) | 82.6% | — | — | Open models not yet tested on Vals.ai |
-| SWE-bench Pro | 64.3% | 60.6% | **4 pp** | Surprisingly close at top |
-| Aider Polyglot | 88.0% | 74.2% | **14 pp** | Persistent |
-| Terminal-Bench 2.0 | 90.2% | 39.6% | **50 pp** | Massive gap persists |
+| LiveCodeBench (Vals.ai) | 89.8% (Fable 5) | 87.5% (DeepSeek V4 Pro) | **2 pp** | Effectively closed |
+| SWE-bench Verified (vendor) | 95.0% (Fable 5) | 80.6% (DeepSeek V4 Pro) | **14 pp** | Benchmark deprecated; gap widened by Fable 5 |
+| SWE-bench Pro (vendor) | 80.3% (Fable 5) | 59.0% (MiniMax M3) | **21 pp** | Open caught GPT-5.5 but not Claude |
+| SWE-bench Pro (Scale SEAL) | 59.1% (GPT-5.4) | 38.7% (Qwen3-Coder-480B) | **20 pp** | Few open submissions; gap real |
+| Aider Polyglot (stale) | 88.0% | 74.2% | **14 pp** | Leaderboard no longer updated |
+| Terminal-Bench 2.0 | 84.7% (GPT-5.5) | 52.4% (GLM-5) | **32 pp** | Large gap persists |
+
+The headline shift since May is that **Claude Fable 5 (9 Jun) pushed the closed ceiling well above the open frontier on the curated benchmarks** (SWE-bench Verified/Pro vendor), even as open models converged with GPT-5.5 and Gemini 3.1 Pro. On standardised harnesses (LiveCodeBench Vals.ai, SWE-bench Pro SEAL) the picture is more sober: open models match closed on algorithmic coding but trail by ~20 points on decontaminated repository tasks, and by ~30 on hard terminal tasks.
 
 **Key insight**: The gap depends on task difficulty. On pure code generation (LiveCodeBench), open models have essentially caught up. On multi-step agentic tasks requiring planning, tool use, and error recovery (Terminal-Bench 2.0), closed models maintain a commanding lead. SWE-bench Verified is somewhere in between but is likely inflated for all models due to contamination.
 
@@ -215,14 +289,15 @@ Several open models are now specifically trained for agentic coding rather than 
 
 ### Purpose-Built Agentic Models
 
-| Model | Approach | SWE-bench | Designed For |
-|-------|----------|-----------|-------------|
-| **Qwen3-Coder-Next** (80B/3B active) | Agentically trained on executable task synthesis + RL | 70.6% | Cline, Claude Code, Qwen Code |
-| **Devstral** family (Mistral) | Fine-tuned from Mistral-Small for code agent tasks | 53.6–72.2% | Mistral Vibe CLI, general agents |
-| **OpenHands LM 32B** | RL fine-tuned (SWE-Gym) on successful agent trajectories | 37.2% | OpenHands/SWE-agent |
-| **Skywork-SWE-32B** | RL-trained specifically for SWE-bench | 38–47% | SWE-agent workflows |
+| Model | Approach | SWE-bench Verified | Designed For |
+|-------|----------|-------------------|-------------|
+| **Devstral 2 / Small 2** (Mistral) | Fine-tuned from Mistral for code-agent tasks | 68.0% (Small 2) – 72.2% (Devstral 2) | Mistral Vibe CLI, OpenHands, general agents |
+| **MiniMax M3** | MoE (MSA), agentically trained, 1M context | 80.5% (59.0% Pro vendor) | OpenHands, Cline, computer use |
+| **DeepSeek V4 Pro / Flash** | MoE, improved tool-call reliability over V3 | 80.6% / 79.0% | Cloud-scale agentic coding |
+| **OpenHands LM 32B** | RL fine-tuned (SWE-Gym) on agent trajectories | 37.2% | OpenHands/SWE-agent (now superseded) |
+| **Skywork-SWE-32B** | RL-trained specifically for SWE-bench | 38–47% | SWE-agent workflows (now superseded) |
 
-Qwen3-Coder-Next is notable for achieving 70.6% on SWE-bench Verified with only 3B active parameters — it is explicitly designed for local agentic coding and supports integration with major agent platforms.
+The older 32B agentic fine-tunes (OpenHands LM, Skywork-SWE) — both based on Qwen2.5-Coder — are now effectively obsolete: Qwen 3.6-27B reaches 77.2% Verified on a single GPU, far exceeding them. A purported **"Qwen3-Coder-Next" (80B/3B active, ~70.6%)** was previously listed here but could not be confirmed as a released model (see Areas of Uncertainty). `mini-SWE-agent` notably reaches ~74% SWE-bench Verified in ~100 lines of Python, underscoring how much the scaffold matters.
 
 ### Key Differences from Code Completion Models
 
@@ -254,39 +329,54 @@ The gap between "code completion" and "agentic coding" performance is large. Mod
 - **NVIDIA GPU (single card)**: AWQ for batch/server use (vLLM), GGUF Q4_K_M for single-user (llama.cpp/Ollama).
 - **NVIDIA GPU (speed priority)**: EXL2 via ExLlamaV2 or TabbyAPI for single-user inference.
 
-### Speculative Decoding
+### Speculative Decoding and Quant Tooling (updated June 2026)
 
-Block-diffusion (DFlash) provides a measured 2.56× speedup on Qwen 3.6-27B Q4_K_M on RTX 3090. llama.cpp added Multi-Token Prediction (MTP) support for Qwen 3.6 in May 2026, enabling native speculative decoding without a draft model.
+- **Block-diffusion (DFlash)** gives a measured ~2.0–2.56× mean speedup on Qwen 3.6-27B Q4_K_M on a single RTX 3090 — 78 tok/s on HumanEval-style tasks (2.24×), ~70 tok/s on Math500. The fully-trained Qwen 3.5 DFlash draft reaches 3.43× on HumanEval, roughly the ceiling once 3.6 training lands. NVIDIA-only (no Mac/AMD).
+- **Multi-Token Prediction (MTP)** for Qwen 3.6 landed in **mainline llama.cpp (PR #22673, 4 May 2026)**, enabling native speculative decoding without a separate draft model. Three competing backends now exist: ik_llama (MTP), BeeLlama (DFlash), and mainline llama.cpp.
+- **Unsloth Dynamic quants** (UD-Q4_K_M, UD-Q4_K_XL) are now recommended over plain Q4_K_M for coding *agents* — they preserve tool-call formatting and instruction-following noticeably better at the same bit-width.
+- **TurboQuant 3-bit KV-cache compression** (ICLR 2026) lets Gemma 4 26B-A4B run its full 262K context on a 24 GB RTX 4090 (≈22.3 GB, ~129 tok/s).
+- **Caveat:** CUDA 13.2 produces gibberish with low-bit Qwen 3.6 quants — use CUDA 13.1 or 13.3.
 
 ## Agent Frameworks for Open Models
 
 No major framework is exclusively optimised for open models — all are model-agnostic. The best options:
 
+GitHub star counts verified via the GitHub API on 16 Jun 2026.
+
 | Framework | Stars | Open-Model Support | Best Open Model Pairing |
 |-----------|-------|-------------------|------------------------|
-| **OpenHands** | 60K+ | Excellent (model-agnostic) | Qwen3-Coder-480B (69.6%) |
-| **Aider** | 35K+ | Excellent (any OpenAI-compatible API) | DeepSeek-V3.2-Exp (74.2%) |
-| **SWE-agent** | — | Good (research-focused) | DeepSeek V3.2 (59%) |
-| **Live-SWE-agent** | — | Scaffold-first approach | Any (79.2% with Claude 4.5) |
-| **Cline** | — | Explicitly supported by Qwen3-Coder | Qwen3-Coder-Next (70.6%) |
+| **OpenHands** | ~77.2K | Excellent (model-agnostic, sandboxed) | DeepSeek V4 Pro / MiniMax M3 |
+| **Cline** | ~63.3K | Excellent (IDE/CLI, local models) | Qwen 3.6-27B (local) |
+| **Aider** | ~46.3K | Excellent (any OpenAI-compatible API) | DeepSeek-V3.2-Exp (74.2%) |
+| **Roo Code** | ~24.2K (**repo archived**) | Good (VS Code, multi-mode) | Devstral Small 2 |
+| **SWE-agent** | ~19.5K | Good (research-focused; `mini-SWE-agent` ~74% in 100 LOC) | DeepSeek V3.2 |
 
-The scaffold quality has become as important as model capability. Live-SWE-agent achieves 79.2% on SWE-bench Verified with Claude 4.5 — outperforming many other closed-model + scaffold combinations. Open-source scaffolds with closed models often outperform closed scaffolds + open models.
+The scaffold quality has become as important as model capability — the same model varies 15–25 points across harnesses on Terminal-Bench 2.0. `mini-SWE-agent` reaching ~74% SWE-bench Verified in ~100 lines of Python is the clearest demonstration: open-source scaffolds with the right model often outperform far more complex setups. Open-source scaffolds paired with closed models still top most leaderboards. (Note: Roo Code's GitHub repository is now archived; Cline, from which it forked, remains active.)
 
 ## Cost Analysis
 
-| Solution | SWE-bench Verified | Cost per 1M tokens (output) | Cost Ratio |
-|----------|-------------------|----------------------------|------------|
-| Claude Opus 4.7 (Anthropic API) | 87.6% | $75.00 | 1× (baseline) |
-| GPT-5.5 (OpenAI API) | 88.7% | ~$15.00 | 0.2× |
-| DeepSeek V4-Pro (official API) | 80.6% | $0.87 | **0.012×** |
-| DeepSeek V3.1 (official API) | 66% | $1.10 | 0.015× |
-| DeepSeek V3.1 (Together AI) | 66% | $1.70 | 0.023× |
-| Qwen 3.6-27B (local, RTX 4090) | 77.2%† | ~$0 (electricity only) | **~0×** |
-| Devstral Small 2 (local) | 56.4–68% | ~$0 | **~0×** |
+Cost ratios are against Claude Opus 4.8 output ($25/M) as baseline. Prices are list output $/M tokens, June 2026.
 
-†Vendor-reported, not independently verified.
+| Solution | SWE-bench (Verified / Pro vendor) | Input $/M | Output $/M | Cost Ratio (output) |
+|----------|-----------------------------------|-----------|------------|---------------------|
+| Claude Fable 5 (Anthropic API) | 95.0% / 80.3% | $10.00 | $50.00 | 2× |
+| Claude Opus 4.8 (Anthropic API) | 88.6% / 69.2% | $5.00 | $25.00 | 1× (baseline) |
+| Claude Opus 4.7 (Anthropic API) | 87.6% / 64.3% | $5.00 | $25.00 | 1× |
+| GPT-5.5 (OpenAI API) | 82.6%‡ / 58.6% | — | ~$30.00 | 1.2× |
+| Gemini 3.1 Pro (Google) | 78.8% / 54.2% | — | ~$12.00 | 0.48× |
+| **Kimi K2.6** (Moonshot) | 80.2% / 58.6% | — | $4.00 | **0.16×** |
+| **GLM-5.1** (Z.ai) | ~78% / 58.4% | — | $3.20 | **0.128×** |
+| **MiniMax M3** | 80.5% / 59.0% | $0.60 | $2.40 | **0.096×** |
+| **Qwen 3.6-Flash (35B-A3B)** | 73.4% / 49.5% | — | $0.90 | **0.036×** |
+| **DeepSeek V4 Pro** (official API) | 80.6% / 55.4% | $0.44 | $0.87 | **0.035×** |
+| **DeepSeek V4 Flash** (official API) | 79.0% / 52.6% | $0.14 | $0.28 | **0.011×** |
+| **Nemotron 3 Ultra** (OpenRouter) | 71.9% / — | free | free | **~0×** |
+| **Qwen 3.6-27B** (local, RTX 4090) | 77.2%† / 53.5% | — | ~$0 (electricity) | **~0×** |
+| **Devstral Small 2** (local) | 68.0% / — | — | ~$0 | **~0×** |
 
-DeepSeek V4 Pro delivers ~91% of Claude Opus 4.7's SWE-bench performance at ~1.2% of the cost. For organisations processing millions of tokens, this represents transformational savings.
+†Vendor-reported, not independently verified. ‡Vals.ai standardised (vendor max ~88.7%).
+
+DeepSeek V4 Pro delivers ~91% of Claude Opus 4.8's vendor SWE-bench-Pro performance at **3.5% of the output cost**, and MiniMax M3 actually **edges out GPT-5.5 on vendor SWE-bench Pro (59.0% vs 58.6%) at under a tenth of the price**. DeepSeek V4 Flash ($0.28/M) is the cheapest frontier-class option on the market, and NVIDIA Nemotron 3 Ultra is free on OpenRouter. For organisations processing millions of tokens, the open-model cost advantage is now 10–60×, with the best open models within ~1–2 points of GPT-5.5/Gemini 3.1 Pro on most metrics — though still well behind Claude Fable 5/Opus 4.8 on the curated benchmarks.
 
 ## Limitations of Open Models
 
@@ -304,34 +394,36 @@ Despite rapid progress, open models still trail closed models in several areas:
 
 6. **Structured harness dependency**: All models perform better in structured agent frameworks, but open models show a larger gap between "raw chat" and "properly scaffolded" performance.
 
-7. **Geographic concentration**: The leading open coding models are almost exclusively from Chinese labs (DeepSeek, Qwen/Alibaba, Kimi/Moonshot, GLM/Zhipu, MiniMax). Meta's Llama 4 Maverick scores poorly on coding benchmarks (15.6% Aider Polyglot). Mistral's Devstral is the main Western exception.
+7. **Geographic concentration (now slightly less extreme)**: The leading open coding models remain overwhelmingly from Chinese labs (DeepSeek, Qwen/Alibaba, Kimi/Moonshot, GLM/Zhipu, MiniMax, MiMo/Xiaomi). The notable June 2026 change is **NVIDIA Nemotron 3 Ultra** (4 Jun) — the first genuinely competitive *Western* open coding model (71.9% Verified, 86.0 LiveCodeBench), joining Mistral's Devstral as a Western exception. Meta's Llama 4 Maverick still scores poorly on coding (15.6% Aider Polyglot), and Llama 4 Behemoth remains unreleased.
 
 ## Recommendations
 
 ### For Production Agentic Coding (Maximum Quality)
-Use **closed models** (Claude Opus 4.7, GPT-5.5) when correctness matters and cost is secondary. The Terminal-Bench and SWE-bench Pro gaps are real.
+Use **closed models** — **Claude Fable 5** (9 Jun) is the new ceiling (95.0% Verified, 80.3% SWE-bench Pro), with Claude Opus 4.8 and GPT-5.5 close behind. Use these when correctness matters and cost is secondary. The Terminal-Bench and Scale SEAL SWE-bench Pro gaps remain real.
 
 ### For Cost-Sensitive Production
-Use **DeepSeek V4 Pro** via API — 80.6% SWE-bench at 1/86th the cost of Claude Opus. Pair with OpenHands or Aider for best results.
+Use **DeepSeek V4 Pro** via API — 80.6% Verified / 55.4% SWE-bench Pro at ~1/29th the output cost of Claude Opus 4.8 — or **MiniMax M3** if you want the strongest open SWE-bench Pro vendor score (59.0%, edging GPT-5.5) plus 1M context and multimodal. **DeepSeek V4 Flash** ($0.28/M) is the cheapest frontier-class option; **Nemotron 3 Ultra** is free on OpenRouter. Pair with OpenHands or Aider.
 
 ### For Local Development (24 GB GPU)
-**Qwen 3.6-27B** (Q4_K_M, 16.8 GB) is the clear leader if vendor benchmarks hold. **Qwen 3.6-35B-A3B** for speed-sensitive use (101 tok/s). **Devstral Small 2** (24B) as a well-verified alternative.
+**Qwen 3.6-27B** (Q6_K, ~22.5 GB) remains the leader if vendor benchmarks hold. **Qwen 3.6-35B-A3B** for speed-sensitive use (101 tok/s on RTX 3090). **Devstral Small 2** (24B, 68.0% Verified) as the best-verified agentic alternative. Use **Unsloth Dynamic quants** (UD-Q4_K_M) for better tool-call reliability, and enable DFlash/MTP speculative decoding for ~2× throughput.
 
 ### For Budget Hardware (8–16 GB GPU)
-**DeepSeek R1 Distill 14B** (8 GB Q4_K_M) for reasoning/debugging. **Gemma 4 26B-A4B** (14 GB) for maximum speed on light tasks.
+**Qwen 3.6-35B-A3B** at UD-Q3_K_M (16.6 GB) fits 16 GB cards at full speed. **GLM-4.7 (9B)** (~6 GB) punches far above its size on code generation (94.2% HumanEval). **DeepSeek R1 Distill 14B** (8 GB) for reasoning/debugging; **Gemma 4 26B-A4B** for maximum speed.
 
 ### For Agentic Coding Specifically
-**Qwen3-Coder-Next** (80B/3B active) — purpose-built for coding agents with explicit Cline/Claude Code support and 70.6% SWE-bench.
+**Devstral Small 2** (24B, agentically tuned, runs locally) for single-GPU agent loops, or **DeepSeek V4 Pro / MiniMax M3** via API for cloud-scale agentic coding. (The previously-recommended "Qwen3-Coder-Next" could not be confirmed as a released model — see Areas of Uncertainty.)
 
 ## Areas of Uncertainty
 
-- **Qwen 3.6-27B's SWE-bench score** (77.2%) is vendor-reported and not independently verified on the official leaderboard. The official SWE-bench site only shows the 480B variant at 69.6%.
-- **DeepSeek V4 Pro Max's 80.6% SWE-bench** is from aggregator sites; not yet on the official SWE-bench leaderboard at time of writing.
-- **SWE-bench Verified contamination**: Models trained on GitHub data (which includes SWE-bench issues) may score artificially high. SWE-bench Pro addresses this but has fewer model submissions.
-- **Terminal-Bench 2.0 representation**: Open models may score low partly because they lack investment in advanced agent scaffolds (most use basic Terminus 2), not solely due to model capability.
-- **Long-context coding performance**: No standardised benchmark exists for 100K+ token repository-level coding tasks. Real-world behaviour at these scales is largely anecdotal.
-- **StarCoder 3**: No technical paper found; performance claims (85.4% HumanEval, 15B params) come from a single source.
-- **Llama 4 Behemoth**: Status unclear — no verified coding benchmark results found despite being announced.
+- **Qwen 3.6-27B's SWE-bench score** (77.2%) and 3.6-35B-A3B's (73.4%) remain vendor-reported using Qwen's own scaffold. As of June 2026, multiple independent reviewers report the numbers "line up directionally," but **no full third-party SWE-bench reproduction outside Qwen's scaffold has been published**, and real-world users report tool-use drift in long agent loops. Treat as upper bounds.
+- **"Qwen3-Coder-Next" (80B/3B active)**: This model — previously listed in this article at 70.6% SWE-bench — could **not be confirmed** as a released, consumer-deployable model by two of three independent searches in June 2026. It appears in some aggregator tables and an arXiv preprint (2603.00729) but not in Qwen's own current release lineup (Qwen3.6-27B, 35B-A3B, Qwen3-Coder-480B). Removed from the headline tables pending confirmation.
+- **"DeepSeek V4 Pro Max" is not a separate model** — it refers to DeepSeek V4 Pro running in *Think Max* reasoning mode. The released models are V4 Pro (1.6T/49B) and V4 Flash (284B/13B).
+- **SWE-bench Verified is deprecated** (OpenAI withdrew it Feb 2026 over ~59% flawed tests). Vendor-reported numbers stay in this article for continuity but should not be the basis for model selection. Prefer SWE-bench Pro (SEAL) and Terminal-Bench 2.0.
+- **SWE-bench Pro vendor vs Scale SEAL gap (15–30 pp)**: Almost all open-model SWE-bench Pro figures here are vendor-reported. Only Qwen3-Coder-480B (38.7%) has a public Scale SEAL entry; DeepSeek V4, MiniMax M3, GLM-5.1, and Kimi K2.6 have no SEAL submissions, so their decontaminated standing is unverified.
+- **MiniMax M3 / GLM-5.2 weight releases**: M3 (1 Jun) and GLM-5.2 (13 Jun) were announced open-weight with weights release pending shortly after launch — confirm availability before relying on self-hosting. GLM-5.2 had no independent benchmarks at the time of writing.
+- **Terminal-Bench 2.0 representation**: Open models may score low partly because they lack investment in advanced agent scaffolds (most use basic Terminus 2), not solely due to model capability — vendor TB figures (MiniMax M3 66%, Kimi K2.6 66.7%, Qwen 3.7 Plus 70.3%) are far higher than official-harness open scores.
+- **Long-context coding performance**: No standardised benchmark exists for 100K+ token repository-level coding tasks. Several June models claim 1M-token contexts (DeepSeek V4 Pro, MiniMax M3, GLM-5.2), but real-world behaviour at these scales is largely anecdotal.
+- **Llama 4 Behemoth**: Still unreleased as of June 2026 — no verified coding benchmark results.
 
 ## References
 
@@ -358,3 +450,18 @@ Use **DeepSeek V4 Pro** via API — 80.6% SWE-bench at 1/86th the cost of Claude
 21. [Open-Source Coding Agents 2026](https://agentmarketcap.ai/blog/2026/04/10/open-source-coding-agents-2026-openhands-swe-agent-aider-vs-claude-code-codex) — Agent framework comparison
 22. [MoE Architecture Explained](https://ninadpathak.com/blog/mixture-of-experts-explained/) — DeepSeek V3 MoE analysis
 23. [ArkForge Benchmark Snapshot](https://ark-forge.github.io/genesis/benchmark.html) — 44-model code benchmark compilation (April 2026)
+24. [Morph SWE-bench Pro Leaderboard](https://www.morphllm.com/swe-bench-pro) — Vendor + Scale SEAL SWE-bench Pro/Verified (fetched 2026-06-16)
+25. [CodingFleet SWE-bench Pro Leaderboard 2026](https://codingfleet.com/blog/swe-bench-pro-leaderboard-2026/) — Cross-model SWE-bench Pro + pricing (June 2026)
+26. [MiniMax M3 announcement](https://www.minimax.io/blog/minimax-m3) — Open-weight, MSA, 1M context (1 Jun 2026)
+27. [MiniMax M3 guide](https://www.aimadetools.com/blog/minimax-m3-complete-guide/) — Specs, benchmarks, pricing
+28. [NVIDIA Nemotron 3 Ultra model card](https://build.nvidia.com/nvidia/nemotron-3-ultra-550b-a55b/modelcard) — 550B/55B MoE, OpenMDW-1.1 (4 Jun 2026)
+29. [GLM-5.2 open-source release](https://awesomeagents.ai/news/zhipu-glm-5-2-open-source/) — 1M context, coding-first (13 Jun 2026)
+30. [DeepSeek V4 Pro guide](https://www.aimadetools.com/blog/deepseek-v4-pro-complete-guide/) — Architecture, Think Max mode, pricing
+31. [DeepSeek V4 (Morph)](https://www.morphllm.com/deepseek-v4) — V4 Pro / V4 Flash specs and pricing
+32. [Kimi K2.6 guide](https://codersera.com/blog/kimi-k2-6-complete-guide-2026/) — 1T/32B MoE, Agent Swarm
+33. [Qwen 3.6 local AI guide](https://insiderllm.com/guides/qwen-3-6-local-ai-guide/) — 27B/35B-A3B VRAM, speeds, benchmark caveats
+34. [Best local coding models 2026](https://insiderllm.com/guides/best-local-coding-models-2026/) — VRAM tiers, DFlash/MTP, quant tooling (June 2026)
+35. [Devstral Small 2 hardware guide](https://runaihome.com/blog/devstral-small-2-local-ai-hardware-guide-2026/) — VRAM, speeds, 68.0% SWE-bench
+36. [Vals.ai LiveCodeBench](https://www.vals.ai/benchmarks/lcb) — Standardised LiveCodeBench, June 2026 snapshot
+37. [Terminal-Bench 2.0 Leaderboard](https://www.tbench.ai/leaderboard/terminal-bench/2.0) — Stanford/Laude Labs (fetched 2026-06-16)
+38. [OpenHands GitHub](https://github.com/OpenHands/OpenHands), [Cline GitHub](https://github.com/cline/cline), [Aider GitHub](https://github.com/Aider-AI/aider), [SWE-agent GitHub](https://github.com/SWE-agent/SWE-agent) — Framework star counts (fetched 2026-06-16)

@@ -12,6 +12,7 @@ Articles are organised into topic folders. Survey-style articles compare options
 - [Gemma 4 12B Overview](models/gemma-4-12b.md) — Google's encoder-free multimodal 12B (native audio, 256K context, 16 GB laptop-ready): architecture, full Gemma 4 family benchmark comparison, and how it sits between E4B and the 26B MoE
 - [Molmo2 Capabilities Overview](models/molmo2.md) — Ai2's fully-open vision-language family (4B/8B/7B-O): image captioning, OCR/scene-text and document text extraction, video understanding and dense captioning, and best-in-class spatio-temporal grounding (pointing/tracking)
 - [TurboQuant on Mac with Qwen3.5](models/turboquant-mac-qwen3-5.md) — Google Research's two-stage KV-cache quantiser (ICLR 2026): 3-bit/6× memory reduction, and the MLX / llama.cpp ports targeting Qwen3.5 on Apple Silicon
+- [GLM-5.2 Overview](models/glm-5-2.md) — Z.ai's MIT-licensed open-weight coding flagship (~753B MoE, 1M context): architecture, the GLM-5 lineage, vendor vs independent benchmarks, why it sits below GLM-5.1 on the text arena despite leading on coding, pricing, and self-hosted/hyperscaler deployment
 
 ## RAG & retrieval
 

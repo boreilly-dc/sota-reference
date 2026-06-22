@@ -50,7 +50,7 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 - **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Its best Arena variant (high) sits at Elo 1481. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
 - **Muse Spark** (Meta) holds a place in the Arena top 6 at Elo 1487. Details are limited.
 - GPT-5.4 Pro still leads BenchLM's overall composite at 92/100 (#1 of 225+ models evaluated); GPT-5.5 follows at 91/100.
-- GLM-5.1 (Zhipu AI, Elo 1475) is the highest-ranked open-source model — see the [Open Source](#open-source) section.
+- GLM-5.1 (Zhipu AI, Elo 1475) is the highest-ranked open-source model on the text arena; the newer GLM-5.2 (13 June 2026, Elo 1471, 1M context, MIT) leads it on coding but sits marginally below on chat preference — see the [Open Source](#open-source) section and the [GLM-5.2 overview](glm-5-2.md).
 
 ## Agentic Coding
 
@@ -215,19 +215,21 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 
 | # | Model | Origin | Released | Predecessor | Successor | Params (total / active) | Architecture | Context | Licence | Key Scores |
 |---|-------|--------|----------|-------------|-----------|------------------------|-------------|---------|---------|------------|
-| 1 | **GLM-5.1** | Zhipu AI | 2026-04-08 | GLM-5 | Incumbent | Undisclosed | MoE | 128K | Apache 2.0 | Arena Elo 1475, successor to GLM-5 |
-| 2 | **GLM-5** | Zhipu AI | 2026-02-11 | GLM-4.5 (355B) | GLM-5.1 | 744B / ~40B | MoE | 128K | Apache 2.0 | Arena Elo 1457, Quality Index 49.6, MMLU-Pro 89.7%, HumanEval 92.1% |
-| 3 | **DeepSeek V3.2** | DeepSeek | 2026-02-15 | DeepSeek V3.1 | Incumbent | 685B / 37B | MoE (DeepSeekMoE + MLA) | 128K | DeepSeek Licence | Quality Index 41.2, LiveCodeBench 86-90%, AIME 92%, SWE-Bench 72.8% |
-| 4 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | ~1T / 32B | MoE | 256K | Open weights (Modified MIT) | Intelligence Index 54, SWE-Bench Pro 58.6%, 300-agent swarm coding |
-| 5 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | 230B / undisclosed | MoE | 204K | Open weights | Quality Index 42.0, SWE-Bench Verified 80.2% (#1 open-weights coding) |
-| 6 | **MiMo-V2-Flash** | Xiaomi | 2025-12-16 | MiMo-V1 | Incumbent | 309B / 15B | MoE (hybrid attn + MTP) | 128K | Apache 2.0 | LiveCodeBench 87%, AIME 96%, ~150 tok/s |
-| 7 | **Qwen3-235B-A22B** | Alibaba | 2025-04-29 | Qwen 2.5-72B | Qwen 3.5 | 235B / 22B | MoE | 128K | Apache 2.0 | Hybrid thinking (fast/deep), 119 languages |
-| 8 | **Llama 4 Maverick** | Meta | 2025-04-05 | Llama 3.3 70B | Llama 4 Behemoth (pending) | 400B / 17B (128 experts) | MoE | 10M | Llama Community | Natively multimodal |
-| 9 | **Gemma 4 31B** | Google DeepMind | 2026-04-02 | Gemma 3 27B | Incumbent | 31B | Dense | 256K | Apache 2.0 | Arena Elo ~1451 (#4 open), multimodal (text/image/video/audio), native function calling |
-| 10 | **Mistral Large 3** | Mistral AI | 2025-12-02 | Mistral Large 2 (123B) | Incumbent | 675B / 41B | MoE | 256K | Apache 2.0 | Multimodal, strong European compliance |
+| 1 | **GLM-5.2** | Zhipu AI | 2026-06-13 | GLM-5.1 | Incumbent | ~753B / ~40B | MoE | 1M | MIT | Arena Elo 1471, SWE-bench Pro 62.1 / Terminal-Bench 2.1 81.0 (vendor); long-horizon coding focus (see [GLM-5.2 overview](glm-5-2.md)) |
+| 2 | **GLM-5.1** | Zhipu AI | 2026-04-08 | GLM-5 | GLM-5.2 | Undisclosed | MoE | 200K | MIT | Arena Elo 1475 — highest open model on the text arena; SWE-bench Pro 58.4 (vendor) |
+| 3 | **GLM-5** | Zhipu AI | 2026-02-11 | GLM-4.5 (355B) | GLM-5.1 | 744B / ~40B | MoE | 200K | MIT | Arena Elo 1457, Quality Index 49.6, MMLU-Pro 89.7%, HumanEval 92.1% |
+| 4 | **DeepSeek V3.2** | DeepSeek | 2026-02-15 | DeepSeek V3.1 | Incumbent | 685B / 37B | MoE (DeepSeekMoE + MLA) | 128K | DeepSeek Licence | Quality Index 41.2, LiveCodeBench 86-90%, AIME 92%, SWE-Bench 72.8% |
+| 5 | **Kimi K2.6** | Moonshot AI | 2026-04-20 | Kimi K2.5 | Incumbent | ~1T / 32B | MoE | 256K | Open weights (Modified MIT) | Intelligence Index 54, SWE-Bench Pro 58.6%, 300-agent swarm coding |
+| 6 | **MiniMax M2.5** | MiniMax | Q1 2026 | MiniMax M2.1 | Incumbent | 230B / undisclosed | MoE | 204K | Open weights | Quality Index 42.0, SWE-Bench Verified 80.2% (#1 open-weights coding) |
+| 7 | **MiMo-V2-Flash** | Xiaomi | 2025-12-16 | MiMo-V1 | Incumbent | 309B / 15B | MoE (hybrid attn + MTP) | 128K | Apache 2.0 | LiveCodeBench 87%, AIME 96%, ~150 tok/s |
+| 8 | **Qwen3-235B-A22B** | Alibaba | 2025-04-29 | Qwen 2.5-72B | Qwen 3.5 | 235B / 22B | MoE | 128K | Apache 2.0 | Hybrid thinking (fast/deep), 119 languages |
+| 9 | **Llama 4 Maverick** | Meta | 2025-04-05 | Llama 3.3 70B | Llama 4 Behemoth (pending) | 400B / 17B (128 experts) | MoE | 10M | Llama Community | Natively multimodal |
+| 10 | **Gemma 4 31B** | Google DeepMind | 2026-04-02 | Gemma 3 27B | Incumbent | 31B | Dense | 256K | Apache 2.0 | Arena Elo ~1451 (#4 open), multimodal (text/image/video/audio), native function calling |
+| 11 | **Mistral Large 3** | Mistral AI | 2025-12-02 | Mistral Large 2 (123B) | Incumbent | 675B / 41B | MoE | 256K | Apache 2.0 | Multimodal, strong European compliance |
 
 **Key observations:**
-- **GLM-5.1** (Zhipu AI, April 2026) takes the open-source crown from GLM-5, reaching Arena Elo 1475. GLM-5 (744B MoE) originally unseated DeepSeek in February 2026. Native support for 14+ Asian languages including Tamil, Hindi, and Telugu.
+- **GLM-5.2** (Z.ai, 13 June 2026) is the newest GLM flagship: a ~753B MoE under the **MIT** licence with a **1M-token context**, tuned for long-horizon coding agents (vendor SWE-bench Pro 62.1, Terminal-Bench 2.1 81.0) at ~1/6 the cost of GPT-5.5. Interestingly its best variant sits at Arena Elo **1471 — marginally below GLM-5.1 (1475)** on the *text* arena, even as it leads GLM-5.1 on coding benchmarks; LMArena's chat-preference signal does not track agentic-coding gains. See the [GLM-5.2 overview](glm-5-2.md).
+- **GLM-5.1** (Zhipu AI, April 2026) took the open-source crown from GLM-5, reaching Arena Elo 1475 — still the **highest-ranked open model on the text arena**. GLM-5 (744B MoE) originally unseated DeepSeek in February 2026. Native support for 14+ Asian languages including Tamil, Hindi, and Telugu.
 - **Kimi K2.6** (Moonshot AI, 20 April 2026) is the strongest new open-weights entry. Artificial Analysis Intelligence Index of 54 — the highest for any open-weight model — with SWE-Bench Pro 58.6% matching GPT-5.5. Supports 12-hour autonomous coding sessions and 300-agent coordinated swarms. $0.60/M input, $2.50/M output.
 - **Gemma 4** (Google DeepMind, April 2, 2026) is a major open-source entry. The 31B dense model ranks among the top open models on Arena AI's text leaderboard (Elo ~1451; the 26B A4B MoE sits at ~1438). Apache 2.0 licence — a significant shift from Gemma 3's more restrictive Gemma Licence. Originally four sizes (E2B, E4B, 26B A4B MoE, 31B dense); a fifth — the **Gemma 4 12B** dense model with native audio — was added ~3 June 2026 as the 16 GB-laptop sweet spot (see the [Gemma 4 12B overview](gemma-4-12b.md)). The family has passed 150M downloads.
 - **GLM-4.7** (Zhipu AI) is a notable coding-focused release with thinking capabilities: AIME 2025 95.7%, SWE-bench Verified 73.8%, HLE 42.8% (+12.4% over GLM-4.6).

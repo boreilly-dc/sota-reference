@@ -100,7 +100,8 @@ SLUG_MAP = {
     "glm-4.7":                        "GLM-4.7",
     "glm-5":                          "GLM-5",
     "glm-5.1":                        "GLM-5.1",
-    "glm-5.2 (max)":                  None,  # GLM-5.2 not tracked yet; arena score sits below GLM-5.1
+    "glm-5.2":                        "GLM-5.2",
+    "glm-5.2 (max)":                  "GLM-5.2",  # "max" thinking tier is the best-performing GLM-5.2 variant
 
     # Baidu — not tracked
     "ernie-5.1":                      None,
@@ -143,6 +144,7 @@ SLUG_PREFIX_MAP = {
     "claude-opus-4-5-":               "Claude Opus 4.5",
     "claude-sonnet-4-5-":             "Claude Sonnet 4.5",
     "claude-sonnet-4-6-":             "Claude Sonnet 4.6",
+    "qwen3-235b":                     "Qwen3-235B",  # matches dated/instruct variants e.g. qwen3-235b-a22b-instruct-2507
 }
 
 

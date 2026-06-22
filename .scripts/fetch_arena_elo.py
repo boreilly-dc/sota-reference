@@ -100,6 +100,7 @@ SLUG_MAP = {
     "glm-4.7":                        "GLM-4.7",
     "glm-5":                          "GLM-5",
     "glm-5.1":                        "GLM-5.1",
+    "glm-5.2 (max)":                  None,  # GLM-5.2 not tracked yet; arena score sits below GLM-5.1
 
     # Baidu — not tracked
     "ernie-5.1":                      None,

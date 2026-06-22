@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-06-15 |
-| Version | 3.0 |
+| Last Updated | 2026-06-23 |
+| Version | 3.1 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo and Best Overall section were refreshed on 15 June 2026 (Arena snapshot of 14 June 2026; Claude Fable 5 added). The Agentic Coding and Tool Use sections were refreshed on 8 June 2026; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
+This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo and Best Overall section were refreshed on 23 June 2026 (Arena snapshot of 22 June 2026). The Agentic Coding and Tool Use sections were refreshed on 8 June 2026; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
 
 Each model entry includes origin, release date, model lineage, licence, parameter count, context window, and throughput data where known.
 
@@ -43,10 +43,10 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 | 9 | **Claude Opus 4.8 (thinking)** | Anthropic | 2026-05-28 | Claude Opus 4.7 | Claude Fable 5 | Proprietary | Undisclosed | 1M | ~50-60 (2.5× fast mode) | ~2-5 s |
 | 10 | **GPT-5.5 (high)** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
 
-**Key observations (LMArena Elo refreshed to the 14 June 2026 snapshot):**
-- **Claude Fable 5** (released 9 June 2026) debuts at the top of the text Arena at **Elo 1510**, the first Claude 5–generation model in general availability. It is the safeguarded public deployment of Anthropic's Mythos-class weights — the restricted **Claude Mythos 5** (Project Glasswing) shares the same underlying model and is described as Anthropic's most capable to date. Fable 5 ships with a 1M-token context (up to 128K output tokens), always-on adaptive thinking, and a January 2026 knowledge cutoff, priced at $10/M input and $50/M output (with the standard 90% prompt-caching discount). It is generally available on the Claude API, Amazon Bedrock, Vertex AI, and Microsoft Foundry from launch.
-- Anthropic also holds the rest of the top of the Arena behind Fable 5. **Claude Opus 4.6 (thinking) sits at Elo 1504** and Opus 4.7 (thinking) at 1502 — roughly +17 over the nearest non-Anthropic models (Muse Spark and Gemini 3.1 Pro Preview, both 1487). Note the Opus lineage is *non-monotonic on the text arena*: the newer Opus 4.7 and Opus 4.8 score slightly below Opus 4.6 here, even though they lead on agentic coding and tool-use benchmarks.
-- **Claude Opus 4.8** (released 28 May 2026) was the flagship until Fable 5, entering the Arena at Elo 1486 (thinking) / 1477 (base). It posts the strongest agentic-coding and computer-use results of the Opus line (SWE-Bench Pro 69.2%), with a 2.5× fast mode now ~3× cheaper than on Opus 4.7, at unchanged $5/$25 per 1M pricing.
+**Key observations (LMArena Elo refreshed to the 22 June 2026 snapshot):**
+- **Claude Fable 5** (released 9 June 2026) debuts at the top of the text Arena at **Elo 1508**, the first Claude 5–generation model in general availability. It is the safeguarded public deployment of Anthropic's Mythos-class weights — the restricted **Claude Mythos 5** (Project Glasswing) shares the same underlying model and is described as Anthropic's most capable to date. Fable 5 ships with a 1M-token context (up to 128K output tokens), always-on adaptive thinking, and a January 2026 knowledge cutoff, priced at $10/M input and $50/M output (with the standard 90% prompt-caching discount). It is generally available on the Claude API, Amazon Bedrock, Vertex AI, and Microsoft Foundry from launch.
+- Anthropic also holds the rest of the top of the Arena behind Fable 5. **Claude Opus 4.6 (thinking) sits at Elo 1504** and Opus 4.7 (thinking) at 1502 — roughly +17 over the nearest non-Anthropic model (Muse Spark at 1487, with Gemini 3.1 Pro Preview just behind at 1486). Note the Opus lineage is *non-monotonic on the text arena*: the newer Opus 4.7 and Opus 4.8 score slightly below Opus 4.6 here, even though they lead on agentic coding and tool-use benchmarks.
+- **Claude Opus 4.8** (released 28 May 2026) was the flagship until Fable 5, entering the Arena at Elo 1483 (thinking) / 1478 (base). It posts the strongest agentic-coding and computer-use results of the Opus line (SWE-Bench Pro 69.2%), with a 2.5× fast mode now ~3× cheaper than on Opus 4.7, at unchanged $5/$25 per 1M pricing.
 - **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Its best Arena variant (high) sits at Elo 1481. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
 - **Muse Spark** (Meta) holds a place in the Arena top 6 at Elo 1487. Details are limited.
 - GPT-5.4 Pro still leads BenchLM's overall composite at 92/100 (#1 of 225+ models evaluated); GPT-5.5 follows at 91/100.
@@ -233,7 +233,7 @@ The top open-source models overall, ranked by a composite of Chatbot Arena Elo, 
 - **GLM-4.7** (Zhipu AI) is a notable coding-focused release with thinking capabilities: AIME 2025 95.7%, SWE-bench Verified 73.8%, HLE 42.8% (+12.4% over GLM-4.6).
 - Every top open-source model at the frontier tier uses MoE architecture (Gemma 4 31B dense is the exception, ranking via raw parameter density).
 - Apache 2.0 dominates licensing, with Meta's Llama Community Licence the main exception.
-- The gap to proprietary models continues to narrow: GLM-5.1 at Arena Elo 1475 vs the Arena leader Claude Fable 5 at 1510 — a ~35 Elo gap, down from ~200+ a year ago.
+- The gap to proprietary models continues to narrow: GLM-5.1 at Arena Elo 1475 vs the Arena leader Claude Fable 5 at 1508 — a ~33 Elo gap, down from ~200+ a year ago.
 
 ## Best Models <= 20B Parameters
 

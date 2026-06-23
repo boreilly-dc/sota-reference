@@ -11,3 +11,7 @@ _codebase-overview.md
 
 # Downloaded research papers (local cache only)
 .papers/
+
+# Python bytecode cache
+__pycache__/
+*.pyc

@@ -17,6 +17,7 @@ Articles are organised into topic folders. Survey-style articles compare options
 ## RAG & retrieval
 
 - [RAG & Context Engineering](rag/rag-and-context-engineering.md) — Retrieval-augmented generation patterns, chunking strategies, and managed services
+- [Grounded Search for LLMs](rag/grounded-search-for-llms.md) — Build-your-own grounded web search: reference architecture, retrieval/attribution/verification methods, RL-trained agentic search, open-source frameworks, and hyperscaler grounding
 - [Benchmarks for RAG Chatbots](rag/rag-chatbot-benchmarks.md) — Benchmarks for testing RAG-powered chatbots
 - [Large Document LLM Methods](rag/large-document-llm-methods.md) — Methods for processing large documents with LLM-based chatbots
 - [Embedding Models](rag/embedding-models.md) — Best open-source local embedding models and how they compare with proprietary alternatives

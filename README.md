@@ -17,7 +17,6 @@ Articles are organised into topic folders. Survey-style articles compare options
 ## RAG & retrieval
 
 - [RAG & Context Engineering](rag/rag-and-context-engineering.md) — Retrieval-augmented generation patterns, chunking strategies, and managed services
-- [Grounded Search for LLMs](rag/grounded-search-for-llms.md) — Build-your-own grounded web search: reference architecture, retrieval/attribution/verification methods, RL-trained agentic search, open-source frameworks, and hyperscaler grounding
 - [Benchmarks for RAG Chatbots](rag/rag-chatbot-benchmarks.md) — Benchmarks for testing RAG-powered chatbots
 - [Large Document LLM Methods](rag/large-document-llm-methods.md) — Methods for processing large documents with LLM-based chatbots
 - [Embedding Models](rag/embedding-models.md) — Best open-source local embedding models and how they compare with proprietary alternatives
@@ -29,6 +28,7 @@ Articles are organised into topic folders. Survey-style articles compare options
 - [Agentic Coding: Claude Code vs OpenAI Codex](agents/agentic-coding-claude-vs-openai.md) — Best-in-class models, benchmark comparison, architecture differences, and consistency analysis for Claude Code and OpenAI Codex
 - [Open Models for Coding Agents](agents/open-models-coding-agents.md) — Best open models for coding agents vs frontier closed models across SWE-bench, Aider, LiveCodeBench, and Terminal-Bench, with consumer-hardware and large-model tiers
 - [Research Agent Frameworks](agents/frameworks-research-agents.md) — Frameworks for building autonomous research agents
+- [Grounded Search for LLMs](agents/grounded-search-for-llms.md) — Build-your-own grounded web search: reference architecture, retrieval/attribution/verification methods, RL-trained agentic search, open-source frameworks, and hyperscaler grounding
 - [Agentic Harnesses](agents/agentic-harnesses.md) — Survey of frameworks for building agentic systems across Python, JS/TS, Go, and C#/.NET: agent application frameworks, vendor agent SDKs, coding-agent harnesses, durable-execution engines, hyperscaler managed runtimes, and interoperability protocols (MCP, A2A, AGNTCY), with a decision guide and anti-patterns
 - [Alternatives to MCP: Tool-Calling Strategies](agents/mcp-alternatives-and-tool-calling-strategies.md) — MCP's rise as the dominant tool-integration standard and the alternative tool-calling strategies for connecting LLMs to external tools and data
 

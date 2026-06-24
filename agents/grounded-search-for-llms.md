@@ -4,7 +4,7 @@
 |-------|-------|
 | Created | 2026-06-24 |
 | Last Updated | 2026-06-24 |
-| Version | 1.0 |
+| Version | 1.1 |
 
 ---
 
@@ -86,21 +86,37 @@ Every grounded-search system — proprietary or open — follows the same compon
 
 Stages 1, 4, and 6 are what separate a *grounded* system from a naive "search → stuff results into prompt" hack. Skipping query understanding hurts recall; skipping reranking floods the generator with noise; skipping verification is how hallucinated citations ship.
 
-### 2.2 Two reference profiles
+### 2.1.1 The data contract (carry provenance end-to-end)
 
-The full pipeline scales down. Pick a profile by your compute budget and reliability needs.
+The single hardest engineering problem in grounded search is keeping a claim traceable to a source *span* through every stage. Define the data objects up front and thread their provenance fields through the whole pipeline — retrofitting offsets later is impractical:
 
-| | **Minimal viable pipeline** | **Full canonical pipeline** |
-|---|---|---|
-| Query understanding | none / single rewrite | classify intent → HyDE or decomposition |
-| Search | SearXNG (snippets only) | SearXNG + paid API fallback |
-| Extraction | snippet-only (no fetch) | selective full-text (Trafilatura/Firecrawl) |
-| Retrieval | BM25 over snippets | hybrid BM25 + dense + rerank |
-| Generation | 8B open model, prompt-based citations | larger model / reasoning core |
-| Verification | DeBERTa-V3 NLI on each claim | NLI + LLM-judge + abstention |
-| Hardware | single GPU (~12 GB VRAM) | multi-GPU / managed inference |
+| Object | Key fields |
+|---|---|
+| `SearchResult` | `url`, `canonical_url`, `title`, `snippet`, `rank`, `engine`, `retrieved_at` |
+| `ExtractedDocument` | `canonical_url`, `content`, `content_hash`, `extractor`, `extractor_version`, `fetched_at`, `mime_type` |
+| `Chunk` | `doc_id`, `text`, `char_start`, `char_end`, `byte_start`, `byte_end`, `embedding`, `source_trust` |
+| `CitationSpan` | `chunk_id`, `quote`, `char_start`, `char_end`, `url` |
+| `Claim` | `text`, `citation_span_ids[]`, `requires_aggregation` |
+| `VerificationVerdict` | `claim_id`, `label` (entailed/contradicted/unverifiable), `score`, `verifier`, `threshold` |
 
-The minimal profile is a legitimate production starting point for low query volumes — the dominant cost saving is **not fetching and extracting every result**. Decoupling search from extraction and letting the model select which URLs are worth full-text reading cuts extraction cost by an estimated 70–90% (codenote.net comparison, 2026). Start snippet-only; add full extraction only where snippets prove insufficient.
+Two rules fall out of this contract: store the **canonical URL** (resolve redirects/AMP/tracking params) so citations dedupe and resolve later; and record `extractor_version` and `content_hash` so a citation can be re-validated against the exact text it was drawn from when the live page changes.
+
+### 2.2 Three reference profiles
+
+The pipeline scales down, but be honest about what each tier actually delivers. The key distinction is **whether citations are merely *displayed* or actually *verified against fetched source text***. Snippets alone (a search API's 1–2 sentence preview) rarely contain enough context — or stable character offsets — to support claim-level entailment, so a snippet-only system produces *attributed-looking answers*, not the span-verified grounding defined in [Section 1](#1-what-grounded-search-means).
+
+| | **A — Snippet-attributed** | **B — Standard grounded** | **C — Verified grounded** |
+|---|---|---|---|
+| Attribution strength | weak (link-level) | source-level | span-level, entailment-checked |
+| Query understanding | none / single rewrite | classify intent → HyDE/decompose | + multi-query fusion |
+| Search | SearXNG (snippets) | SearXNG + paid API fallback | same |
+| Extraction | none (snippet only) | selective full-text + offsets | full-text + preserved offsets (required) |
+| Retrieval | BM25 over snippets | hybrid BM25 + dense + rerank | same |
+| Generation | 8B open model, prompt citations | larger model / reasoning core | citation-format-tuned model |
+| Verification | none / heuristic | NLI on each claim | NLI + abstention + audit sampling |
+| Hardware | single GPU (~12 GB VRAM) | multi-GPU / managed inference | + verifier serving |
+
+Profile **A** is a legitimate *low-stakes* starting point (FAQ-style answers, internal tooling) and the dominant cost saving is **not fetching every result** — decoupling search from extraction and letting the model select which URLs deserve full-text reading cuts extraction cost an estimated 70–90% (codenote.net, 2026). But **A is not "grounded" in the strict sense**: do not present span-level "verified" citations from snippets alone. Any product that claims verified citations must be **profile B or C**, which require full-text extraction with **preserved character/byte offsets** ([Section 4.3](#43-citation-granularity)). Treat A→B→C as a maturity path, not interchangeable options.
 
 ---
 
@@ -110,23 +126,25 @@ This is the layer most teams underestimate. **Retrieval quality is the primary b
 
 ### 3.1 Web search backends
 
+> **Scope note on the hyperscaler-only rule.** This repository limits *managed-service* recommendations to AWS, Azure, GCP, IBM, and Oracle. The search APIs below are listed as **external data providers** (a raw input to your own pipeline), not as managed platforms that replace it — the same category as a public dataset or news feed. The open-source option (SearXNG) is presented first and is sufficient to build the whole system; the paid APIs are optional inputs. Managed *grounding platforms* are confined to the five hyperscalers in [Section 9](#9-hyperscaler-managed-grounding).
+
 The web-search API market shifted materially in 2025–26, and several defaults that older tutorials assume are now gone:
 
 - **Bing Web Search API — retired 11 August 2025** (official Microsoft lifecycle notice). The replacement, *Grounding with Bing Search* inside Azure AI Agents, costs roughly **$35 per 1,000 queries** — far more than the old API. Do not design new systems around the Bing API.
-- **Google Custom Search JSON API — closed to new customers (2025), full retirement 1 January 2027.** Google directs new builders to Vertex AI Search. Not a viable foundation for a new project.
+- **Google Custom Search JSON API — closing to new customers, full retirement 1 January 2027** (per Google's own deprecation guidance; existing customers retain access until that date). Google directs new builders to Vertex AI Search. Not a viable foundation for a new project — confirm current status on Google's docs before relying on it.
 
-That leaves a field of LLM-oriented search APIs and one strong open-source option:
+That leaves a field of LLM-oriented search APIs and one strong open-source option (prices are 2026 vendor-page snapshots — **re-check before committing**, they move with tier changes and acquisitions):
 
-| Backend | Type | Indicative price /1K | Notes |
-|---|---|---|---|
-| **SearXNG** (open source) | Self-hosted meta-search | Free (VPS only) | Aggregates 200+ engines behind one JSON API; the open-source default. Google sub-queries hit CAPTCHAs at scale (see 3.5). |
-| Brave Search API | Independent index | ~$5 | Own 30B-page index (not scraped from others); SOC 2 Type II; `/llm/context` endpoint returns LLM-shaped content. Retired its free tier Feb 2026. |
-| Tavily | LLM-native search+extract | ~$8 (basic) / $16 (adv) | De-facto LangChain default; returns clean content. Being acquired by Nebius (Feb 2026) — avoid deep lock-in. |
-| Exa | Neural/semantic | ~$7 search + $1 contents | Embedding-based search with a `/findSimilar` endpoint; weaker on high-freshness content (news, prices). |
-| Serper.dev | Raw Google SERP | ~$0.30–1 | Cheapest, but exposed to the *Google v. SerpAPI* lawsuit (filed Dec 2025) — legal risk for all Google-scraping providers. |
-| You.com | Search + Web-LLM | ~$5 (sales-led) | Returns full content; also offers an end-to-end RAG endpoint. |
+| Backend | Type | Free tier | Indicative paid price /1K | Notes |
+|---|---|---|---|---|
+| **SearXNG** (open source) | Self-hosted meta-search *interface* | n/a (self-host) | Free (VPS only) | Aggregates 200+ engines behind one JSON API; the open-source default. It is a **proxy, not an index** (see 3.5). |
+| Brave Search API | Independent index | $5/mo free credits | ~$4–5 (+~$5/M tokens for the AI-grounding endpoint) | Own multi-billion-page index (not scraped from others); SOC 2 Type II; `/llm/context`-style endpoint returns LLM-shaped content. |
+| Tavily | LLM-native search+extract | limited | ~$8 (basic) / $16 (adv) | De-facto LangChain default; returns clean content. Acquisition by Nebius announced Feb 2026 — avoid deep lock-in. |
+| Exa | Neural/semantic | 20,000 req/mo | ~$7 search + $1/1K contents | Embedding-based search with a `/findSimilar` endpoint; weaker on high-freshness content (news, prices). |
+| Serper.dev | Raw Google SERP | trial credits | ~$0.30–1 | Cheapest, but a *Google v. SerpApi* lawsuit (filed Dec 2025) is pending — possible legal exposure for SERP-scraping resellers (the degree varies by provider; not legal advice). |
+| You.com | Search + Web-LLM | sales-led | ~$5 (sales-led) | Returns full content; also offers an end-to-end RAG endpoint. |
 
-**Recommendation for builders:** default to **SearXNG** for development and low-volume production (open-source, no per-query cost, no vendor lock-in), with a paid **independent-index** provider (Brave) as the scale/quality fallback. Avoid building solely on Google-SERP-scraping providers given the active litigation.
+**Recommendation for builders:** default to **SearXNG** for development and low-volume production (open-source, no per-query cost, no vendor lock-in), with a paid **independent-index** provider (Brave) as the scale/quality fallback. Avoid building *solely* on Google-SERP-reselling providers given the pending litigation.
 
 ### 3.2 Content extraction (the "read" stage)
 
@@ -165,9 +183,24 @@ Open-source rerankers (all self-hostable):
 
 Managed equivalent: **Cohere Rerank 4** (closed, 100+ languages) — available directly and as a first-party option inside Oracle OCI and others. Prefer an Apache-2.0/MIT open reranker unless you have a reason not to.
 
+**Embedding models** (open-weight, for the dense signal): **BGE-M3** (multi-functional: dense + sparse + ColBERT-style in one model, a strong default), **E5 / multilingual-E5**, **GTE**, **Nomic Embed** (open, long-context), and **Qwen3-Embedding** to standardise on one family with the reranker. Validate on your own queries — MTEB rank does not predict web-grounding performance.
+
+**Where to run retrieval.** Web grounding is unusual: results are *ephemeral per query*, so you build a small index on the fly rather than maintaining a giant persistent one. Two patterns:
+
+- *Ephemeral in-memory index* — embed the handful of fetched passages per query, score, discard. Simplest; no infrastructure. Best for profiles A/B.
+- *Persistent hybrid store* — when you cache/accumulate sources. Open-source options: **OpenSearch** or **Elasticsearch** (BM25 + dense in one engine), **Vespa** (best-in-class hybrid + ranking), **Qdrant / Milvus / Weaviate / LanceDB** (vector-first), **pgvector** (if already on Postgres), and **Lucene/Tantivy** for the lexical side. SPLADE for learned-sparse.
+
+**Three things the happy path omits but a builder must handle:**
+
+- **Deduplication** — the same story appears across syndicating sites; dedupe by canonical URL and near-duplicate content hashing (MinHash/SimHash) *before* reranking, or you waste context on copies.
+- **Freshness ranking** — for time-sensitive queries, boost by source recency; do not let a high-similarity stale page outrank a fresh one. Carry `retrieved_at`/publish date into the ranker.
+- **Source trust scoring** — weight by domain reputation (a credibility prior like this article's own rubric) so SEO spam and content farms are demoted before they reach the generator (see [Section 13](#13-legal-compliance--adversarial-robustness)).
+
 ### 3.5 Resolving the SearXNG scalability caveat
 
-SearXNG is the right open-source default, but it proxies public engines, so high-volume Google sub-queries trigger CAPTCHAs and 429s. In production: (a) configure SearXNG to prefer engines that tolerate automation (Brave, DuckDuckGo, Wikipedia) over Google; (b) run multiple instances behind rate-limiting; (c) keep a paid independent-index API (Brave) as a fallback when SearXNG returns thin results. Treat pure-SearXNG-on-Google as a **development-tier** configuration, not a scale tier.
+Be precise about what SearXNG *is*: a **self-hosted meta-search interface**, not a **self-owned index**. It owns no crawl or corpus — it forwards each query to upstream engines and merges their results. So its reliability, freshness, and legal posture are inherited from those upstreams: high-volume Google sub-queries trigger CAPTCHAs and 429s, and commercial use sits within the upstreams' terms of service. The only way to *own* your search (no upstream dependency, no rate-limit ceiling, no ToS grey area) is to run your own crawler + index (e.g. an OpenSearch/Vespa corpus, or a hosted independent index like Brave's) — a far larger undertaking that most teams should defer.
+
+Practical mitigations for SearXNG in production: (a) prefer engines that tolerate automation (Brave, DuckDuckGo, Wikipedia) over Google; (b) run multiple instances behind rate-limiting; (c) keep a paid independent-index API (Brave) as a fallback when results are thin. Treat **pure-SearXNG-on-Google as a development-tier configuration**; for production at volume, budget for an independent-index API or your own index.
 
 ---
 
@@ -207,7 +240,7 @@ A practical engineering point the literature underweights: **provenance must be 
 Grounding reduces hallucination but does not remove it, so verify before you ship the answer. The workhorse is **Natural Language Inference (NLI) entailment checking**: given (claim, cited passage), classify as *entailed / contradicted / neutral (unverifiable)*.
 
 - **Google T5-XXL-TRUE** is a widely used NLI verifier and underpins ALCE's automatic scoring.
-- A 2025 study (SDP workshop) found **DeBERTa-V3-large fine-tuned on NLI corpora outperforms LLM prompting** for reference-grounded hallucination detection, while being far cheaper and faster — a strong, self-hostable default verifier.
+- A 2025 study (SDP workshop) found **DeBERTa-V3-large fine-tuned on NLI corpora outperforms LLM prompting** for reference-grounded hallucination detection on *that benchmark*, while being far cheaper and faster. Read this as scoped evidence, not a universal law — it makes DeBERTa-V3 a strong, self-hostable *default* verifier, not the right tool for every claim type (see "verification is more than NLI" below).
 - **AttrScore** (OSU, EMNLP Findings 2023) classifies attribution errors into *attributable / extrapolatory (goes beyond source) / contradictory*; `AttrScore-Flan-T5` (3B) is a compact open evaluator. **AttributionBench** (ACL Findings 2024) confirms NLI-fine-tuned models lead this task.
 
 **Verifier options, by cost/accuracy:**
@@ -220,6 +253,18 @@ Grounding reduces hallucination but does not remove it, so verify before you shi
 | LLM-as-judge | Highest | Flexible but slow, costly, and itself prone to sycophancy. Use sparingly. |
 
 The verification stage should **down-grade or remove** any claim whose citation does not entail it, and surface abstention ("the sources do not confirm X") rather than paper over gaps. Calibrated abstention is a quality signal.
+
+### 5.1 Verification is more than NLI
+
+Sentence-pair NLI handles the common case but is brittle exactly where grounded answers fail. A production verifier is a small pipeline, not a single model:
+
+- **Claim segmentation** — decompose the answer into atomic, individually-checkable claims first; a sentence often bundles several.
+- **Multi-citation / aggregation** — a claim supported by *combining* two sources ("X is the largest of A, B, C") entails against no single passage. Verify against the *union* of cited spans, and flag `requires_aggregation` claims for stricter handling.
+- **Numeric, temporal & tabular claims** — NLI is weak on "23% vs 0.23", date arithmetic, unit conversions, and table lookups. Add targeted checks (extract the number/date from the source span and compare) rather than trusting entailment.
+- **Quotation integrity** — for verbatim quotes, do an exact-substring check against the source, not entailment.
+- **Citation-span validation** — confirm the cited offsets actually exist in the (hashed) source and contain the quoted text — catches both model hallucination and silently-changed pages.
+- **Threshold calibration & contradiction handling** — calibrate the entailment threshold on a labelled set per claim class; treat *contradicted* differently from *unverifiable* (contradiction is a hard removal).
+- **Human audit sampling** — sample a small fraction of shipped answers for human review; this is your ground-truth signal for drift and the only check that catches systematic verifier blind spots.
 
 ---
 
@@ -238,7 +283,9 @@ These are achievable today with any capable instruction model and an orchestrati
 
 ### 6.2 RL-trained search models
 
-The 2025–26 research wave trains the model itself to search well, rather than scripting it. This is the "build your own" frontier if you can fine-tune.
+> **This is frontier research, not core build guidance.** Most teams building a grounded-search system will *not* train their own search model — the prompt-orchestrated patterns in §6.1 plus a good retrieval/verification stack get you most of the way. Treat this subsection as context on where the field is heading and what to adopt *if* you hit a ceiling and have the data + RL infrastructure. Reported gains come from fast-moving 2025–26 work on overlapping benchmarks with limited independent replication.
+
+The 2025–26 research wave trains the model itself to search well, rather than scripting it.
 
 - **WebGPT** (OpenAI, 2022) — the progenitor: fine-tuned GPT-3 to browse a text interface (search/click/quote/cite) via imitation learning then RLHF. Established that RL-from-human-feedback can optimise web-grounded QA with citations.
 - **Search-R1** (UIUC, 2025) — DeepSeek-R1-style RL teaching an LLM to emit `<search>` queries inside its reasoning. Two key tricks: an **outcome-only reward** (just answer correctness — no process/format reward needed) and **retrieved-token masking** (mask retrieved passages during gradient computation so the model is rewarded for its own reasoning/queries, not for copying retrieved text). +41% over RAG baselines on Qwen2.5-7B; **GRPO outperformed PPO**.
@@ -248,7 +295,7 @@ The 2025–26 research wave trains the model itself to search well, rather than 
 - **WebThinker** (RUC, NeurIPS 2025) — equips large reasoning models (DeepSeek-R1, o1-class) to interleave search, navigation, and report drafting inside the thinking process; trained with iterative online DPO.
 - **Search-o1** (RUC, EMNLP 2025) — names the *Reasoning-Retrieval Dilemma*: injecting raw retrieved documents disrupts a long reasoning chain. Its *Reason-in-Documents* module distils retrieved content into reasoning-compatible form before injection.
 
-A practical note on reward design: across these systems, **citation quality is an emergent property of optimising answer correctness** — none use an explicit citation reward. If you train your own, start with outcome reward + retrieved-token masking (Search-R1) before engineering anything fancier.
+A practical note on reward design: these systems optimise mainly for **answer correctness** and report that useful search behaviour emerges without an explicit citation reward. But answer correctness does **not** guarantee citation *faithfulness* — a model can reach the right answer while citing the wrong span or no span at all. Keep citation training and citation evaluation ([Sections 4](#4-citation--attribution-generation)–[5](#5-grounding-verification--faithfulness)) as a separate concern; do not assume a correctness-optimised search model produces trustworthy citations. If you train your own, start with outcome reward + retrieved-token masking (Search-R1), then add explicit citation supervision/eval rather than expecting it for free.
 
 ### 6.3 Train or orchestrate?
 
@@ -283,6 +330,8 @@ Two layers of open source matter: **end-to-end answer engines** (fork-and-run "P
 
 For most teams wanting a working system quickly, **Perplexica** (interactive answers) or **GPT-Researcher** (reports) are the two to evaluate first; both are permissively licensed and LLM-agnostic.
 
+Star counts are a weak signal. When you actually evaluate one of these, score it on what matters for production: **maintenance activity** (recent commits/releases), **deployment model** (Docker/k8s, single-user vs multi-tenant), **citation granularity** (link vs span) and whether it has any **verification** at all, **search backend** (self-hostable vs paid-API-locked — Morphic, for instance, is Tavily-dependent), **local-only feasibility**, **licence risk** (note Khoj is AGPL-3.0), and **observability/security posture**. Most of these projects do *display* citations but do *not* verify them — you will likely add the §5 verification stage yourself.
+
 ### 7.2 Orchestration frameworks (build-your-own)
 
 - **LangGraph / LangChain** (MIT) — agentic RAG with retriever-as-tool, query-rewriting loops, self-correction, and hallucination-detection patterns. No built-in citation *engine*, but the most flexible substrate for the agentic loops in [Section 6](#6-agentic--rl-trained-search). Ships a `SearxSearchWrapper` for SearXNG.
@@ -303,13 +352,22 @@ Grounded search is bottlenecked by retrieval, not generation, so you can use a *
 - **Llama 4 Scout** — long context (useful for many extracted pages at once) and multimodal.
 - **Gemma 4** — efficient smaller models for the minimal-viable profile.
 
-No single model dominates every axis; choose by your dominant workload (reasoning depth vs. throughput vs. context length) and validate on your own grounded-search eval. For the minimal profile, an 8B-class instruction model with prompt-based inline citation plus a DeBERTa NLI verifier is a credible production starting point. (See the repository's frontier- and open-model surveys for current rankings.)
+No single model dominates every axis. For grounded search specifically, weight your selection on criteria that generic benchmarks miss:
+
+- **Citation-format adherence** — does it reliably emit the inline citation syntax you asked for, every time? (This, not raw reasoning, is often the deciding factor.)
+- **Structured-output & tool-use reliability** — for agentic loops and JSON citation objects.
+- **Context length under many sources** — and *quality* at long context, not just the advertised window, when you stuff 10–20 extracted pages.
+- **Runtime/serving** — quantisation support, vLLM/TGI/llama.cpp compatibility, batching, latency, and cost at your volume.
+
+For the minimal profile (extractive, few sources), an 8B-class instruction model with prompt-based inline citation plus a DeBERTa NLI verifier is a credible starting point — but qualify that by task complexity: multi-hop synthesis and high citation fidelity push you toward larger models. Validate on your own grounded-search eval ([Section 11](#11-evaluation)); see the repository's frontier- and open-model surveys for current rankings.
 
 ---
 
 ## 9. Hyperscaler Managed Grounding
 
 If you would rather buy the grounding layer, the major clouds offer managed equivalents. Coverage is uneven — AWS, GCP, and Azure are mature; IBM and Oracle are thinner.
+
+**Distinguish two different things these vendors sell**, because only one is *grounded web search*: (1) **live open-web grounding** — answers grounded in real-time public search results (GCP *Grounding with Google Search*, Azure *Grounding with Bing*); versus (2) **enterprise-corpus RAG** — grounding over *your configured* documents/connectors (AWS Bedrock Knowledge Bases, GCP *Vertex AI Search*, Azure Foundry IQ, IBM OpenRAG). Bedrock's web-crawler connector ingests pages into your corpus; it is not the same as querying the live open web. Pick the category that matches your problem before comparing vendors.
 
 - **AWS — Bedrock Knowledge Bases.** Managed RAG with auto-ingestion/embedding/reranking, **citations in responses**, and *agentic retrieval* (multi-hop query decomposition). Connectors for S3, SharePoint, Confluence, web crawler. **Contextual Grounding guardrails** detect hallucination/ungrounded output as a first-class feature. Integrates with AgentCore Gateway (MCP-compatible). The most complete managed grounding stack for the build-vs-buy comparison.
 - **GCP — Vertex AI grounding.** *Grounding with Google Search* grounds Gemini in real-time results with byte-indexed `groundingMetadata` citations and a dynamic-retrieval threshold; *Grounding with Vertex AI Search* grounds on your own data (combinable, up to 10 data sources); *Enterprise Web Search* offers web grounding **without query logging** for regulated industries. Now under the Gemini Enterprise Agent Platform.
@@ -360,6 +418,21 @@ You cannot improve grounding you do not measure. Use both offline attribution me
 - **Freshness** (age of cited sources) and abstention rate.
 - Drift monitoring (citations that stop resolving over time).
 
+**Evaluation matrix** — the metrics worth tracking, by stage:
+
+| Stage | Metric | What it catches |
+|---|---|---|
+| Retrieval | source recall@k | did the evidence even get retrieved? |
+| Retrieval | freshness (median source age) | stale answers on time-sensitive queries |
+| Citation | citation precision / recall (ALCE) | do citations support claims / are claims cited? |
+| Citation | span IoU vs gold | are the cited *offsets* right, not just the doc? |
+| Verification | unsupported-claim rate | hallucinated/ungrounded statements shipped |
+| Verification | contradiction rate | claims that conflict with their own source |
+| Verification | abstention calibration | does it abstain when it should (not too much/little)? |
+| System | latency (P50/P95), cost/query | operational viability |
+
+Break every metric down **by query class** (factual lookup vs comparison vs multi-hop vs time-sensitive) — aggregate numbers hide the failure modes that matter.
+
 A pragmatic harness: run ALCE-style precision/recall on a gold set in CI, and track verification rate + abstention live. Beware "citation washing" — inline citations can create an *illusion* of reliability; the verification stage is what makes them real.
 
 ---
@@ -394,6 +467,17 @@ Grounded search reaches out to the live web and republishes others' content with
 - **SEO spam & source poisoning.** Adversaries optimise content to rank and to be cited. Mitigate with **source-reputation scoring** (credibility weighting, as in this article's own rubric), preferring primary/established domains, and cross-checking a claim against ≥2 independent sources before stating it with confidence.
 - **Citation integrity.** Verify that cited URLs resolve and that the cited span actually entails the claim (§5) — both to catch model hallucination and to catch poisoned/altered sources.
 
+**Fetcher hardening (you are running a server-side URL fetcher — treat it as attack surface):**
+
+- **SSRF prevention.** A grounded-search fetcher will dereference URLs an attacker can influence (via search results or user input). Block requests to private/link-local ranges (`127.0.0.0/8`, `10/8`, `172.16/12`, `192.168/16`, `169.254.169.254` cloud metadata, IPv6 ULA), resolve-then-validate to defeat DNS rebinding, and disallow non-`http(s)` schemes (`file://`, `gopher://`).
+- **Sandboxed fetch/render.** Run extraction (especially JS-rendering headless browsers) in an isolated, network-egress-restricted, ephemeral sandbox with no credentials and no access to internal services. Never reuse an authenticated browser profile for grounding fetches.
+- **Content limits & sanitisation.** Enforce MIME-type allowlists, max response size, and timeouts; sandbox/scan PDFs and office files (malware, embedded scripts); strip `<script>`/HTML before the text reaches the model; reject binaries you do not intend to parse.
+- **URL allow/deny lists** for known-malicious or out-of-policy domains, applied before fetch.
+
+**Content reuse:**
+
+- **Copyright, caching & opt-outs.** Quoting for citation is generally defensible, but storing large verbatim copies, ignoring publisher opt-out signals (e.g. AI-usage directives), or serving long passages can create exposure. Cache the minimum needed for verification, honour opt-outs, and bound quotation length. (General guidance, not legal advice.)
+
 ---
 
 ## 14. Build Recommendations
@@ -408,13 +492,30 @@ A concrete, open-source-first stack and the decision points that matter:
 6. **Treat fetched content as untrusted data.** Bake in injection resistance and source-reputation scoring from day one.
 7. **Buy the grounding layer (AWS Bedrock KB / GCP Vertex grounding / Azure Foundry IQ) when** speed-to-market and managed compliance outweigh control and per-query cost at your volume.
 
+### 14.1 Build checklist
+
+A launch-readiness sequence — each item maps to a section above:
+
+- [ ] **Search backend** chosen, with a fallback provider (§3.1, §3.5)
+- [ ] **Fetch policy**: snippet-only vs selective vs full extraction, matched to your profile (§2.2)
+- [ ] **Extraction** with fallback (Trafilatura → Firecrawl) and **offsets preserved** (§3.2, §2.1.1)
+- [ ] **Chunk schema** carries `url`/`canonical_url`/offsets/`content_hash`/trust (§2.1.1)
+- [ ] **Retrieval + rerank** config: hybrid weights, RRF k, candidate/return counts, dedup + freshness + trust scoring (§3.4)
+- [ ] **Citation format** the generator must emit, and granularity target (§4)
+- [ ] **Verifier** + calibrated thresholds + abstention policy + claim-type routing (§5, §5.1)
+- [ ] **Eval set** with gold answers; ALCE-style citation precision/recall in CI (§11)
+- [ ] **Security**: SSRF blocklist, sandboxed fetch, content sanitisation, injection tests (§13)
+- [ ] **Caching** with freshness-aware TTLs (§12)
+- [ ] **Observability**: full per-answer trajectory logged (§12)
+- [ ] **Launch gates**: min citation precision, max unsupported-claim rate, latency/cost budgets
+
 ---
 
 ## 15. Areas of Uncertainty & Caveats
 
 - **Reverse-engineered internals.** Perplexity's architecture (§10) is reconstructed from third-party analysis with possible commercial bias — directional only.
 - **Preprint-heavy frontier.** Much of §6 (Search-R1, DeepResearcher, ZeroSearch, R1-Searcher, WebThinker, Search-o1) is 2025–26 work, some not yet peer-reviewed and reproduced; reported gains are indicative.
-- **Vendor pricing is volatile.** All per-query prices (§3, §9) are 2026 snapshots from vendor pages and shift with acquisitions (Nebius–Tavily), tier changes (Brave free-tier retirement), and litigation. Re-check before committing.
+- **Vendor pricing is volatile.** All per-query prices (§3, §9) are 2026 snapshots from vendor pages and shift with acquisitions (Nebius–Tavily), tier changes, and litigation. Re-check the vendor page before committing — several figures here were already stale within months of first writing.
 - **English-centric evidence.** Retrieval quality, extraction accuracy, and NLI-verifier availability are materially worse in low-resource languages; this article's sources are overwhelmingly English.
 - **Thin IBM/Oracle coverage.** Managed grounding evidence for IBM watsonx and Oracle OCI is limited; validate current capabilities directly.
 - **Limited independent benchmarking.** Cross-system, apples-to-apples comparisons (RL vs. prompt-orchestrated; backend A vs. B on identical queries) are scarce — benchmark on your own workload.
@@ -424,7 +525,9 @@ A concrete, open-source-first stack and the decision points that matter:
 
 ## References
 
-**Grounding, attribution & verification (academic)**
+Sources are graded by type: **[peer-reviewed]** academic venue, **[official]** vendor/primary documentation, **[vendor]** vendor marketing/pricing page, **[secondary]** third-party blog/analysis (indicative, cross-checked where possible), **[speculative]** reverse-engineering. Treat pricing/benchmark figures from **[vendor]**/**[secondary]** sources as indicative and re-verify against primary sources before relying on them.
+
+**Grounding, attribution & verification — [peer-reviewed] except as noted**
 
 1. Rashkin et al. — Measuring Attribution in NLG Models (AIS), *Computational Linguistics* 2023 — https://aclanthology.org/2023.cl-4.2/
 2. Gao et al. — RARR: Researching and Revising What Language Models Say, ACL 2023 — https://arxiv.org/abs/2210.08726
@@ -456,46 +559,48 @@ A concrete, open-source-first stack and the decision points that matter:
 
 **Retrieval, search backends & reranking**
 
-25. Bing Search APIs Retiring Aug 2025, Microsoft Lifecycle — https://learn.microsoft.com/en-us/lifecycle/announcements/bing-search-api-retirement
-26. Google Custom Search JSON API pricing/retirement — https://blog.expertrec.com/google-custom-search-json-api-simplified/
-27. Search & Extraction APIs for AI Agents — Cost Comparison (2026) — https://codenote.net/en/posts/tavily-alternatives-cost-comparison-search-extract-api/
-28. Exa/Tavily/Serper/Brave comparison — https://rhumb.dev/blog/exa-vs-tavily-vs-serper-vs-brave-search
-29. SearXNG — https://github.com/searxng/searxng
-30. Trafilatura evaluation — https://trafilatura.readthedocs.io/en/latest/evaluation.html
-31. Query transformation (HyDE / Multi-Query / Step-Back / Decomposition) — https://neelmishra.github.io/blog/mlops/rag/query-transformation.html
-32. Best Rerankers for RAG in 2026 — https://futureagi.com/blog/best-rerankers-for-rag-2026/
-33. jina-reranker-v3 — https://arxiv.org/html/2509.25085v3
-34. Hybrid Search & Re-ranking in Production RAG 2026 — https://appscale.blog/en/blog/hybrid-search-and-reranking-production-rag-bm25-dense-cross-encoder-2026
+25. [official] Bing Search APIs Retiring Aug 2025, Microsoft Lifecycle — https://learn.microsoft.com/en-us/lifecycle/announcements/bing-search-api-retirement
+26. [official] Custom Search JSON API — Google for Developers (deprecation/overview; confirm current status) — https://developers.google.com/custom-search/v1/overview
+27. [vendor] Brave Search API — pricing/free tier — https://brave.com/search/api/
+28. [vendor] Exa — pricing/free tier — https://exa.ai/pricing
+29. [secondary] Search & Extraction APIs for AI Agents — Cost Comparison (2026) — https://codenote.net/en/posts/tavily-alternatives-cost-comparison-search-extract-api/
+30. [secondary] Exa/Tavily/Serper/Brave comparison — https://rhumb.dev/blog/exa-vs-tavily-vs-serper-vs-brave-search
+31. [official] SearXNG — https://github.com/searxng/searxng
+32. [official] Trafilatura evaluation — https://trafilatura.readthedocs.io/en/latest/evaluation.html
+33. [secondary] Query transformation (HyDE / Multi-Query / Step-Back / Decomposition) — https://neelmishra.github.io/blog/mlops/rag/query-transformation.html
+34. [secondary] Best Rerankers for RAG in 2026 — https://futureagi.com/blog/best-rerankers-for-rag-2026/
+35. [peer-reviewed] jina-reranker-v3 — https://arxiv.org/abs/2509.25085
+36. [secondary] Hybrid Search & Re-ranking in Production RAG 2026 — https://appscale.blog/en/blog/hybrid-search-and-reranking-production-rag-bm25-dense-cross-encoder-2026
 
-**Open-source frameworks & answer engines**
+**Open-source frameworks & answer engines — [official] repos/docs**
 
-35. Perplexica — https://github.com/ItzCrazyKns/Perplexica
-36. GPT-Researcher — https://github.com/assafelovic/gpt-researcher
-37. Morphic — https://github.com/miurla/morphic
-38. Farfalle — https://github.com/rashadphz/farfalle
-39. Khoj — https://github.com/khoj-ai/khoj
-40. LeptonAI search_with_lepton — https://github.com/leptonai/search_with_lepton
-41. LangGraph Agentic RAG — https://docs.langchain.com/oss/python/langgraph/agentic-rag
-42. LlamaIndex CitationQueryEngine — https://developers.llamaindex.ai/python/examples/query_engine/citation_query_engine/
-43. Haystack (deepset) — https://github.com/deepset-ai/haystack
-44. DSPy RAG — https://dspy.ai/tutorials/rag/
-45. SearXNG self-hosted grounding pipeline (reference impl) — https://github.com/TadMSTR/searxng-mcp
+37. Perplexica — https://github.com/ItzCrazyKns/Perplexica
+38. GPT-Researcher — https://github.com/assafelovic/gpt-researcher
+39. Morphic — https://github.com/miurla/morphic
+40. Farfalle — https://github.com/rashadphz/farfalle
+41. Khoj — https://github.com/khoj-ai/khoj
+42. LeptonAI search_with_lepton — https://github.com/leptonai/search_with_lepton
+43. LangGraph Agentic RAG — https://docs.langchain.com/oss/python/langgraph/agentic-rag
+44. LlamaIndex CitationQueryEngine — https://developers.llamaindex.ai/python/examples/query_engine/citation_query_engine/
+45. Haystack (deepset) — https://github.com/deepset-ai/haystack
+46. DSPy RAG — https://dspy.ai/tutorials/rag/
+47. SearXNG self-hosted grounding pipeline (reference impl) — https://github.com/TadMSTR/searxng-mcp
 
 **Proprietary systems & managed grounding**
 
-46. Grounding with Google Search (Gemini API) — https://ai.google.dev/gemini-api/docs/google-search
-47. OpenAI Responses API — Web search — https://developers.openai.com/api/docs/guides/tools-web-search
-48. Anthropic Claude web search tool — https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool
-49. How Perplexity AI Answers Work (third-party, directional) — https://ziptie.dev/blog/how-perplexity-ai-answers-work/
-50. Perplexity Research — Architecting an AI-First Search API — https://research.perplexity.ai/articles/architecting-and-evaluating-an-ai-first-search-api
-51. How Microsoft Copilot Search Works (third-party) — https://rankly.substack.com/p/how-microsoft-copilot-search-works
-52. AWS Bedrock Knowledge Bases — https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html
-53. GCP Grounding with Google Search (Vertex) — https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search
-54. Azure OpenAI "On Your Data" deprecation — https://learn.microsoft.com/en-us/azure/foundry-classic/openai/concepts/use-your-data
-55. IBM watsonx.data (OpenRAG) — https://www.ibm.com/products/watsonx-data
-56. Oracle AI updates (June 2026) — https://blogs.oracle.com/ai-and-datascience/whats-new-in-ai-june-2026
+48. [official] Grounding with Google Search (Gemini API) — https://ai.google.dev/gemini-api/docs/google-search
+49. [official] OpenAI Responses API — Web search — https://developers.openai.com/api/docs/guides/tools-web-search
+50. [official] Anthropic Claude web search tool — https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool
+51. [speculative] How Perplexity AI Answers Work (third-party reverse-engineering, directional) — https://ziptie.dev/blog/how-perplexity-ai-answers-work/
+52. [vendor] Perplexity Research — Architecting an AI-First Search API — https://research.perplexity.ai/articles/architecting-and-evaluating-an-ai-first-search-api
+53. [secondary] How Microsoft Copilot Search Works (third-party) — https://rankly.substack.com/p/how-microsoft-copilot-search-works
+54. [official] AWS Bedrock Knowledge Bases — https://docs.aws.amazon.com/bedrock/latest/userguide/knowledge-base.html
+55. [official] GCP Grounding with Google Search (Vertex) — https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/grounding/grounding-with-google-search
+56. [official] Azure OpenAI "On Your Data" deprecation — https://learn.microsoft.com/en-us/azure/foundry-classic/openai/concepts/use-your-data
+57. [official] IBM watsonx.data (OpenRAG) — https://www.ibm.com/products/watsonx-data
+58. [vendor] Oracle AI updates (June 2026) — https://blogs.oracle.com/ai-and-datascience/whats-new-in-ai-june-2026
 
-**Open-weight models for the generation core**
+**Open-weight models for the generation core — [secondary]**
 
-57. DeepSeek V3 vs Llama 4 vs Qwen 3 (2026) — https://appscale.blog/en/blog/deepseek-v3-vs-llama-4-vs-qwen-3-open-weight-comparison-2026
-58. Best Open-Source LLM 2026 — https://codersera.com/blog/best-open-source-llm-2026-llama-4-qwen-3-5-deepseek-v4-gemma-4-mistral/
+59. DeepSeek V3 vs Llama 4 vs Qwen 3 (2026) — https://appscale.blog/en/blog/deepseek-v3-vs-llama-4-vs-qwen-3-open-weight-comparison-2026
+60. Best Open-Source LLM 2026 — https://codersera.com/blog/best-open-source-llm-2026-llama-4-qwen-3-5-deepseek-v4-gemma-4-mistral/

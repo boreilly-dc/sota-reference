@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-06-23 |
-| Version | 3.1 |
+| Last Updated | 2026-07-03 |
+| Version | 3.2 |
 
 ---
 
@@ -43,14 +43,14 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 | 9 | **Claude Opus 4.8 (thinking)** | Anthropic | 2026-05-28 | Claude Opus 4.7 | Claude Fable 5 | Proprietary | Undisclosed | 1M | ~50-60 (2.5× fast mode) | ~2-5 s |
 | 10 | **GPT-5.5 (high)** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
 
-**Key observations (LMArena Elo refreshed to the 22 June 2026 snapshot):**
+**Key observations (LMArena Elo refreshed to the 2 July 2026 snapshot):**
 - **Claude Fable 5** (released 9 June 2026) debuts at the top of the text Arena at **Elo 1508**, the first Claude 5–generation model in general availability. It is the safeguarded public deployment of Anthropic's Mythos-class weights — the restricted **Claude Mythos 5** (Project Glasswing) shares the same underlying model and is described as Anthropic's most capable to date. Fable 5 ships with a 1M-token context (up to 128K output tokens), always-on adaptive thinking, and a January 2026 knowledge cutoff, priced at $10/M input and $50/M output (with the standard 90% prompt-caching discount). It is generally available on the Claude API, Amazon Bedrock, Vertex AI, and Microsoft Foundry from launch.
-- Anthropic also holds the rest of the top of the Arena behind Fable 5. **Claude Opus 4.6 (thinking) sits at Elo 1504** and Opus 4.7 (thinking) at 1502 — roughly +17 over the nearest non-Anthropic model (Muse Spark at 1487, with Gemini 3.1 Pro Preview just behind at 1486). Note the Opus lineage is *non-monotonic on the text arena*: the newer Opus 4.7 and Opus 4.8 score slightly below Opus 4.6 here, even though they lead on agentic coding and tool-use benchmarks.
-- **Claude Opus 4.8** (released 28 May 2026) was the flagship until Fable 5, entering the Arena at Elo 1483 (thinking) / 1478 (base). It posts the strongest agentic-coding and computer-use results of the Opus line (SWE-Bench Pro 69.2%), with a 2.5× fast mode now ~3× cheaper than on Opus 4.7, at unchanged $5/$25 per 1M pricing.
+- Anthropic also holds the rest of the top of the Arena behind Fable 5. **Claude Opus 4.8** leads the Opus line at Elo 1510 (converging upward with ~18K votes), followed by **Opus 4.7** at 1505 and **Opus 4.6 (thinking)** at 1503. Muse Spark (1487) and Gemini 3.1 Pro Preview (1487) follow as the nearest non-Anthropic models.
+- **Claude Opus 4.8** (released 28 May 2026) posts the strongest agentic-coding and computer-use results of the Opus line (SWE-Bench Pro 69.2%), with a 2.5× fast mode now ~3× cheaper than on Opus 4.7, at unchanged $5/$25 per 1M pricing.
 - **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Its best Arena variant (high) sits at Elo 1481. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
 - **Muse Spark** (Meta) holds a place in the Arena top 6 at Elo 1487. Details are limited.
 - GPT-5.4 Pro still leads BenchLM's overall composite at 92/100 (#1 of 225+ models evaluated); GPT-5.5 follows at 91/100.
-- GLM-5.1 (Zhipu AI, Elo 1475) is the highest-ranked open-source model on the text arena; the newer GLM-5.2 (13 June 2026, Elo 1471, 1M context, MIT) leads it on coding but sits marginally below on chat preference — see the [Open Source](#open-source) section and the [GLM-5.2 overview](glm-5-2.md).
+- GLM-5.1 (Zhipu AI, Elo 1473) is the highest-ranked open-source model on the text arena; the newer GLM-5.2 (13 June 2026, Elo 1474, 1M context, MIT) leads it on coding and sits marginally above on chat preference — see the [Open Source](#open-source) section and the [GLM-5.2 overview](glm-5-2.md).
 
 ## Agentic Coding
 

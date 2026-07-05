@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-07-03 |
-| Version | 3.3 |
+| Last Updated | 2026-07-06 |
+| Version | 3.4 |
 
 ---
 

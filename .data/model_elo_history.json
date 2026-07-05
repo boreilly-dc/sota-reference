@@ -7,7 +7,7 @@
       "frontier-models-benchmark.md (this repo)"
     ],
     "notes": "Elo scale was recalibrated several times by LMSYS/LMArena. Models with plot:true have confirmed current arena scores; plot:false models retain their last-known score but are excluded from charts. For models with multiple variants (e.g. -high, -thinking), the best-performing variant is used.",
-    "last_updated": "2026-07-03"
+    "last_updated": "2026-07-06"
   },
   "labs": {
     "OpenAI": {
@@ -50,7 +50,8 @@
     ],
     "GPT (pro)": [
       "GPT-5.2 Pro",
-      "GPT-5.4 Pro"
+      "GPT-5.4 Pro",
+      "GPT-5.5 Pro"
     ],
     "Claude Opus": [
       "Claude 3 Opus",
@@ -84,7 +85,8 @@
       "Grok 2",
       "Grok 3",
       "Grok 4.1",
-      "Grok 4.20 Beta"
+      "Grok 4.20 Beta",
+      "Grok 4.3"
     ],
     "Llama": [
       "Llama 3 70B",
@@ -140,7 +142,7 @@
       "lab": "OpenAI",
       "family": "GPT-5",
       "release_date": "2026-03-05",
-      "elo": 1478,
+      "elo": 1495,
       "open_source": false,
       "plot": true
     },
@@ -149,7 +151,7 @@
       "lab": "Anthropic",
       "family": "Claude 4",
       "release_date": "2025-06-25",
-      "elo": 1449,
+      "elo": 1360,
       "open_source": false,
       "plot": true
     },
@@ -176,7 +178,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-02-17",
-      "elo": 1472,
+      "elo": 1467,
       "open_source": false,
       "plot": true
     },
@@ -185,7 +187,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-02-05",
-      "elo": 1504,
+      "elo": 1490,
       "open_source": false,
       "plot": true
     },
@@ -203,7 +205,7 @@
       "lab": "Google DeepMind",
       "family": "Gemini 3",
       "release_date": "2026-02-19",
-      "elo": 1486,
+      "elo": 1505,
       "open_source": false,
       "plot": true
     },
@@ -221,7 +223,7 @@
       "lab": "xAI",
       "family": "Grok",
       "release_date": "2026-02-17",
-      "elo": 1475,
+      "elo": 1496,
       "open_source": false,
       "plot": true
     },
@@ -230,7 +232,7 @@
       "lab": "Alibaba",
       "family": "Qwen",
       "release_date": "2025-04-29",
-      "elo": 1421,
+      "elo": 1488,
       "open_source": true,
       "plot": true
     },
@@ -239,7 +241,7 @@
       "lab": "Zhipu AI",
       "family": "GLM",
       "release_date": "2026-02-11",
-      "elo": 1457,
+      "elo": 1450,
       "open_source": true,
       "plot": true
     },
@@ -248,7 +250,7 @@
       "lab": "Zhipu AI",
       "family": "GLM",
       "release_date": "2026-04-08",
-      "elo": 1472,
+      "elo": 1467,
       "open_source": true,
       "plot": true
     },
@@ -284,7 +286,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-04-16",
-      "elo": 1502,
+      "elo": 1505,
       "open_source": false,
       "plot": true
     },
@@ -293,7 +295,7 @@
       "lab": "OpenAI",
       "family": "GPT-5",
       "release_date": "2026-04-23",
-      "elo": 1481,
+      "elo": 1506,
       "open_source": false,
       "plot": true
     },
@@ -302,7 +304,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-05-28",
-      "elo": 1484,
+      "elo": 1512,
       "open_source": false,
       "plot": true
     },
@@ -311,7 +313,7 @@
       "lab": "Anthropic",
       "family": "Claude 5",
       "release_date": "2026-06-09",
-      "elo": 1509,
+      "elo": 1525,
       "open_source": false,
       "plot": true
     },
@@ -329,7 +331,7 @@
       "lab": "DeepSeek",
       "family": "DeepSeek",
       "release_date": "2026-04-20",
-      "elo": 1458,
+      "elo": 1467,
       "open_source": true,
       "plot": true
     },
@@ -365,7 +367,7 @@
       "lab": "OpenAI",
       "family": "GPT-5",
       "release_date": "2025-08-07",
-      "elo": 1434,
+      "elo": 1455,
       "open_source": false,
       "plot": false
     },
@@ -410,7 +412,7 @@
       "lab": "Anthropic",
       "family": "Claude 4",
       "release_date": "2025-06-25",
-      "elo": 1389,
+      "elo": 1320,
       "open_source": false,
       "plot": false
     },
@@ -437,7 +439,7 @@
       "lab": "Google DeepMind",
       "family": "Gemini 2",
       "release_date": "2024-12-11",
-      "elo": 1361,
+      "elo": 1240,
       "open_source": false,
       "plot": false
     },
@@ -446,7 +448,7 @@
       "lab": "Google DeepMind",
       "family": "Gemini 2",
       "release_date": "2025-03-25",
-      "elo": 1448,
+      "elo": 1345,
       "open_source": false,
       "plot": false
     },
@@ -464,7 +466,7 @@
       "lab": "xAI",
       "family": "Grok",
       "release_date": "2025-02-17",
-      "elo": 1412,
+      "elo": 1330,
       "open_source": false,
       "plot": false
     },
@@ -491,7 +493,7 @@
       "lab": "Meta",
       "family": "Llama",
       "release_date": "2025-04-05",
-      "elo": 1417,
+      "elo": 1260,
       "open_source": true,
       "plot": false
     },
@@ -509,7 +511,7 @@
       "lab": "DeepSeek",
       "family": "DeepSeek",
       "release_date": "2024-12-26",
-      "elo": 1395,
+      "elo": 1310,
       "open_source": true,
       "plot": false
     },
@@ -545,7 +547,7 @@
       "lab": "Mistral",
       "family": "Mistral",
       "release_date": "2024-07-24",
-      "elo": 1314,
+      "elo": 1250,
       "open_source": false,
       "plot": false
     },
@@ -563,7 +565,7 @@
       "lab": "Alibaba",
       "family": "Qwen",
       "release_date": "2024-09-19",
-      "elo": 1303,
+      "elo": 1255,
       "open_source": true,
       "plot": false
     },
@@ -602,6 +604,24 @@
       "elo": 1366,
       "open_source": true,
       "plot": false
+    },
+    {
+      "name": "GPT-5.5 Pro",
+      "lab": "OpenAI",
+      "family": "GPT-5",
+      "release_date": "2026-06-28",
+      "elo": 1510,
+      "open_source": false,
+      "plot": true
+    },
+    {
+      "name": "Grok 4.3",
+      "lab": "xAI",
+      "family": "Grok 4",
+      "release_date": "2026-06-20",
+      "elo": 1496,
+      "open_source": false,
+      "plot": true
     }
   ]
 }

@@ -211,7 +211,7 @@
       "lab": "Google DeepMind",
       "family": "Gemini 3",
       "release_date": "2026-02-19",
-      "elo": 1485,
+      "elo": 1505,
       "open_source": false,
       "plot": true
     },
@@ -265,7 +265,7 @@
       "lab": "Zhipu AI",
       "family": "GLM",
       "release_date": "2026-06-13",
-      "elo": 1468,
+      "elo": 1472,
       "open_source": true,
       "plot": true
     },
@@ -292,7 +292,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-04-16",
-      "elo": 1503,
+      "elo": 1505,
       "open_source": false,
       "plot": true
     },
@@ -310,7 +310,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-05-28",
-      "elo": 1483,
+      "elo": 1512,
       "open_source": false,
       "plot": true
     },
@@ -499,7 +499,7 @@
       "lab": "Meta",
       "family": "Llama",
       "release_date": "2025-04-05",
-      "elo": 1327,
+      "elo": 1336,
       "open_source": true,
       "plot": false
     },

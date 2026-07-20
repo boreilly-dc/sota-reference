@@ -2,6 +2,7 @@
 """Plot AI model Elo ratings over time, coloured by lab, with family connections."""
 
 import json
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -136,9 +137,34 @@ def plot_chart(models, labs, families, *, output_path, title_suffix,
     print(f"Saved {output_path}")
 
 
+def check_monotonicity(models, families):
+    model_map = {m["name"]: m for m in models}
+    warnings = []
+    for family_name, members in families.items():
+        prev_elo = None
+        prev_name = None
+        for name in members:
+            model = model_map.get(name)
+            if not model:
+                continue
+            elo = model["elo"]
+            if prev_elo is not None and elo <= prev_elo:
+                warnings.append(f"{family_name}: {prev_name} ({prev_elo}) >= {name} ({elo})")
+            prev_elo = elo
+            prev_name = name
+    return warnings
+
+
 def main():
     with open(DATA_FILE) as f:
         data = json.load(f)
+
+    mono_warnings = check_monotonicity(data["models"], data["families"])
+    if mono_warnings:
+        print("Refusing to plot while family monotonicity warnings remain:", file=sys.stderr)
+        for warning in mono_warnings:
+            print(f"  {warning}", file=sys.stderr)
+        sys.exit(1)
 
     labs = data["labs"]
     families = data["families"]

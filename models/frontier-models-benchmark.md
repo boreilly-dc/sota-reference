@@ -4,7 +4,7 @@
 |-------|-------|
 | Created | 2026-03-17 |
 | Last Updated | 2026-07-20 |
-| Version | 3.5 |
+| Version | 3.6 |
 
 ---
 

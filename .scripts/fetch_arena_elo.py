@@ -10,6 +10,7 @@ import argparse
 import json
 import re
 import statistics
+import sys
 import urllib.request
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -597,6 +598,10 @@ def main():
         print(f"\n  Monotonicity warnings:")
         for w in mono_warnings:
             print(w)
+        if args.apply:
+            print("\n  Refusing to write while family monotonicity warnings remain.")
+            print("  Re-check the current leaderboard and correct stale predecessor/successor Elo values first.")
+            sys.exit(1)
 
     if args.apply and (changes or new_models):
         today = datetime.now().strftime("%Y-%m-%d")

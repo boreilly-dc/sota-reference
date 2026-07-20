@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-07-06 |
-| Version | 3.4 |
+| Last Updated | 2026-07-20 |
+| Version | 3.5 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo and Best Overall section were refreshed on 23 June 2026 (Arena snapshot of 22 June 2026). The Agentic Coding and Tool Use sections were refreshed on 8 June 2026; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
+This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo plot data was refreshed on 20 July 2026 (Arena snapshot of 19 July 2026); the narrative Best Overall section remains based on the early-July refresh, because the current public snapshot exposes only the top 10 text entries. The Agentic Coding and Tool Use sections were refreshed on 8 June 2026; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
 
 Each model entry includes origin, release date, model lineage, licence, parameter count, context window, and throughput data where known.
 

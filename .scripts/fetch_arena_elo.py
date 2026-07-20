@@ -43,7 +43,11 @@ SLUG_MAP = {
     "claude-3-opus":                  "Claude 3 Opus",
     "claude-3.5-sonnet":              "Claude 3.5 Sonnet",
     "claude-3.5-sonnet-v2":           "Claude 3.5 Sonnet v2",
+    "claude-3-5-sonnet-20240620":     "Claude 3.5 Sonnet",
+    "claude-3-5-sonnet-20241022":     "Claude 3.5 Sonnet v2",
     "claude-sonnet-4":                "Claude Sonnet 4",
+    "claude-sonnet-4-20250514":       "Claude Sonnet 4",
+    "claude-sonnet-4-20250514-thinking-32k": "Claude Sonnet 4",
     "claude-opus-4":                  "Claude Opus 4",
     "claude-sonnet-4-5":              "Claude Sonnet 4.5",
     "claude-sonnet-4-6":              "Claude Sonnet 4.6",
@@ -72,6 +76,9 @@ SLUG_MAP = {
     # xAI
     "grok-2":                         "Grok 2",
     "grok-3":                         "Grok 3",
+    "grok-3-preview-02-24":           "Grok 3",
+    "grok-3-mini-high":               "Grok 3",
+    "grok-3-mini-beta":               "Grok 3",
     "grok-4.1":                       "Grok 4.1",
     "grok-4.20-beta1":                "Grok 4.20 Beta",
 
@@ -79,6 +86,7 @@ SLUG_MAP = {
     "llama-3-70b":                    "Llama 3 70B",
     "llama-3.1-405b":                 "Llama 3.1 405B",
     "llama-4-maverick":               "Llama 4 Maverick",
+    "llama-4-maverick-17b-128e-instruct": "Llama 4 Maverick",
     "muse-spark":                     "Muse Spark",
 
     # DeepSeek
@@ -172,6 +180,7 @@ SKIP_PREFIXES = [
 VARIANT_SUFFIXES = [
     "-high",
     "-thinking",
+    "-xhigh",
     "-chat-latest",
     "-instant",
     "-mini",
@@ -388,12 +397,14 @@ def discover_model(slug: str, score: int, data: dict) -> dict | None:
 
     family = infer_family(display_name, lab, data["families"])
     is_open = LAB_OPEN_SOURCE.get(lab, False)
+    if slug.startswith("muse-"):
+        is_open = False
 
     return {
         "name": display_name,
         "lab": lab,
         "family": family or lab,
-        "release_date": "unknown",
+        "release_date": datetime.now().strftime("%Y-%m-%d"),
         "elo": score,
         "open_source": is_open,
         "plot": True,
@@ -426,7 +437,7 @@ def fetch_snapshot(date: str, discovered: dict | None = None) -> tuple:
     unmapped: list[tuple[str, int]] = []
     for entry in raw["models"]:
         slug = entry["model"]
-        score = entry["score"]
+        score = round(entry["score"])
         display = resolve_slug(slug, discovered)
         if display == "__UNKNOWN__":
             unmapped.append((slug, score))

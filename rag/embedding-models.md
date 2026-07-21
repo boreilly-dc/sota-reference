@@ -4,7 +4,7 @@
 |-------|-------|
 | Created | 2026-03-19 |
 | Last Updated | 2026-07-21 |
-| Version | 4.0 |
+| Version | 4.1 |
 
 ---
 
@@ -12,6 +12,8 @@
 - [How to Read the Rankings](#how-to-read-the-rankings)
 - [Size Classes](#size-classes)
 - [Best-in-Class Matrix](#best-in-class-matrix)
+- [Best Open-Weight Models](#best-open-weight-models)
+- [Best Fully Open Models](#best-fully-open-models)
 - [Domain Recommendations](#domain-recommendations)
 - [Model Profiles by Size](#model-profiles-by-size)
 - [Retrieval Architecture Matters](#retrieval-architecture-matters)
@@ -26,7 +28,9 @@
 
 There is no single best embedding model for every workload. The best model changes with the domain, parameter budget, language, input length, modality, and retrieval architecture. The live MTEB leaderboard now contains separate suites for English, multilingual text, law, medicine, code, long-context retrieval, visual documents, and the beta Retrieval Embedding Benchmark (RTEB). This separation is useful because an overall MTEB average can hide a large domain-specific gap.
 
-As of **21 July 2026**, the strongest shortlists are:
+As of **21 July 2026**, the strongest shortlists are shown in three views: the absolute benchmark leader, the best open-weight submission, and the best fully-open submission. The open-weight view includes downloadable models with non-commercial or custom licences; the fully-open view requires permissive weights, training code, and training data.
+
+The main findings are:
 
 - **General English text:** `jina-embeddings-v5-text-nano` at 212M, `Jasper-Token-Compression-600M` at 607M, and the proprietary `ingot-8b-r3` at 7.6B lead their size classes on MTEB English v2. For a permissively licensed large model, use `Qwen3-Embedding-8B` as the safer production default.
 - **Multilingual text:** Microsoft `harrier-oss-v1-270m`, `harrier-oss-v1-0.6b`, and `harrier-oss-v1-27b` lead the small, medium, and very-large classes on MTEB Multilingual v2. The 27B model is MIT licensed and has a 131K-token limit.
@@ -35,6 +39,7 @@ As of **21 July 2026**, the strongest shortlists are:
 - **Finance and healthcare retrieval:** NVIDIA's July 2026 `Nemotron-3-Embed-8B` leads RTEB Finance and is the strongest submitted dense model in its size class on RTEB Healthcare. RTEB is still beta, and the model's custom NVIDIA licence needs a legal review.
 - **Long documents:** `GTE-ModernColBERT-v1` (149M) leads its class and ranks second overall on LongEmbed. Its late-interaction index uses many token vectors per document, so it is not storage-equivalent to a 149M dense encoder.
 - **Multimodal:** `jina-embeddings-v5-omni-small` (1.63B) leads MIEB Multilingual. `Nemotron-3-Embed-8B` leads ViDoRe v3.1 for visually rich document retrieval. The suites measure different tasks and cannot be merged into one ranking.
+- **Fully open:** CodeFuse F2LLM-v2 provides the broadest set of size-class leaders with permissive weights, training code, and training data. Jasper 600M leads the fully-open medium class for English v2. LateOn-Code leads the fully-open tiny and small code classes. GTE-ModernColBERT leads the fully-open small class on LongEmbed.
 
 Use these results to form a shortlist. Do not select a production model from a leaderboard alone. Run a held-out evaluation on the target corpus and measure nDCG@10, Recall@k, MRR, latency, peak memory, vector-index size, and cost.
 
@@ -48,7 +53,8 @@ This article applies the following rules:
 2. Scores from different benchmark suites or versions are not compared numerically.
 3. A dense encoder, sparse encoder, late-interaction model, and reranker are identified separately. Their storage and latency costs differ.
 4. Open weights do not mean open source. The licence, training code, and training data are separate properties.
-5. A benchmark winner is not always the recommended production model. Licence, reproducibility, deployment support, and data leakage can change the recommendation.
+5. In this article, **fully open** means downloadable weights, a permissive commercial licence, public training code, and public training data. A paper and model card support reproducibility but do not replace code or data.
+6. A benchmark winner is not always the recommended production model. Licence, reproducibility, deployment support, and data leakage can change the recommendation.
 
 ### Confidence labels
 
@@ -108,13 +114,53 @@ The table gives the leader returned by the live MTEB API on 21 July 2026 for eac
 - A higher parameter class does not always have a better score. The very-large entry is only the best model *inside that class*.
 - The scientific row is intentionally unfilled. SciFact, NFCorpus, arXiv, bioRxiv, and related tasks exist, but the current public leaderboard does not provide a clean, independent scientific-domain aggregate. Use a corpus-specific evaluation.
 - The legal, finance, and health rows show that benchmark definition matters. MTEB Law and RTEB Legal have different leaders. MTEB Medical and RTEB Healthcare also differ.
-- The matrix includes non-commercial and proprietary models when they lead. The deployment recommendations below prefer permissive licences.
+- The matrix includes non-commercial and proprietary models when they lead. The two matrices below make the open alternatives explicit.
+
+## Best Open-Weight Models
+
+This matrix filters each benchmark and size class to models with downloadable weights. **P** means a permissive commercial licence, **NC** means non-commercial, and **C** means a custom licence that needs review. Open weights do not imply public training code or data. Sparse baselines and rerankers are excluded so the entries remain embedding retrievers.
+
+| Domain and benchmark | Tiny (<100M) | Small (100–500M) | Medium (>500M–2B) | Large (>2B–10B) | Very large (>10B) |
+|----------------------|--------------|-------------------|--------------------|-----------------|-------------------|
+| **General English** — MTEB English v2 | GIST-small, P | Jina v5 nano, NC | Jasper 600M, P | QZhou-Embedding, P | F2LLM-v2-14B, P |
+| **General retrieval** — BEIR | MongoDB leaf-ir, P | Stella 400M v5, P | Stella 1.5B v5, P | Qwen3-Embedding-8B, P | F2LLM-v2-14B, P |
+| **Multilingual** — MTEB Multilingual v2 | F2LLM-v2-80M, P | Harrier 270M, P | Harrier 0.6B, P | Llama Embed Nemotron 8B, C | Harrier 27B, P |
+| **Code** — MTEB Code v1 | LateOn-Code-edge, P | LateOn-Code, P | F2LLM-v2-1.7B, P | C2LLM-7B, P | F2LLM-v2-14B, P |
+| **Legal** — MTEB Law v1 | Ivysaur, P | Arctic Embed M v2, P | Dinghy Law 0.6B, P | Euler Legal 8B, P | F2LLM-v2-14B, P |
+| **Finance retrieval** — RTEB beta | MongoDB leaf-ir, P | Jina v5 nano, NC | Nemotron-3 Embed 1B, C | Nemotron-3 Embed 8B, C | F2LLM-v2-14B, P |
+| **Medical** — MTEB Medical v1 | F2LLM-v2-80M, P | F2LLM-v2-330M, P | GTE-Qwen2-1.5B, P | GTE-Qwen2-7B, P | F2LLM-v2-14B, P |
+| **Healthcare retrieval** — RTEB beta | F2LLM-v2-80M, P | Jina v5 nano, NC | Nemotron-3 Embed 1B, C | Nemotron-3 Embed 8B, C | F2LLM-v2-14B, P |
+| **Long-context retrieval** — LongEmbed | Granite 97M R2, P | GTE-ModernColBERT, P | BidirLM 1B, P | F2LLM-v2-8B, P | F2LLM-v2-14B, P |
+| **Image-text, multilingual** — MIEB | Nomic Embed Vision 1.5, P | SigLIP Base 512, P | Jina v5 Omni Small, NC | E5-V, licence unclear | — |
+| **Visual documents** — ViDoRe v3.1 | — | EmbeddingGemma 300M, P | Nemotron-3 Embed 1B, C | Nemotron-3 Embed 8B, C | — |
+
+The open-weight matrix is often the practical shortlist. It still includes non-commercial and custom licences because the weights are downloadable. Use the fully-open matrix when auditability, modification, or reproducible training is a requirement.
+
+## Best Fully Open Models
+
+These entries pass the strict article test: downloadable weights, a permissive commercial licence, public training code, and public training data. The result can be lower than the open-weight leader because many strong models do not publish their complete training pipeline. **—** means no qualifying submitted model was found in that class. It does not prove that no fully-open model exists outside the submitted results. Missing MTEB artefact links are treated as missing evidence, not as proof that an artefact is unavailable.
+
+| Domain and benchmark | Tiny (<100M) | Small (100–500M) | Medium (>500M–2B) | Large (>2B–10B) | Very large (>10B) |
+|----------------------|--------------|-------------------|--------------------|-----------------|-------------------|
+| **General English** — MTEB English v2 | F2LLM-v2-80M | F2LLM-v2-330M | Jasper 600M | F2LLM-v2-8B | F2LLM-v2-14B |
+| **General retrieval** — BEIR | F2LLM-v2-80M | ColBERT-Zero | F2LLM-v2-1.7B | BGE-en-ICL | F2LLM-v2-14B |
+| **Multilingual** — MTEB Multilingual v2 | F2LLM-v2-80M | F2LLM-v2-330M | F2LLM-v2-1.7B | F2LLM-v2-8B | F2LLM-v2-14B |
+| **Code** — MTEB Code v1 | LateOn-Code-edge | LateOn-Code | F2LLM-v2-1.7B | F2LLM-v2-4B | F2LLM-v2-14B |
+| **Legal** — MTEB Law v1 | F2LLM-v2-80M | F2LLM-v2-330M | F2LLM-v2-1.7B | F2LLM-v2-8B | F2LLM-v2-14B |
+| **Finance retrieval** — RTEB beta | F2LLM-v2-80M | F2LLM-v2-330M | F2LLM-v2-1.7B | F2LLM-v2-8B | F2LLM-v2-14B |
+| **Medical** — MTEB Medical v1 | F2LLM-v2-80M | F2LLM-v2-330M | Jasper Vision-Language v1 | F2LLM-v2-8B | F2LLM-v2-14B |
+| **Healthcare retrieval** — RTEB beta | F2LLM-v2-80M | F2LLM-v2-330M | F2LLM-v2-1.7B | F2LLM-v2-8B | F2LLM-v2-14B |
+| **Long-context retrieval** — LongEmbed | F2LLM-v2-80M | GTE-ModernColBERT | F2LLM-v2-1.7B | F2LLM-v2-8B | F2LLM-v2-14B |
+| **Image-text, multilingual** — MIEB | — | LAION CLIP-L DataComp XL | LAION CLIP-H laion2B | LAION CLIP-bigG laion2B | — |
+| **Visual documents** — ViDoRe v3.1 | — | ColModernVBERT | — | Nomic Embed Multimodal 7B | — |
+
+F2LLM appears frequently because CodeFuse publishes the Apache-2.0 weights, training code, and training dataset for a broad family of sizes. This is a transparency advantage, not evidence that one family is optimal for every production corpus. Jasper 600M, LateOn-Code, GTE-ModernColBERT, LAION CLIP, and selected BGE/Nomic models provide independent fully-open alternatives.
 
 ## Domain Recommendations
 
 ### General RAG and enterprise search
 
-**Recommended default:** `Qwen3-Embedding-8B` when a large GPU is available; `Jasper-Token-Compression-600M` for a medium local model; `jina-embeddings-v5-text-nano` when its non-commercial licence is acceptable.
+**Recommended default:** `Qwen3-Embedding-8B` when a large GPU is available; `Jasper-Token-Compression-600M` for a medium local and fully-open model; `jina-embeddings-v5-text-nano` when its non-commercial licence is acceptable. Use F2LLM-v2 when a fully-open model is required at another size.
 
 Qwen3-Embedding-8B leads the large class on BEIR and has an Apache 2.0 licence, a 32K-token limit, Matryoshka dimensions, broad language coverage, and mature Sentence Transformers support. Jasper leads the medium class on MTEB English v2 and is MIT licensed with published training code and data. Jina v5 nano leads the small class on English v2, but its CC-BY-NC-4.0 licence excludes many commercial deployments.
 
@@ -200,69 +246,69 @@ Use reciprocal rank fusion to combine independent dense and lexical results. Add
 
 ### Tiny: under 100M
 
-| Model | Params | Type | Context | Licence | Best fit |
-|-------|--------|------|---------|---------|----------|
-| `LateOn-Code-edge` | 17M | Late interaction | Check model card | Apache 2.0 | Code retrieval |
-| `MongoDB/mdbr-leaf-ir` | 23M | Dense | Check model card | Check model card | General and finance retrieval baseline |
-| `GIST-small-Embedding-v0` | 33M | Dense | 512 | MIT | General English and routing baseline |
-| `F2LLM-v2-80M` | 80M | Dense | 40K | Apache 2.0 | Multilingual, medical, code-capable edge use |
-| `granite-embedding-97m-multilingual-r2` | 97M | Dense | 8K | Apache 2.0 | Commercial multilingual CPU and long-context baseline |
+| Model | Params | Type | Context | Licence | Openness | Best fit |
+|-------|--------|------|---------|---------|----------|----------|
+| `LateOn-Code-edge` | 17M | Late interaction | Check model card | Apache 2.0 | Fully open | Code retrieval |
+| `MongoDB/mdbr-leaf-ir` | 23M | Dense | Check model card | Check model card | Open weights | General and finance retrieval baseline |
+| `GIST-small-Embedding-v0` | 33M | Dense | 512 | MIT | Open weights | General English and routing baseline |
+| `F2LLM-v2-80M` | 80M | Dense | 40K | Apache 2.0 | Fully open | Multilingual, medical, code-capable edge use |
+| `granite-embedding-97m-multilingual-r2` | 97M | Dense | 8K | Apache 2.0 | Open weights | Commercial multilingual CPU and long-context baseline |
 
 Tiny models are useful for high-volume routing and first-stage retrieval. They give up recall on difficult semantic and cross-lingual queries. Quantise only after measuring the change in neighbour ordering.
 
 ### Small: 100M to 500M
 
-| Model | Params | Type | Context | Licence | Best fit |
-|-------|--------|------|---------|---------|----------|
-| `LateOn-Code` | 149M | Late interaction | 8K | Apache 2.0 | Code retrieval |
-| `GTE-ModernColBERT-v1` | 149M | Late interaction | 8K | Apache 2.0 | Long-document retrieval |
-| `jina-embeddings-v5-text-nano` | 212M | Dense + task adapters | 8K | CC-BY-NC-4.0 | English and multilingual quality where non-commercial terms fit |
-| `harrier-oss-v1-270m` | 268M | Dense | 32K | MIT | Multilingual commercial use |
-| `snowflake-arctic-embed-m-v2.0` | 305M | Dense | 8K | Apache 2.0 | Legal and general retrieval |
-| `F2LLM-v2-330M` | 334M | Dense | 40K | Apache 2.0 | Medical and multilingual retrieval |
-| `stella_en_400M_v5` | 435M | Dense | 8K | MIT | English BEIR retrieval |
+| Model | Params | Type | Context | Licence | Openness | Best fit |
+|-------|--------|------|---------|---------|----------|----------|
+| `LateOn-Code` | 149M | Late interaction | 8K | Apache 2.0 | Fully open | Code retrieval |
+| `GTE-ModernColBERT-v1` | 149M | Late interaction | 8K | Apache 2.0 | Fully open | Long-document retrieval |
+| `jina-embeddings-v5-text-nano` | 212M | Dense + task adapters | 8K | CC-BY-NC-4.0 | Open weights, NC | English and multilingual quality where non-commercial terms fit |
+| `harrier-oss-v1-270m` | 268M | Dense | 32K | MIT | Open weights | Multilingual commercial use |
+| `snowflake-arctic-embed-m-v2.0` | 305M | Dense | 8K | Apache 2.0 | Open weights | Legal and general retrieval |
+| `F2LLM-v2-330M` | 334M | Dense | 40K | Apache 2.0 | Fully open | Medical and multilingual retrieval |
+| `stella_en_400M_v5` | 435M | Dense | 8K | MIT | Open weights | English BEIR retrieval |
 
 Jina v5 nano has a strong score but a non-commercial licence. Harrier, Granite, Arctic, F2LLM, and Stella are safer starting points for commercial self-hosting.
 
 ### Medium: over 500M to 2B
 
-| Model | Params | Type | Context | Licence | Best fit |
-|-------|--------|------|---------|---------|----------|
-| `BGE-M3` | 568M | Dense + sparse + late interaction | 8K | MIT | Hybrid multilingual retrieval |
-| `dinghy-law-0.6b-v1` | 597M | Dense | 32K | Apache 2.0 | Legal retrieval |
-| `harrier-oss-v1-0.6b` | 596M | Dense | 32K | MIT | Multilingual retrieval |
-| `Jasper-Token-Compression-600M` | 607M | Dense | 32K | MIT | General English |
-| `BidirLM-1B-Embedding` | 1.0B | Dense | 32K | Check model card | Long-context dense retrieval |
-| `Nemotron-3-Embed-1B` | 1.14B | Dense | 32K | NVIDIA licence | Finance, health, visual documents |
-| `gte-Qwen2-1.5B-instruct` | 1.54B | Dense | 32K | Apache 2.0 | Medical and general retrieval |
-| `stella_en_1.5B_v5` | 1.54B | Dense | 8K | MIT | English BEIR retrieval |
-| `jina-embeddings-v5-omni-small` | 1.63B | Dense multimodal | 32K | Check model card | Multilingual image-text retrieval |
-| `F2LLM-v2-1.7B` | 1.72B | Dense | 40K | Apache 2.0 | Code and multilingual text |
+| Model | Params | Type | Context | Licence | Openness | Best fit |
+|-------|--------|------|---------|---------|----------|----------|
+| `BGE-M3` | 568M | Dense + sparse + late interaction | 8K | MIT | Open weights | Hybrid multilingual retrieval |
+| `dinghy-law-0.6b-v1` | 597M | Dense | 32K | Apache 2.0 | Open weights | Legal retrieval |
+| `harrier-oss-v1-0.6b` | 596M | Dense | 32K | MIT | Open weights | Multilingual retrieval |
+| `Jasper-Token-Compression-600M` | 607M | Dense | 32K | MIT | Fully open | General English |
+| `BidirLM-1B-Embedding` | 1.0B | Dense | 32K | Check model card | Open weights | Long-context dense retrieval |
+| `Nemotron-3-Embed-1B` | 1.14B | Dense | 32K | NVIDIA licence | Open weights, custom | Finance, health, visual documents |
+| `gte-Qwen2-1.5B-instruct` | 1.54B | Dense | 32K | Apache 2.0 | Open weights | Medical and general retrieval |
+| `stella_en_1.5B_v5` | 1.54B | Dense | 8K | MIT | Open weights | English BEIR retrieval |
+| `jina-embeddings-v5-omni-small` | 1.63B | Dense multimodal | 32K | Check model card | Open weights, NC | Multilingual image-text retrieval |
+| `F2LLM-v2-1.7B` | 1.72B | Dense | 40K | Apache 2.0 | Fully open | Code and multilingual text |
 
 This class is the best local quality-to-cost range. Most models fit in 2–4GB of FP16 weights and can run on a consumer GPU or Apple Silicon with sufficient unified memory.
 
 ### Large: over 2B to 10B
 
-| Model | Params | Type | Context | Licence | Best fit |
-|-------|--------|------|---------|---------|----------|
-| `Qwen3-Embedding-8B` | 7.57B | Dense | 32K | Apache 2.0 | General retrieval and multilingual baseline |
-| `Euler-Legal-Embedding-V1` | 7.57B | Dense | 1.5K | Apache 2.0 | MTEB Law |
-| `C2LLM-7B` | 7.67B | Dense | Check model card | Check model card | Code retrieval |
-| `Nemotron-3-Embed-8B` | 7.95B | Dense | 32K | NVIDIA licence | Finance, health, visual documents |
-| `F2LLM-v2-8B` | 7.57B | Dense | 40K | Apache 2.0 | Long-context and multilingual retrieval |
-| `E5-V` | 8.36B | Dense multimodal | Check model card | Check model card | MIEB image-text tasks |
+| Model | Params | Type | Context | Licence | Openness | Best fit |
+|-------|--------|------|---------|---------|----------|----------|
+| `Qwen3-Embedding-8B` | 7.57B | Dense | 32K | Apache 2.0 | Open weights | General retrieval and multilingual baseline |
+| `Euler-Legal-Embedding-V1` | 7.57B | Dense | 1.5K | Apache 2.0 | Open weights | MTEB Law |
+| `C2LLM-7B` | 7.67B | Dense | Check model card | Check model card | Open weights | Code retrieval |
+| `Nemotron-3-Embed-8B` | 7.95B | Dense | 32K | NVIDIA licence | Open weights, custom | Finance, health, visual documents |
+| `F2LLM-v2-8B` | 7.57B | Dense | 40K | Apache 2.0 | Fully open | Long-context and multilingual retrieval |
+| `E5-V` | 8.36B | Dense multimodal | Check model card | Check model card | Open weights | MIEB image-text tasks |
 
 Use Qwen3-Embedding-8B as the permissive general-purpose control. Specialist winners should beat this control on a held-out domain test before adoption.
 
 ### Very large and managed
 
-| Model | Size | Type | Context | Licence/access | Best fit |
-|-------|------|------|---------|----------------|----------|
-| `F2LLM-v2-14B` | 14B | Dense | 40K | Apache 2.0 | Code and broad multilingual tasks |
-| `harrier-oss-v1-27b` | 27B | Dense | 131K | MIT | Best MTEB Multilingual v2 aggregate |
-| Gemini Embedding 2 | Undisclosed | Multimodal dense API | Provider-defined by modality | GCP API | Text, image, audio, video, and PDF in one space |
-| Cohere Embed v4 | Undisclosed | Text/image API | 128K | AWS, Azure, Oracle | Enterprise multimodal and compressed outputs |
-| OpenAI text-embedding-3 | Undisclosed | Dense API | 8K | Azure API | Mature managed text embeddings |
+| Model | Size | Type | Context | Licence/access | Openness | Best fit |
+|-------|------|------|---------|----------------|----------|----------|
+| `F2LLM-v2-14B` | 14B | Dense | 40K | Apache 2.0 | Fully open | Code and broad multilingual tasks |
+| `harrier-oss-v1-27b` | 27B | Dense | 131K | MIT | Open weights | Best MTEB Multilingual v2 aggregate |
+| Gemini Embedding 2 | Undisclosed | Multimodal dense API | Provider-defined by modality | GCP API | Closed API | Text, image, audio, video, and PDF in one space |
+| Cohere Embed v4 | Undisclosed | Text/image API | 128K | AWS, Azure, Oracle | Closed API | Enterprise multimodal and compressed outputs |
+| OpenAI text-embedding-3 | Undisclosed | Dense API | 8K | Azure API | Closed API | Mature managed text embeddings |
 
 A larger model can lose to a smaller specialist. Select this class only when measured quality offsets serving, latency, and re-indexing costs.
 
@@ -446,3 +492,11 @@ Add one domain specialist. Use reciprocal rank fusion and a reranker as separate
 37. [Vertex AI embeddings documentation](https://cloud.google.com/vertex-ai/generative-ai/docs/embeddings) — Google managed embedding service.
 38. [IBM Granite Embedding Multilingual R2](https://arxiv.org/abs/2605.13521) — IBM's 2026 multilingual embedding family.
 39. [OCI Generative AI documentation](https://docs.oracle.com/en-us/iaas/Content/generative-ai/home.htm) — Oracle managed generative AI and embedding services.
+40. [F2LLM-v2 training dataset](https://huggingface.co/datasets/codefuse-ai/F2LLM-v2) — public training data for the fully-open CodeFuse embedding family.
+41. [Jasper training repository](https://github.com/DunZhang/Jasper-Token-Compression-Training) — public training code for Jasper Token Compression 600M.
+42. [Jasper distillation dataset](https://huggingface.co/datasets/infgrad/jasper_text_distill_dataset) — public training data for Jasper 600M.
+43. [LateOn-Code training dataset](https://huggingface.co/datasets/lightonai/nv-embed-supervised-distill-dedup-code) — public code-retrieval training data.
+44. [OpenCLIP repository](https://github.com/mlfoundations/open_clip) — training code and model definitions for LAION CLIP models.
+45. [LAION-2B dataset](https://laion.ai/blog/laion-5b/) — public dataset family used by the fully-open LAION CLIP entries.
+46. [Nomic Embed Multimodal](https://huggingface.co/nomic-ai/nomic-embed-multimodal-7b) — open visual-document embedding model with published artefact links.
+47. [ColModernVBERT](https://huggingface.co/ModernVBERT/colmodernvbert) — compact fully-open visual-document retriever.

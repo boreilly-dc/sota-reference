@@ -1,0 +1,38 @@
+name: Benchmark provenance
+
+on:
+  pull_request:
+    paths:
+      - ".data/benchmarklist/**"
+      - ".data/benchmarklist_manifest.json"
+      - ".data/benchmarklist_coverage.json"
+      - ".scripts/fetch_benchmarklist.py"
+      - ".github/workflows/benchmark-provenance.yml"
+  push:
+    branches: [main]
+    paths:
+      - ".data/benchmarklist/**"
+      - ".data/benchmarklist_manifest.json"
+      - ".data/benchmarklist_coverage.json"
+      - ".scripts/fetch_benchmarklist.py"
+      - ".github/workflows/benchmark-provenance.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compile importer
+        run: python3 -m py_compile .scripts/fetch_benchmarklist.py
+      - name: Validate generated provenance
+        run: python3 .scripts/fetch_benchmarklist.py --validate
+      - name: Validate JSON syntax
+        run: |
+          python3 -m json.tool .data/benchmarklist_manifest.json >/dev/null
+          python3 -m json.tool .data/benchmarklist_coverage.json >/dev/null
+          for file in .data/benchmarklist/*.json; do
+            python3 -m json.tool "$file" >/dev/null
+          done

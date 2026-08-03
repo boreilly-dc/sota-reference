@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-24 |
-| Last Updated | 2026-03-24 |
-| Version | 1.1 |
+| Last Updated | 2026-08-03 |
+| Version | 1.2 |
 
 ---
 
@@ -350,6 +350,8 @@ MT-Bench (Zheng et al., 2023) is a multi-turn benchmark consisting of 80 questio
 
 Each question involves two turns (follow-up questions), testing the model's ability to maintain context and refine responses. GPT-4 evaluates responses on a 1–10 scale.
 
+BenchmarkList now provides a verified provenance snapshot of the original MT-Bench judgement data. It records GPT-4 at 8.991, GPT-3.5 Turbo at 7.944, and Claude v1 at 7.900 on the 1–10 scale, sourced from the LMSYS judgement JSONL. These are historical benchmark rows, not current frontier rankings or an independent rerun. A separate Arena-Hard v2 record is also tracked, but its scores remain a distinct benchmark and must not be merged with MT-Bench.
+
 MT-Bench has been widely adopted for model comparison but has known limitations:
 - Fixed question set (80 questions) limits coverage
 - GPT-4 judge introduces self-enhancement bias
@@ -621,16 +623,18 @@ When standard metrics don't cover your specific evaluation needs, use G-Eval (vi
 
 15. Wataoka, K., et al. (2024). "Self-Preference Bias in LLM-as-a-Judge." *NeurIPS 2024 Safe Generative AI Workshop*. [https://arxiv.org/abs/2410.21819](https://arxiv.org/abs/2410.21819)
 
-16. Ye, J., et al. (2024). "Justice or Prejudice? Quantifying Biases in LLM-as-a-Judge." [https://arxiv.org/abs/2410.02736](https://arxiv.org/abs/2410.02736)
+16. BenchmarkList. MT-Bench, Arena-Hard v2, and API guide. [https://benchmarklist.com/benchmarks/mt_bench/](https://benchmarklist.com/benchmarks/mt_bench/), [https://benchmarklist.com/benchmarks/arena_hard_v2/](https://benchmarklist.com/benchmarks/arena_hard_v2/), [https://benchmarklist.com/agents/](https://benchmarklist.com/agents/)
 
-17. Hu, Y., et al. (2024). "Themis: A Reference-free NLG Evaluation Language Model with Flexibility and Interpretability." *EMNLP 2024*. [https://aclanthology.org/2024.emnlp-main.891/](https://aclanthology.org/2024.emnlp-main.891/)
+17. Ye, J., et al. (2024). "Justice or Prejudice? Quantifying Biases in LLM-as-a-Judge." [https://arxiv.org/abs/2410.02736](https://arxiv.org/abs/2410.02736)
 
-18. Tripathi, A., et al. (2024). "Pairwise or Pointwise? Evaluating Feedback Protocols for Bias in LLM-Based Evaluation." [https://openreview.net/forum?id=uyX5Vnow3U](https://openreview.net/forum?id=uyX5Vnow3U)
+18. Hu, Y., et al. (2024). "Themis: A Reference-free NLG Evaluation Language Model with Flexibility and Interpretability." *EMNLP 2024*. [https://aclanthology.org/2024.emnlp-main.891/](https://aclanthology.org/2024.emnlp-main.891/)
 
-19. Sheng, Q., et al. (2024). "Is Reference Necessary in the Evaluation of NLG Systems? When and Where?" [https://arxiv.org/abs/2403.14275](https://arxiv.org/abs/2403.14275)
+19. Tripathi, A., et al. (2024). "Pairwise or Pointwise? Evaluating Feedback Protocols for Bias in LLM-Based Evaluation." [https://openreview.net/forum?id=uyX5Vnow3U](https://openreview.net/forum?id=uyX5Vnow3U)
 
-20. Gu, Z., et al. (2025). "From Generation to Judgment: Opportunities and Challenges of LLM-as-a-judge." *EMNLP 2025*. [https://arxiv.org/abs/2411.16594](https://arxiv.org/abs/2411.16594)
+20. Sheng, Q., et al. (2024). "Is Reference Necessary in the Evaluation of NLG Systems? When and Where?" [https://arxiv.org/abs/2403.14275](https://arxiv.org/abs/2403.14275)
 
-21. AIMultiple. (2026). "RAG Evaluation Tools: W&B vs RAGAS vs DeepEval." [https://aimultiple.com/rag-evaluation-tools](https://aimultiple.com/rag-evaluation-tools)
+21. Gu, Z., et al. (2025). "From Generation to Judgment: Opportunities and Challenges of LLM-as-a-judge." *EMNLP 2025*. [https://arxiv.org/abs/2411.16594](https://arxiv.org/abs/2411.16594)
 
-22. Microsoft. "G-Eval Metric for Summarization." [https://learn.microsoft.com/en-us/ai/playbook/technology-guidance/generative-ai/working-with-llms/evaluation/g-eval-metric-for-summarization](https://learn.microsoft.com/en-us/ai/playbook/technology-guidance/generative-ai/working-with-llms/evaluation/g-eval-metric-for-summarization)
+22. AIMultiple. (2026). "RAG Evaluation Tools: W&B vs RAGAS vs DeepEval." [https://aimultiple.com/rag-evaluation-tools](https://aimultiple.com/rag-evaluation-tools)
+
+23. Microsoft. "G-Eval Metric for Summarization." [https://learn.microsoft.com/en-us/ai/playbook/technology-guidance/generative-ai/working-with-llms/evaluation/g-eval-metric-for-summarization](https://learn.microsoft.com/en-us/ai/playbook/technology-guidance/generative-ai/working-with-llms/evaluation/g-eval-metric-for-summarization)

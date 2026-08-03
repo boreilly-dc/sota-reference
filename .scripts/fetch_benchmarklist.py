@@ -163,6 +163,64 @@ def discover_benchmark_articles() -> list[str]:
     return articles
 
 
+def validate_generated(manifest: dict) -> dict:
+    """Validate manifest, generated outputs, and coverage without network access."""
+    errors = []
+    allowed_statuses = {
+        "migrated", "blocked", "primary_source_only", "not_applicable", "later_wave"
+    }
+    for article, config in manifest.get("articles", {}).items():
+        article_path = BASE_DIR / article
+        if not article_path.exists():
+            errors.append(f"missing article: {article}")
+        status = config.get("status")
+        if status not in allowed_statuses:
+            errors.append(f"invalid status for {article}: {status!r}")
+        if status == "migrated":
+            if not config.get("output") or not config.get("observations"):
+                errors.append(f"incomplete migrated config: {article}")
+                continue
+            output_path = OUTPUT_DIR / config["output"]
+            if not output_path.exists():
+                errors.append(f"missing generated output: {output_path.relative_to(BASE_DIR)}")
+                continue
+            data = json.loads(output_path.read_text())
+            if data.get("metadata", {}).get("article") != article:
+                errors.append(f"output article mismatch: {article}")
+            for observation in data.get("observations", []):
+                if observation.get("review_state") != "verified":
+                    errors.append(f"non-verified observation: {article}/{observation.get('benchmark_id')}")
+                for field in ("sampled_at", "source_url", "subject_type", "selected_metric"):
+                    if not observation.get(field):
+                        errors.append(f"missing {field}: {article}/{observation.get('benchmark_id')}")
+                definitions = {
+                    item.get("key"): item for item in observation.get("metric_definitions", [])
+                }
+                definition = definitions.get(observation.get("selected_metric"))
+                if not definition or "higher_is_better" not in definition:
+                    errors.append(
+                        f"missing metric direction: {article}/{observation.get('benchmark_id')}"
+                    )
+        elif not config.get("reason"):
+            errors.append(f"missing classification reason: {article}")
+
+    coverage = json.loads(COVERAGE_FILE.read_text()) if COVERAGE_FILE.exists() else {}
+    if not coverage:
+        errors.append("missing coverage report")
+    else:
+        unclassified = coverage.get("unclassified_benchmark_articles", [])
+        if unclassified:
+            errors.append(f"unclassified benchmark articles: {unclassified}")
+        if set(coverage.get("articles", {})) != set(manifest.get("articles", {})):
+            errors.append("coverage and manifest article sets differ")
+
+    if errors:
+        raise ValueError("Offline validation failed:\n  " + "\n  ".join(errors))
+    summary = coverage["summary"]
+    print(f"Offline validation passed: {summary}")
+    return summary
+
+
 def build_outputs(manifest: dict) -> tuple[dict[Path, dict], dict]:
     """Build generated article datasets and the coverage report."""
     models_resource = fetch_json(f"{API_BASE}/models.json")
@@ -236,19 +294,20 @@ def build_outputs(manifest: dict) -> tuple[dict[Path, dict], dict]:
     discovered_articles = discover_benchmark_articles()
     known_articles = set(coverage_articles) | set(manifest.get("later_wave", []))
     unclassified = sorted(set(discovered_articles) - known_articles)
+    status_counts = {
+        status: sum(item["status"] == status for item in coverage_articles.values())
+        for status in ("migrated", "blocked", "primary_source_only", "not_applicable", "later_wave")
+    }
     coverage = {
         "metadata": {
             "description": "Repository BenchmarkList migration and quality-gate coverage",
             "last_updated": date.today().isoformat(),
         },
         "articles": coverage_articles,
-        "later_wave": manifest.get("later_wave", []),
         "unclassified_benchmark_articles": unclassified,
         "summary": {
             "benchmark_articles_discovered": len(discovered_articles),
-            "migrated": sum(item["status"] == "migrated" for item in coverage_articles.values()),
-            "blocked": sum(item["status"] == "blocked" for item in coverage_articles.values()),
-            "later_wave": len(manifest.get("later_wave", [])),
+            **status_counts,
             "unclassified": len(unclassified),
         },
     }
@@ -278,9 +337,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--apply", action="store_true", help="Write changes (default: dry-run)")
     parser.add_argument("--audit", action="store_true", help="Print coverage and quality summary")
+    parser.add_argument("--validate", action="store_true", help="Validate tracked data without network access")
     args = parser.parse_args()
 
     manifest = json.loads(MANIFEST_FILE.read_text())
+    if args.validate:
+        validate_generated(manifest)
+        return
+
     outputs, coverage = build_outputs(manifest)
     changed = []
     for path, data in outputs.items():

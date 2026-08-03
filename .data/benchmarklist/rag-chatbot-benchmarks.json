@@ -1,0 +1,331 @@
+{
+  "metadata": {
+    "article": "rag/rag-chatbot-benchmarks.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [],
+  "observations": [
+    {
+      "benchmark_id": "rgb",
+      "benchmark_name": "RGB",
+      "category": "generalization",
+      "review_state": "verified",
+      "selected_metric": "mean_noise_robustness_accuracy",
+      "metric_definitions": [
+        {
+          "key": "mean_noise_robustness_accuracy",
+          "label": "Mean noise robustness accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_accuracy",
+          "label": "English noise ratio 0 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_2_accuracy",
+          "label": "English noise ratio 0.2 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_4_accuracy",
+          "label": "English noise ratio 0.4 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_6_accuracy",
+          "label": "English noise ratio 0.6 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_8_accuracy",
+          "label": "English noise ratio 0.8 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_accuracy",
+          "label": "Chinese noise ratio 0 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_2_accuracy",
+          "label": "Chinese noise ratio 0.2 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_4_accuracy",
+          "label": "Chinese noise ratio 0.4 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_6_accuracy",
+          "label": "Chinese noise ratio 0.6 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_8_accuracy",
+          "label": "Chinese noise ratio 0.8 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "higher_is_better": true,
+        "label": "Mean noise robustness accuracy",
+        "unit": "percentage",
+        "value": 85.434
+      },
+      "score": 85.434,
+      "rank": 3,
+      "raw_score": "85.434%",
+      "subject_id": "rgb_chatglm_6b",
+      "subject_type": "model",
+      "display_name": "ChatGLM-6B",
+      "qualifiers": {
+        "source_table": "RGB arXiv paper Table 1"
+      },
+      "sampled_at": "2026-05-27",
+      "source_url": "https://arxiv.org/abs/2309.01431",
+      "benchmark_links": {
+        "homepage": "https://github.com/chen700564/RGB",
+        "paper": "https://arxiv.org/pdf/2309.01431"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/rgb/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/rgb.json",
+        "results": "https://benchmarklist.com/api/v1/results/rgb.json"
+      }
+    },
+    {
+      "benchmark_id": "rgb",
+      "benchmark_name": "RGB",
+      "category": "generalization",
+      "review_state": "verified",
+      "selected_metric": "mean_noise_robustness_accuracy",
+      "metric_definitions": [
+        {
+          "key": "mean_noise_robustness_accuracy",
+          "label": "Mean noise robustness accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_accuracy",
+          "label": "English noise ratio 0 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_2_accuracy",
+          "label": "English noise ratio 0.2 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_4_accuracy",
+          "label": "English noise ratio 0.4 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_6_accuracy",
+          "label": "English noise ratio 0.6 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_8_accuracy",
+          "label": "English noise ratio 0.8 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_accuracy",
+          "label": "Chinese noise ratio 0 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_2_accuracy",
+          "label": "Chinese noise ratio 0.2 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_4_accuracy",
+          "label": "Chinese noise ratio 0.4 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_6_accuracy",
+          "label": "Chinese noise ratio 0.6 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_8_accuracy",
+          "label": "Chinese noise ratio 0.8 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "higher_is_better": true,
+        "label": "Mean noise robustness accuracy",
+        "unit": "percentage",
+        "value": 89.068
+      },
+      "score": 89.068,
+      "rank": 1,
+      "raw_score": "89.068%",
+      "subject_id": "rgb_chatgpt",
+      "subject_type": "model",
+      "display_name": "ChatGPT",
+      "qualifiers": {
+        "source_table": "RGB arXiv paper Table 1"
+      },
+      "sampled_at": "2026-05-27",
+      "source_url": "https://arxiv.org/abs/2309.01431",
+      "benchmark_links": {
+        "homepage": "https://github.com/chen700564/RGB",
+        "paper": "https://arxiv.org/pdf/2309.01431"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/rgb/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/rgb.json",
+        "results": "https://benchmarklist.com/api/v1/results/rgb.json"
+      }
+    },
+    {
+      "benchmark_id": "rgb",
+      "benchmark_name": "RGB",
+      "category": "generalization",
+      "review_state": "verified",
+      "selected_metric": "mean_noise_robustness_accuracy",
+      "metric_definitions": [
+        {
+          "key": "mean_noise_robustness_accuracy",
+          "label": "Mean noise robustness accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_accuracy",
+          "label": "English noise ratio 0 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_2_accuracy",
+          "label": "English noise ratio 0.2 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_4_accuracy",
+          "label": "English noise ratio 0.4 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_6_accuracy",
+          "label": "English noise ratio 0.6 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "english_noise_0_8_accuracy",
+          "label": "English noise ratio 0.8 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_accuracy",
+          "label": "Chinese noise ratio 0 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_2_accuracy",
+          "label": "Chinese noise ratio 0.2 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_4_accuracy",
+          "label": "Chinese noise ratio 0.4 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_6_accuracy",
+          "label": "Chinese noise ratio 0.6 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        },
+        {
+          "key": "chinese_noise_0_8_accuracy",
+          "label": "Chinese noise ratio 0.8 accuracy",
+          "unit": "percentage",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "higher_is_better": true,
+        "label": "Mean noise robustness accuracy",
+        "unit": "percentage",
+        "value": 86.567
+      },
+      "score": 86.567,
+      "rank": 2,
+      "raw_score": "86.567%",
+      "subject_id": "rgb_qwen_7b_chat",
+      "subject_type": "model",
+      "display_name": "Qwen-7B-Chat",
+      "qualifiers": {
+        "source_table": "RGB arXiv paper Table 1"
+      },
+      "sampled_at": "2026-05-27",
+      "source_url": "https://arxiv.org/abs/2309.01431",
+      "benchmark_links": {
+        "homepage": "https://github.com/chen700564/RGB",
+        "paper": "https://arxiv.org/pdf/2309.01431"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/rgb/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/rgb.json",
+        "results": "https://benchmarklist.com/api/v1/results/rgb.json"
+      }
+    }
+  ]
+}

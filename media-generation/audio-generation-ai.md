@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-08 |
-| Last Updated | 2026-06-08 |
-| Version | 1.0 |
+| Last Updated | 2026-08-03 |
+| Version | 1.1 |
 
 ---
 
@@ -156,9 +156,12 @@ The open field is rich and moves monthly. **The licence matters as much as the q
 
 Two families of benchmark dominate, and **their scores are not comparable to each other**:
 
-- **Artificial Analysis Speech Arena** — production APIs, blind human preference, ~1000-centred Elo, 74+ models.
+- **Artificial Analysis Speech Arena** — production APIs, blind human preference, ~1000-centred Elo, 74+ models. BenchmarkList's verified 27 July 2026 provider-voice snapshot records Qwen-Audio-3.0-TTS-Plus at 1234, Simba 3.2 at 1230, Gemini 3.1 Flash TTS at 1215, and Sonic 3.5 at 1208.
+- **Speech Arena** — a separate, ~1500-centred Elo system. Its verified 26 July 2026 snapshot records ElevenLabs v3 at 1631, GPT-4o Mini TTS at 1593, and Cartesia Sonic Turbo at 1576.
 - **Hugging Face TTS Arena v2** — community models + APIs, same blind A/B method.
 - **CodeSOTA** — an independent registry using ~1500-centred Elo; useful for relative ranking but with **low vote counts** (wide confidence intervals). It places Chatterbox Turbo and ElevenLabs v3 at the top of its vendor track and Kokoro/XTTS at the top of its open-weight track.
+
+BenchmarkList supplies source-linked snapshots for the first two arenas; it does not independently rerun them. Their Elo scales and participant pools are different and must not be combined.
 
 All of these measure **perceived quality/naturalness, not word accuracy**, and MOS figures from different papers are not directly comparable. Treat any single ranking as indicative, not definitive. ([benchmark overview](https://www.marktechpost.com/2026/05/30/best-text-to-speech-tts-models-in-2026-a-benchmark-based-comparison/))
 
@@ -326,33 +329,34 @@ For self-hosting open models, all five clouds rent the GPUs in the [hardware tie
 21. [Best open-source TTS 2026](https://www.tryspeakeasy.io/blog/open-source-text-to-speech-2026). Credibility 0.72.
 22. [Best open-weight TTS 2026](https://presenc.ai/research/best-open-weight-text-to-speech-models-2026). Credibility 0.75.
 23. [TTS benchmark comparison](https://www.marktechpost.com/2026/05/30/best-text-to-speech-tts-models-in-2026-a-benchmark-based-comparison/) — MarkTechPost. Credibility 0.78.
+24. [BenchmarkList Artificial Analysis Provider Voices](https://benchmarklist.com/benchmarks/artificial_analysis_provider_voice/), [Speech Arena](https://benchmarklist.com/benchmarks/speech_arena/), and [API guide](https://benchmarklist.com/agents/) — source-linked arena snapshots.
 
 ### Music synthesis
-24. [ACE-Step: A Step Towards Music Generation Foundation Model](https://arxiv.org/abs/2506.00045) — arXiv. Credibility 0.90.
-25. [ACE-Step 1.5 project page](https://ace-step.github.io/ace-step-v1.5.github.io/). Credibility 0.85.
-26. [ACE-Step repository](https://github.com/ace-step/ACE-Step). Credibility 0.95.
-27. [YuE: Scaling Open Foundation Models for Long-Form Music Generation](https://openreview.net/forum?id=hZy6YG2Ij8) — peer-reviewed. Credibility 0.90.
-28. [GPU deployment guide: YuE/ACE-Step/MusicGen/Stable Audio Open](https://www.spheron.network/blog/deploy-open-source-ai-music-generation-gpu-cloud-2026/). Credibility 0.70.
-29. [Suno vs Udio (2026)](https://neuronad.com/suno-vs-udio/). Credibility 0.75.
-30. [AI music generation 2026 comparison](https://gudz.ai/posts/ai-music-generation-2026). Credibility 0.65.
-31. [Suno pricing](https://suno.com/pricing) — official. Credibility 0.95.
-32. [ElevenLabs Music v2 review](https://www.buildfastwithai.com/blogs/elevenlabs-music-v2-review-2026). Credibility 0.70.
-33. [Music AI Sandbox / Lyria](https://deepmind.google/blog/music-ai-sandbox-now-with-new-features-and-broader-access/) — Google DeepMind. Credibility 0.90.
-34. [Music industry AI lawsuits tracker 2026](https://www.chartlex.com/blog/business/music-industry-ai-lawsuits-tracker-2026). Credibility 0.75.
-35. [Sony Music continuing litigation](https://www.digitalmusicnews.com/2025/12/18/sony-music-udio-suno-lawsuit-updates/) — Digital Music News. Credibility 0.85.
-36. [Suno/Udio copyright explainer](https://weraveyou.com/2026/05/suno-udio-umg-copyright-lawsuit-musicians-2026/). Credibility 0.80.
+25. [ACE-Step: A Step Towards Music Generation Foundation Model](https://arxiv.org/abs/2506.00045) — arXiv. Credibility 0.90.
+26. [ACE-Step 1.5 project page](https://ace-step.github.io/ace-step-v1.5.github.io/). Credibility 0.85.
+27. [ACE-Step repository](https://github.com/ace-step/ACE-Step). Credibility 0.95.
+28. [YuE: Scaling Open Foundation Models for Long-Form Music Generation](https://openreview.net/forum?id=hZy6YG2Ij8) — peer-reviewed. Credibility 0.90.
+29. [GPU deployment guide: YuE/ACE-Step/MusicGen/Stable Audio Open](https://www.spheron.network/blog/deploy-open-source-ai-music-generation-gpu-cloud-2026/). Credibility 0.70.
+30. [Suno vs Udio (2026)](https://neuronad.com/suno-vs-udio/). Credibility 0.75.
+31. [AI music generation 2026 comparison](https://gudz.ai/posts/ai-music-generation-2026). Credibility 0.65.
+32. [Suno pricing](https://suno.com/pricing) — official. Credibility 0.95.
+33. [ElevenLabs Music v2 review](https://www.buildfastwithai.com/blogs/elevenlabs-music-v2-review-2026). Credibility 0.70.
+34. [Music AI Sandbox / Lyria](https://deepmind.google/blog/music-ai-sandbox-now-with-new-features-and-broader-access/) — Google DeepMind. Credibility 0.90.
+35. [Music industry AI lawsuits tracker 2026](https://www.chartlex.com/blog/business/music-industry-ai-lawsuits-tracker-2026). Credibility 0.75.
+36. [Sony Music continuing litigation](https://www.digitalmusicnews.com/2025/12/18/sony-music-udio-suno-lawsuit-updates/) — Digital Music News. Credibility 0.85.
+37. [Suno/Udio copyright explainer](https://weraveyou.com/2026/05/suno-udio-umg-copyright-lawsuit-musicians-2026/). Credibility 0.80.
 
 ### General sound, SFX, Foley
-37. [TangoFlux: Fast and Faithful Text-to-Audio with Flow Matching + CRPO](https://arxiv.org/abs/2412.21037) — ICLR 2026. Credibility 0.95.
-38. [TangoFlux repository](https://github.com/declare-lab/Tangoflux). Credibility 0.95.
-39. [MMAudio: Multimodal Joint Training for Video-to-Audio](https://github.com/hkchengrex/MMAudio) — CVPR 2025. Credibility 0.95.
-40. [Stable Audio Open 1.0 model card](https://huggingface.co/stabilityai/stable-audio-open-1.0) — official. Credibility 0.95.
-41. [Stable Audio 3.0 announcement](https://stability.ai/news-updates/meet-stable-audio-3-the-model-family-built-for-artistic-experimentation-with-open-weight-models) — official. Credibility 0.95.
-42. [AudioLDM 2 repository](https://github.com/haoheliu/audioldm2). Credibility 0.95.
-43. [AudioX: A Unified Framework for Anything-to-Audio](https://arxiv.org/abs/2503.10522) — ICLR 2026. Credibility 0.92.
-44. [TTA-Bench: Comprehensive Benchmark for Text-to-Audio](https://arxiv.org/html/2509.02398v1) — AAAI 2026. Credibility 0.92.
-45. [Stable Audio metrics (FAD/CLAP/KL)](https://deepwiki.com/Stability-AI/stable-audio-metrics/5.1-full-evaluation-mode). Credibility 0.90.
-46. [ElevenLabs Sound Effects documentation](https://elevenlabs.io/docs/overview/capabilities/sound-effects) — official. Credibility 0.95.
-47. [Adobe Firefly sound effect generator](https://www.adobe.com/products/firefly/features/sound-effect-generator.html) — official. Credibility 0.95.
-48. [Google DeepMind: Generating audio for video (V2A)](https://deepmind.google/blog/generating-audio-for-video/) — official. Credibility 0.95.
-49. [Google Veo 3.1 overview](https://deeka.ai/blog/veo-ai-in-2026-google-s-video-generator-explained-features-pricing-how-to-use-it). Credibility 0.75.
+38. [TangoFlux: Fast and Faithful Text-to-Audio with Flow Matching + CRPO](https://arxiv.org/abs/2412.21037) — ICLR 2026. Credibility 0.95.
+39. [TangoFlux repository](https://github.com/declare-lab/Tangoflux). Credibility 0.95.
+40. [MMAudio: Multimodal Joint Training for Video-to-Audio](https://github.com/hkchengrex/MMAudio) — CVPR 2025. Credibility 0.95.
+41. [Stable Audio Open 1.0 model card](https://huggingface.co/stabilityai/stable-audio-open-1.0) — official. Credibility 0.95.
+42. [Stable Audio 3.0 announcement](https://stability.ai/news-updates/meet-stable-audio-3-the-model-family-built-for-artistic-experimentation-with-open-weight-models) — official. Credibility 0.95.
+43. [AudioLDM 2 repository](https://github.com/haoheliu/audioldm2). Credibility 0.95.
+44. [AudioX: A Unified Framework for Anything-to-Audio](https://arxiv.org/abs/2503.10522) — ICLR 2026. Credibility 0.92.
+45. [TTA-Bench: Comprehensive Benchmark for Text-to-Audio](https://arxiv.org/html/2509.02398v1) — AAAI 2026. Credibility 0.92.
+46. [Stable Audio metrics (FAD/CLAP/KL)](https://deepwiki.com/Stability-AI/stable-audio-metrics/5.1-full-evaluation-mode). Credibility 0.90.
+47. [ElevenLabs Sound Effects documentation](https://elevenlabs.io/docs/overview/capabilities/sound-effects) — official. Credibility 0.95.
+48. [Adobe Firefly sound effect generator](https://www.adobe.com/products/firefly/features/sound-effect-generator.html) — official. Credibility 0.95.
+49. [Google DeepMind: Generating audio for video (V2A)](https://deepmind.google/blog/generating-audio-for-video/) — official. Credibility 0.95.
+50. [Google Veo 3.1 overview](https://deeka.ai/blog/veo-ai-in-2026-google-s-video-generator-explained-features-pricing-how-to-use-it). Credibility 0.75.

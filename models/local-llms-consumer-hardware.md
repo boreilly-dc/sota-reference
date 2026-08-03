@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-31 |
-| Last Updated | 2026-07-03 |
-| Version | 2.1 |
+| Last Updated | 2026-08-03 |
+| Version | 2.2 |
 
 ---
 
@@ -234,7 +234,7 @@ For balanced quality, speed, and personality:
 
 ## Benchmark Comparison
 
-Key benchmarks (June 2026). HumanEval and MMLU are saturated and no longer differentiate models:
+Key benchmarks (June 2026). HumanEval and MMLU are saturated and no longer differentiate models. BenchmarkList now supplies the source-linked provenance record for the cited Gemma 4 12B LiveCodeBench result and GLM-5.2 SWE-bench Pro and Terminal-Bench results. It indexes published observations rather than independently rerunning them:
 
 | Model | MMLU-Pro | SWE-bench Verified | LiveCodeBench v6 | GPQA Diamond | AIME 2026 |
 |-------|----------|-------------------|------------------|--------------|-----------|
@@ -530,3 +530,4 @@ Same models as GPU users — unified memory acts as VRAM. Use **Ollama** (v0.30.
 23. [arXiv:2604.07035 — Gemma 4, Phi-4, and Qwen3 Accuracy-Efficiency Tradeoffs](https://arxiv.org/html/2604.07035v1) — Academic comparison
 24. [GitHub — llama.cpp Releases](https://github.com/ggml-org/llama.cpp/releases) — MTP merge, continuous builds
 25. [LMArena Leaderboard](https://arena.ai/leaderboard/text) — Live model rankings
+26. [BenchmarkList API guide](https://benchmarklist.com/agents/) and [public manifest](https://benchmarklist.com/api/v1/manifest.json) — provenance index for selected model benchmark observations (fetched 2026-08-03)

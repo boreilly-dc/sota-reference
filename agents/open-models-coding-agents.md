@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-31 |
-| Last Updated | 2026-06-16 |
-| Version | 1.1 |
+| Last Updated | 2026-08-03 |
+| Version | 1.2 |
 
 ---
 
@@ -26,7 +26,9 @@
 
 ## Executive Summary
 
-As of June 2026, the gap between open and closed models for coding agents has narrowed dramatically on some benchmarks while remaining substantial on others. The picture depends heavily on which benchmark you trust:
+As of August 2026, the gap between open and closed models for coding agents has narrowed dramatically on some benchmarks while remaining substantial on others. The picture depends heavily on which benchmark you trust:
+
+BenchmarkList is now used as the provenance index for selected SWE-bench, Terminal-Bench, and LiveCodeBench observations in this article. It supplies stable identities, snapshot dates, metric definitions, and links to the underlying sources; it does not independently rerun every evaluation. Scores from different harnesses or benchmark versions remain separate.
 
 - **LiveCodeBench** (algorithmic coding): open models are within 2–3 points of the closed ceiling (DeepSeek V4 Pro at 87.5% vs Claude Fable 5 at 89.8% on the Vals.ai standardised harness).
 - **SWE-bench Verified** (repository-level bug fixes): open models reach 72–81% vs closed at 79–95%. **OpenAI retired this benchmark in February 2026** citing ~59% flawed tests; treat all Verified numbers as inflated and increasingly deprecated.
@@ -107,7 +109,7 @@ SWE-bench Pro figures here are **vendor-reported** (each lab's own scaffold) —
 
 - **MiniMax M3** (1 Jun) is the standout: its **vendor-reported 59.0% on SWE-bench Pro edges out GPT-5.5 (58.6%)**, with a 1M-token context via MiniMax Sparse Attention (MSA), native multimodal input, and ~15.6× faster decoding than M2 at 1M context — at $0.60/$2.40 per M tokens.
 - **NVIDIA Nemotron 3 Ultra** (4 Jun) is the first genuinely competitive **Western** open coding model in this tier (550B/55B MoE, 71.9% Verified, 86.0 LiveCodeBench), and is free to use on OpenRouter. It partially breaks the Chinese-lab monopoly noted under Limitations.
-- **GLM-5.2** (13 Jun) extends the GLM-5 line to a 1M-token context (up from 200K) with a coding-first focus and works inside Claude Code with a config change. Weights were slated for release the week of 13 Jun; **no independent benchmarks were available at the time of writing**, so it is not yet scored here.
+- **GLM-5.2** (13 Jun) extends the GLM-5 line to a 1M-token context (up from 200K) with a coding-first focus. Its verified BenchmarkList observations preserve the underlying sources for **62.1% SWE-bench Pro** and **82.7% Terminal-Bench 2.1**; these remain source observations rather than a new independent BenchmarkList rerun.
 - **DeepSeek V4 Flash** (284B/13B) delivers near-frontier coding at the cheapest frontier-class price on the market ($0.28/M output). Note that "**DeepSeek V4 Pro Max**" is not a separate model — it refers to V4 Pro running in *Think Max* reasoning mode.
 
 ### Tier 2: Strong (60–75% SWE-bench Verified)
@@ -464,4 +466,5 @@ Use **DeepSeek V4 Pro** via API — 80.6% Verified / 55.4% SWE-bench Pro at ~1/2
 35. [Devstral Small 2 hardware guide](https://runaihome.com/blog/devstral-small-2-local-ai-hardware-guide-2026/) — VRAM, speeds, 68.0% SWE-bench
 36. [Vals.ai LiveCodeBench](https://www.vals.ai/benchmarks/lcb) — Standardised LiveCodeBench, June 2026 snapshot
 37. [Terminal-Bench 2.0 Leaderboard](https://www.tbench.ai/leaderboard/terminal-bench/2.0) — Stanford/Laude Labs (fetched 2026-06-16)
-38. [OpenHands GitHub](https://github.com/OpenHands/OpenHands), [Cline GitHub](https://github.com/cline/cline), [Aider GitHub](https://github.com/Aider-AI/aider), [SWE-agent GitHub](https://github.com/SWE-agent/SWE-agent) — Framework star counts (fetched 2026-06-16)
+38. [BenchmarkList API guide](https://benchmarklist.com/agents/) and [public manifest](https://benchmarklist.com/api/v1/manifest.json) — provenance index used for selected benchmark observations (fetched 2026-08-03)
+39. [OpenHands GitHub](https://github.com/OpenHands/OpenHands), [Cline GitHub](https://github.com/cline/cline), [Aider GitHub](https://github.com/Aider-AI/aider), [SWE-agent GitHub](https://github.com/SWE-agent/SWE-agent) — Framework star counts (fetched 2026-06-16)

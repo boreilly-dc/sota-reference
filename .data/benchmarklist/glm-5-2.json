@@ -1,0 +1,192 @@
+{
+  "metadata": {
+    "article": "models/glm-5-2.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [
+    {
+      "model_id": "z-ai-glm-5.2",
+      "name": "GLM 5.2",
+      "developer": "Z.ai",
+      "developer_id": "zai",
+      "isReasoningModel": true,
+      "aliases": [
+        "GLM 5.2",
+        "GLM-5.2",
+        "GLM-5.2[1m]",
+        "glm-5.2",
+        "glm-5.2-1m",
+        "glm-5.2-20260616",
+        "z-ai-glm-5.2",
+        "z-ai-glm-5.2-20260616",
+        "z-ai/glm-5.2",
+        "z-ai/glm-5.2-20260616",
+        "zai-org/GLM-5.2"
+      ],
+      "release_date": "2026-06-16",
+      "cost": {
+        "input_million": 0.94,
+        "output_million": 3
+      },
+      "openness": "open_weights",
+      "links": {
+        "repository": "https://github.com/zai-org/GLM-5",
+        "blog": "https://z.ai/blog/glm-5.2",
+        "model_card": "https://huggingface.co/zai-org/GLM-5.2",
+        "homepage": "https://docs.z.ai/guides/llm/glm-5.2"
+      },
+      "source_provenance": {
+        "weights": {
+          "status": "public",
+          "source": "z_ai_launch_post",
+          "url": "https://huggingface.co/zai-org/GLM-5.2",
+          "source_url": "https://z.ai/blog/glm-5.2",
+          "evidence": "The GLM-5.2 launch post states that model weights are publicly available on Hugging Face and ModelScope.",
+          "observed_at": "2026-06-16"
+        },
+        "license": {
+          "id": "mit",
+          "name": "MIT License",
+          "source": "z_ai_launch_post",
+          "source_url": "https://z.ai/blog/glm-5.2",
+          "evidence": "The GLM-5.2 launch post describes the release as MIT open source.",
+          "observed_at": "2026-06-16"
+        }
+      },
+      "model_type": "llm",
+      "urls": {
+        "page": "https://benchmarklist.com/models/z-ai-glm-5.2/"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "benchmark_id": "swe_bench_pro",
+      "benchmark_name": "SWE-bench Pro",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Score",
+        "unit": "%",
+        "value": 62.1
+      },
+      "score": 62.1,
+      "rank": 3,
+      "raw_score": "62.1%",
+      "model_id": "z-ai-glm-5.2",
+      "subject_id": "z-ai-glm-5.2",
+      "subject_type": "model",
+      "display_name": "GLM 5.2",
+      "qualifiers": {
+        "source_benchmark_label": "SWEBench Pro Public",
+        "source_model_label": "GLM 5.2",
+        "source_table": "Evaluations - Agentic (coding)"
+      },
+      "sampled_at": "2026-07-15",
+      "source_url": "https://thinkingmachines.ai/model-card/inkling/",
+      "source_type": "model_card",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "blog": "https://arxiv.org/abs/2509.16941",
+        "dataset": "https://huggingface.co/datasets/OpenEvals/leaderboard-data",
+        "homepage": "https://huggingface.co/datasets/ScaleAI/SWE-bench_Pro"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/swe_bench_pro/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/swe_bench_pro.json",
+        "results": "https://benchmarklist.com/api/v1/results/swe_bench_pro.json"
+      }
+    },
+    {
+      "benchmark_id": "vals_terminal_bench_2_1",
+      "benchmark_name": "Terminal-Bench 2.1",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "stderr",
+          "label": "Std. error",
+          "unit": "percentage_points",
+          "higher_is_better": false
+        },
+        {
+          "key": "latency_s",
+          "label": "Latency",
+          "unit": "s",
+          "higher_is_better": false
+        },
+        {
+          "key": "cost_per_test_usd",
+          "label": "Cost per test",
+          "unit": "USD",
+          "higher_is_better": false
+        }
+      ],
+      "metric": {
+        "value": 81,
+        "label": "Score",
+        "unit": "%"
+      },
+      "score": 81,
+      "rank": 3,
+      "raw_score": "81.0%",
+      "model_id": "z-ai-glm-5.2",
+      "subject_id": "z-ai-glm-5.2",
+      "subject_type": "model",
+      "display_name": "GLM 5.2",
+      "qualifiers": {
+        "source_benchmark_label": "Terminal Bench 2.1",
+        "source_model_label": "GLM-5.2",
+        "source_table": "Official release benchmark comparison"
+      },
+      "sampled_at": "2026-07-31",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-0731",
+      "source_type": "model_card",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "homepage": "https://www.vals.ai/benchmarks/terminal-bench-2-1"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/vals_terminal_bench_2_1/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/vals_terminal_bench_2_1.json",
+        "results": "https://benchmarklist.com/api/v1/results/vals_terminal_bench_2_1.json"
+      }
+    }
+  ]
+}

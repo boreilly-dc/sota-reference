@@ -1,10 +1,10 @@
-# Agentic Coding: Claude Code vs OpenAI Codex (May 2026)
+# Agentic Coding: Claude Code vs OpenAI Codex
 
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-14 |
-| Last Updated | 2026-05-14 |
-| Version | 1.0 |
+| Last Updated | 2026-08-03 |
+| Version | 1.1 |
 
 ---
 
@@ -61,7 +61,7 @@ Both tools have had recent reliability problems. Claude Code experienced a well-
 
 ## Benchmark Comparison
 
-All scores are the latest available as of May 2026 from aggregated leaderboard data.
+The table below retains the May 2026 comparison baseline. For current model selection, the verified BenchmarkList provenance snapshots add Claude Opus 4.8 at 69.2% and GPT-5.6 Luna at 62.7% on SWE-bench Pro, and GPT-5.6 Luna at 84.7% on Terminal-Bench 2.1. BenchmarkList indexes source observations and does not independently rerun every evaluation. Harness and benchmark versions must remain separate.
 
 | Benchmark | What it measures | Claude best | Score | OpenAI best | Score | Leader |
 |-----------|-----------------|------------|-------|-------------|-------|--------|
@@ -229,4 +229,5 @@ Note that open-source alternatives typically have lower benchmark performance th
 14. [Claude Opus 4.7 vs Claude Opus 4.6](https://www.cometapi.com/claude-opus-4-7-vs-claude-opus-4-6/) — CometAPI benchmark comparison
 15. [Claude Code Review 2026](https://devtoolsreview.com/reviews/claude-code-review/) — DevTools Review (5-month review)
 16. [Anthropic confirms Claude Code problems](https://the-decoder.com/anthropic-confirms-claude-code-problems-and-promises-stricter-quality-controls/) — The Decoder coverage
-17. [OpenAI Codex Review 2026](https://aitoolsrecap.com/Reviews/openai-codex-review-2026) — AI Tools Recap review
+17. [BenchmarkList API guide](https://benchmarklist.com/agents/) and [public manifest](https://benchmarklist.com/api/v1/manifest.json) — source-linked benchmark observations used for the August 2026 provenance update
+18. [OpenAI Codex Review 2026](https://aitoolsrecap.com/Reviews/openai-codex-review-2026) — AI Tools Recap review

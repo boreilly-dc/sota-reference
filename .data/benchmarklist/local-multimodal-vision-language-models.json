@@ -1,0 +1,208 @@
+{
+  "metadata": {
+    "article": "multimodal/local-multimodal-vision-language-models.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [],
+  "observations": [
+    {
+      "benchmark_id": "ocrbench",
+      "benchmark_name": "OCRBench",
+      "category": "ocr",
+      "review_state": "verified",
+      "selected_metric": "final_score",
+      "metric_definitions": [
+        {
+          "key": "text_recognition",
+          "label": "Text recognition",
+          "higher_is_better": true
+        },
+        {
+          "key": "scene_text_centric_vqa",
+          "label": "Scene text-centric VQA",
+          "higher_is_better": true
+        },
+        {
+          "key": "doc_oriented_vqa",
+          "label": "Document-oriented VQA",
+          "higher_is_better": true
+        },
+        {
+          "key": "kie",
+          "label": "Key information extraction",
+          "higher_is_better": true
+        },
+        {
+          "key": "hmer",
+          "label": "Handwritten mathematical expression recognition",
+          "higher_is_better": true
+        },
+        {
+          "key": "final_score",
+          "label": "Final score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 824,
+        "unit": "points"
+      },
+      "score": 824,
+      "rank": 2,
+      "subject_id": "ocrbench_granite_vision_3_3_2b_2",
+      "subject_type": "model_variant",
+      "display_name": "granite-vision-3.3-2b",
+      "sampled_at": "2026-07-13",
+      "source_url": "https://huggingface.co/ibm-granite/granite-vision-3.3-2b",
+      "benchmark_links": {
+        "blog": "https://arxiv.org/abs/2305.07895",
+        "dataset": "https://huggingface.co/spaces/echo840/ocrbench-leaderboard/resolve/main/OCRBench.csv",
+        "homepage": "https://huggingface.co/spaces/echo840/ocrbench-leaderboard"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/ocrbench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/ocrbench.json",
+        "results": "https://benchmarklist.com/api/v1/results/ocrbench.json"
+      }
+    },
+    {
+      "benchmark_id": "ocrbench",
+      "benchmark_name": "OCRBench",
+      "category": "ocr",
+      "review_state": "verified",
+      "selected_metric": "final_score",
+      "metric_definitions": [
+        {
+          "key": "text_recognition",
+          "label": "Text recognition",
+          "higher_is_better": true
+        },
+        {
+          "key": "scene_text_centric_vqa",
+          "label": "Scene text-centric VQA",
+          "higher_is_better": true
+        },
+        {
+          "key": "doc_oriented_vqa",
+          "label": "Document-oriented VQA",
+          "higher_is_better": true
+        },
+        {
+          "key": "kie",
+          "label": "Key information extraction",
+          "higher_is_better": true
+        },
+        {
+          "key": "hmer",
+          "label": "Handwritten mathematical expression recognition",
+          "higher_is_better": true
+        },
+        {
+          "key": "final_score",
+          "label": "Final score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 779,
+        "unit": "points"
+      },
+      "score": 779,
+      "rank": 5,
+      "subject_id": "ocrbench_internvl2_1b_5",
+      "subject_type": "model_variant",
+      "display_name": "InternVL2-1B",
+      "sampled_at": "2026-07-13",
+      "source_url": "https://huggingface.co/OpenGVLab/InternVL2-1B",
+      "benchmark_links": {
+        "blog": "https://arxiv.org/abs/2305.07895",
+        "dataset": "https://huggingface.co/spaces/echo840/ocrbench-leaderboard/resolve/main/OCRBench.csv",
+        "homepage": "https://huggingface.co/spaces/echo840/ocrbench-leaderboard"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/ocrbench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/ocrbench.json",
+        "results": "https://benchmarklist.com/api/v1/results/ocrbench.json"
+      }
+    },
+    {
+      "benchmark_id": "ocrbench",
+      "benchmark_name": "OCRBench",
+      "category": "ocr",
+      "review_state": "verified",
+      "selected_metric": "final_score",
+      "metric_definitions": [
+        {
+          "key": "text_recognition",
+          "label": "Text recognition",
+          "higher_is_better": true
+        },
+        {
+          "key": "scene_text_centric_vqa",
+          "label": "Scene text-centric VQA",
+          "higher_is_better": true
+        },
+        {
+          "key": "doc_oriented_vqa",
+          "label": "Document-oriented VQA",
+          "higher_is_better": true
+        },
+        {
+          "key": "kie",
+          "label": "Key information extraction",
+          "higher_is_better": true
+        },
+        {
+          "key": "hmer",
+          "label": "Handwritten mathematical expression recognition",
+          "higher_is_better": true
+        },
+        {
+          "key": "final_score",
+          "label": "Final score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 852,
+        "unit": "points"
+      },
+      "score": 852,
+      "rank": 1,
+      "subject_id": "ocrbench_minicpm_v_2_6_1",
+      "subject_type": "model_variant",
+      "display_name": "Minicpm-V 2.6",
+      "sampled_at": "2026-07-13",
+      "source_url": "https://github.com/OpenBMB/MiniCPM-V",
+      "benchmark_links": {
+        "blog": "https://arxiv.org/abs/2305.07895",
+        "dataset": "https://huggingface.co/spaces/echo840/ocrbench-leaderboard/resolve/main/OCRBench.csv",
+        "homepage": "https://huggingface.co/spaces/echo840/ocrbench-leaderboard"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/ocrbench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/ocrbench.json",
+        "results": "https://benchmarklist.com/api/v1/results/ocrbench.json"
+      }
+    }
+  ]
+}

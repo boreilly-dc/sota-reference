@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-23 |
-| Last Updated | 2026-06-24 |
-| Version | 2.0 |
+| Last Updated | 2026-08-03 |
+| Version | 2.1 |
 
 ---
 
@@ -52,7 +52,7 @@ It is **text-in, text-out** and multilingual; vision is handled by separate mode
 
 ## Benchmark performance
 
-Z.ai's vendor figures are strong on coding and agentic tasks; independent indices run a few points lower. The "GLM-5.2" column below is **vendor-reported** unless the row says otherwise — treat vendor numbers as upper bounds.
+Z.ai's vendor figures are strong on coding and agentic tasks; independent indices run a few points lower. The "GLM-5.2" column below is **vendor-reported** unless the row says otherwise — treat vendor numbers as upper bounds. BenchmarkList now provides the verified provenance records for the 62.1 SWE-bench Pro and 82.7 Terminal-Bench 2.1 observations, including their source snapshots and model identity. It indexes those published results; it does not independently rerun them.
 
 | Benchmark | GLM-5.2 (vendor) | Independent (Artificial Analysis) | Notes |
 |-----------|---------|-----------------------------------|-------|
@@ -141,3 +141,4 @@ The 1M context adds roughly 80–100 GB of KV-cache VRAM at FP8 on top of the we
 - Groundy — "GLM-5.2 Benchmarks: What 62.1% SWE-bench Pro and 99.2% AIME Actually Mean": https://groundy.com/articles/glm-5-2-benchmarks-what-62-1-swe-bench-pro-and-99-2-aime-actually-mean/
 - Unsloth — GLM-5.2 local-run documentation (GGUF): https://unsloth.ai/docs/models/glm-5.2
 - CodingFleet — "GLM-5.2 vs DeepSeek V4 Pro": https://codingfleet.com/blog/glm-5-2-vs-deepseek-v4-pro/
+- BenchmarkList — API guide and public manifest: https://benchmarklist.com/agents/, https://benchmarklist.com/api/v1/manifest.json

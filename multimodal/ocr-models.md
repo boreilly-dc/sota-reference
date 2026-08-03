@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-02 |
-| Last Updated | 2026-06-02 |
-| Version | 1.0 |
+| Last Updated | 2026-08-03 |
+| Version | 1.1 |
 
 ---
 
@@ -87,7 +87,11 @@ The crucial 2026 insight: **moving up a tier does not monotonically increase acc
 
 ## Benchmarks and How to Read Them
 
-Benchmark selection drives the conclusion, so read leaderboards with three rules in mind:
+Benchmark selection drives the conclusion, so read leaderboards with three rules in mind. BenchmarkList is now used as a provenance index for selected OCRBench observations: it records stable subject identities, the 13 July 2026 snapshot, metric direction, and links to the underlying Hugging Face leaderboard. It does not independently rerun OCRBench.
+
+The verified indexed OCRBench snapshot lists MiniCPM-V 2.6 at 852 points, Granite Vision 3.3 2B at 824, and InternVL2-1B at 779. These are model-variant rows from the same source and should not be mixed with OCRBench v2 or OmniDocBench scores.
+
+Read leaderboards with three rules in mind:
 
 1. **Name *and* version matter.** OmniDocBench v1.0, v1.5 and v1.6 are **not score-comparable** (v1.6 typically runs ~0.5–1 point higher for the same model). OCRBench v1 (scored out of 1.0) and OCRBench v2 (out of 100) are completely different scales. [9][3]
 2. **Automated vs human-preference disagree.** Automated parsing benchmarks reward faithful transcription (specialists win); human-preference arenas reward usable, well-structured output (frontier VLMs win). Cite both lenses, not one. [2][7]
@@ -352,4 +356,5 @@ This article supersedes an internal January 2026 OCR survey. The five-month delt
 33. [AWS Textract Pricing](https://aws.amazon.com/textract/pricing/) — AWS (official). Credibility: 9.5/10
 34. [IBM Docling (IBM Developer)](https://developer.ibm.com/components/docling/) — IBM (official). Credibility: 8.5/10
 35. [Oracle OCI Document Understanding](https://www.oracle.com/artificial-intelligence/document-understanding/) — Oracle (official). Credibility: 8/10
-36. [Intelligent Document Processing: The Future of Automation (2026)](https://highpeaksw.com/intelligent-document-processing/) — consultancy analysis. Credibility: 7/10
+36. [BenchmarkList OCRBench](https://benchmarklist.com/benchmarks/ocrbench/) and [API guide](https://benchmarklist.com/agents/) — verified source-linked OCRBench snapshot used for provenance.
+37. [Intelligent Document Processing: The Future of Automation (2026)](https://highpeaksw.com/intelligent-document-processing/) — consultancy analysis. Credibility: 7/10

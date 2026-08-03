@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-07-20 |
-| Version | 3.6 |
+| Last Updated | 2026-08-03 |
+| Version | 3.7 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo plot data was refreshed on 20 July 2026 (Arena snapshot of 19 July 2026); the narrative Best Overall section remains based on the early-July refresh, because the current public snapshot exposes only the top 10 text entries. The Agentic Coding and Tool Use sections were refreshed on 8 June 2026; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
+This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo plot data was refreshed on 3 August 2026. The GPT-5.6 family and focused GPT-5.6 Luna workload evidence were added on 3 August 2026 from source-linked BenchmarkList observations. The Agentic Coding and Tool Use sections otherwise retain their 8 June 2026 refresh; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), BenchmarkList, SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
 
 Each model entry includes origin, release date, model lineage, licence, parameter count, context window, and throughput data where known.
 
@@ -37,18 +37,19 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 | 3 | **Claude Opus 4.7 (thinking)** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Claude Opus 4.8 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
 | 4 | **Claude Opus 4.6** | Anthropic | 2026-02-05 | Claude Opus 4.5 | Claude Opus 4.7 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
 | 5 | **Claude Opus 4.7** | Anthropic | 2026-04-16 | Claude Opus 4.6 | Claude Opus 4.8 | Proprietary | Undisclosed | 1M | ~50-60 | ~2-5 s |
-| 6 | **Muse Spark** | Meta | 2026-04 | — | Incumbent | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
-| 7 | **Gemini 3.1 Pro Preview** | Google DeepMind | 2026-02-19 | Gemini 3 Pro | Incumbent | Proprietary | Undisclosed (MoE) | 1M | ~110 | ~0.9 s |
-| 8 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
-| 9 | **Claude Opus 4.8 (thinking)** | Anthropic | 2026-05-28 | Claude Opus 4.7 | Claude Fable 5 | Proprietary | Undisclosed | 1M | ~50-60 (2.5× fast mode) | ~2-5 s |
-| 10 | **GPT-5.5 (high)** | OpenAI | 2026-04-23 | GPT-5.4 | Incumbent | Proprietary | Undisclosed | 1M | Unknown | Unknown |
+| 6 | **Claude Opus 5 (high)** | Anthropic | 2026 | Claude Opus 4.8 | Incumbent | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
+| 7 | **Claude Opus 5 (max)** | Anthropic | 2026 | Claude Opus 4.8 | Incumbent | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
+| 8 | **Muse Spark 1.1** | Meta | 2026-07 | Muse Spark | Incumbent | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
+| 9 | **Muse Spark** | Meta | 2026-04 | — | Muse Spark 1.1 | Proprietary | Undisclosed | Unknown | Unknown | Unknown |
+| 10 | **Gemini 3 Pro** | Google DeepMind | 2026-01 | Gemini 2.5 Pro | Gemini 3.1 Pro | Proprietary | Undisclosed (MoE) | 1M | ~80+ | ~1-3 s |
 
-**Key observations (LMArena Elo refreshed to the 2 July 2026 snapshot):**
-- **Claude Fable 5** (released 9 June 2026) debuts at the top of the text Arena at **Elo 1508**, the first Claude 5–generation model in general availability. It is the safeguarded public deployment of Anthropic's Mythos-class weights — the restricted **Claude Mythos 5** (Project Glasswing) shares the same underlying model and is described as Anthropic's most capable to date. Fable 5 ships with a 1M-token context (up to 128K output tokens), always-on adaptive thinking, and a January 2026 knowledge cutoff, priced at $10/M input and $50/M output (with the standard 90% prompt-caching discount). It is generally available on the Claude API, Amazon Bedrock, Vertex AI, and Microsoft Foundry from launch.
-- Anthropic also holds the rest of the top of the Arena behind Fable 5. **Claude Opus 4.8** leads the Opus line at Elo 1510 (converging upward with ~18K votes), followed by **Opus 4.7** at 1505 and **Opus 4.6 (thinking)** at 1503. Muse Spark (1487) and Gemini 3.1 Pro Preview (1487) follow as the nearest non-Anthropic models.
+**Key observations (LMArena Elo refreshed to the 2 August 2026 snapshot):**
+- **Claude Fable 5** (released 9 June 2026) leads the current text Arena at **Elo 1509**, the first Claude 5–generation model in general availability. It is the safeguarded public deployment of Anthropic's Mythos-class weights — the restricted **Claude Mythos 5** (Project Glasswing) shares the same underlying model and is described as Anthropic's most capable to date. Fable 5 ships with a 1M-token context (up to 128K output tokens), always-on adaptive thinking, and a January 2026 knowledge cutoff, priced at $10/M input and $50/M output (with the standard 90% prompt-caching discount). It is generally available on the Claude API, Amazon Bedrock, Vertex AI, and Microsoft Foundry from launch.
+- Anthropic also holds the next four Arena places behind Fable 5. **Claude Opus 4.6 thinking** is at Elo 1505, followed by **Opus 4.7 thinking** at 1502, Opus 4.6 at 1497, and Opus 4.7 at 1492. Current Arena ratings are observations, not a guaranteed monotonic capability sequence: Opus 4.8 thinking is at 1484 in this snapshot.
 - **Claude Opus 4.8** (released 28 May 2026) posts the strongest agentic-coding and computer-use results of the Opus line (SWE-Bench Pro 69.2%), with a 2.5× fast mode now ~3× cheaper than on Opus 4.7, at unchanged $5/$25 per 1M pricing.
-- **GPT-5.5 "Spud"** (released 23 April 2026) is a full-generation upgrade over GPT-5.4. It leads the Artificial Analysis Intelligence Index at 60, breaking the previous three-way tie at 57. Its best Arena variant (high) sits at Elo 1481. Priced at $5/M input, $30/M output (Standard); $30/$180 (Pro).
-- **Muse Spark** (Meta) holds a place in the Arena top 6 at Elo 1487. Details are limited.
+- **GPT-5.6** superseded GPT-5.5 on 9 July 2026. OpenAI now provides three API-only tiers: **Sol** for maximum capability (US$5/M input, US$0.50/M cached input, US$30/M output), **Terra** for balanced workloads (US$2.50/$0.25/$15), and **Luna** for fast, high-volume work (US$1/$0.10/$6). These positions come from OpenAI's release metadata and separate workload results; they are not a composite of unrelated raw benchmark scores. **GLM-5.2** remains an MIT-licensed open alternative for self-hosting and provider independence.
+- **GPT-5.5 "Spud"** (released 23 April 2026) was a full-generation upgrade over GPT-5.4 and is now the predecessor to GPT-5.6. It led the Artificial Analysis Intelligence Index at 60 at launch. Its best Arena variant (high) sat near Elo 1481.
+- **Muse Spark 1.1** (Meta) is eighth at Elo 1490, followed by Muse Spark at 1488. Details are limited.
 - GPT-5.4 Pro still leads BenchLM's overall composite at 92/100 (#1 of 225+ models evaluated); GPT-5.5 follows at 91/100.
 - GLM-5.1 (Zhipu AI, Elo 1473) is the highest-ranked open-source model on the text arena; the newer GLM-5.2 (13 June 2026, Elo 1474, 1M context, MIT) leads it on coding and sits marginally above on chat preference — see the [Open Source](#open-source) section and the [GLM-5.2 overview](glm-5-2.md).
 
@@ -84,6 +85,22 @@ Composite ranking across SWE-Bench Verified, SWE-Bench Pro, Terminal-Bench 2.0, 
 | Kimi K2.6 | 80.2% | 58.6% | — | — | — |
 | MiniMax M2.5 | 80.2% | — | — | — | — |
 | GLM-4.7 | 73.8% | — | — | — | — |
+
+### GPT-5.6 Luna workload evidence
+
+BenchmarkList exposes 97 matched Luna results. The table below keeps each benchmark separate and uses direct-model rows only. All listed observations were sampled from OpenAI's 9 July 2026 launch post, are self-reported, and were not independently verified by BenchmarkList.
+
+| Domain | Benchmark | Metric | Luna score | Source rank | Subject |
+|--------|-----------|--------|-----------:|------------:|---------|
+| Professional agents | Agents' Last Exam | Pass rate | 50.3% | 3 | Direct model |
+| Workflow automation | AutomationBench | Task success rate | 69.6% | 4 | Direct model |
+| Agentic coding | Artificial Analysis Coding Agent Index | Index score | 74.6 | 5 | Direct model |
+| Tool use | Toolathlon | Score | 74.6% | 4 | Direct model |
+| Long context | Graphwalks BFS 256K | F1 | 92.5% | 3 | Direct model |
+| Long context | OpenAI MRCR v2, 8 needles, 512K-1M | Score | 43.3% | 4 | Direct model |
+| Computer use | OSWorld 2.0 partial score | Score | 45.6% | 5 | Direct model |
+
+Use Luna first for high-volume agents, routine coding assistance, browsing, extraction, and interactive work. Escalate to Terra or Sol when application evaluations show that Luna does not meet the quality threshold. Do not infer a universal ranking from these rows because metrics, tasks, and comparison populations differ. For an open-weight alternative, evaluate GLM-5.2 on the same application tasks.
 
 **Key observations:**
 - **Claude Opus 4.8 (released 28 May 2026) now leads SWE-Bench Pro at 69.2%** — a ~5-point jump over Opus 4.7 (64.3%) on the hardest agentic coding benchmark. It also edges Opus 4.7 on SWE-Bench Verified (88.6% vs 87.6%) and Terminal-Bench 2.1 (74.6% vs 66.1%).
@@ -339,10 +356,15 @@ The Intelligence Index is a composite score across multiple benchmarks. As of ea
 - Open ASR Leaderboard — https://huggingface.co/spaces/hf-audio/open_asr_leaderboard
 - Artificial Analysis LLM Leaderboard — https://artificialanalysis.ai/leaderboards/models
 - BenchLM — https://benchlm.ai
+- BenchmarkList GPT-5.6 Luna — https://benchmarklist.com/models/openai-gpt-5.6-luna/
+- BenchmarkList API manifest — https://benchmarklist.com/api/v1/manifest.json
+- BenchmarkList agent and API guide — https://benchmarklist.com/agents/
 - Awesome Agents Speed Leaderboard — https://awesomeagents.ai/leaderboards/ai-speed-latency-leaderboard/
 - LiveBench — https://livebench.ai
 
 ### Model Announcements and Documentation
+- GPT-5.6 — https://openai.com/index/gpt-5-6/
+- GPT-5.6 System Card — https://deploymentsafety.openai.com/gpt-5-6-preview
 - GPT-5.5 — https://ofox.ai/blog/gpt-5-5-api-vs-claude-opus-gemini-3-1-flagship-2026/
 - Claude Opus 4.7 — https://ofox.ai/blog/claude-opus-4-7-api-review-upgrade-guide-2026/
 - Claude Mythos Preview — https://www.infoq.com/news/2026/04/anthropic-claude-mythos/

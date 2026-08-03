@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-05 |
-| Last Updated | 2026-06-08 |
-| Version | 1.1 |
+| Last Updated | 2026-08-03 |
+| Version | 1.2 |
 
 ---
 
@@ -104,7 +104,7 @@ Gemma 4 12B uses a **unified, encoder-free architecture**. Where traditional mul
 
 ## Benchmark performance: full family comparison
 
-These are the **official numbers from the Hugging Face model card** (`google/gemma-4-12B`). Gemma 3 27B (no-think) is included as Google's previous-generation reference point. Higher is better unless marked ↓.
+These are the **official numbers from the Hugging Face model card** (`google/gemma-4-12B`). Gemma 3 27B (no-think) is included as Google's previous-generation reference point. Higher is better unless marked ↓. BenchmarkList now supplies a verified, source-linked observation for the 12B model's 72.0 LiveCodeBench result. This is provenance for Google's published result, not an independent rerun.
 
 ![Gemma 4 family benchmark comparison](../images/gemma4-family-benchmarks.png)
 
@@ -219,5 +219,6 @@ Gemma 4 12B captures the bulk of the 26B MoE's quality — and matches it on age
 2. [google/gemma-4-12B — Hugging Face model card](https://huggingface.co/google/gemma-4-12B) — official benchmark table and architecture spec tables for the full family.
 3. [Google's new open-source Gemma 4 12B analyzes audio, video — VentureBeat](https://venturebeat.com/technology/googles-new-open-source-gemma-4-12b-analyzes-audio-video-and-runs-entirely-locally-on-a-typical-16gb-enterprise-laptop) — corroborates "nearing 26B MoE" and local 16 GB deployment.
 4. [Google Gemma 4 12B Brings Multimodal AI to 16GB Laptops — TechTimes (4 Jun 2026)](https://www.techtimes.com/articles/317758/20260604/google-gemma-4-12b-brings-multimodal-ai-16gb-laptops-free-under-apache-20.htm) — release timing and positioning.
-5. [Gemma 4 Complete Guide 2026 — codersera.com](https://codersera.com/blog/gemma-4-complete-guide-2026/) and [dev.to](https://dev.to/aniruddhaadak/gemma-4-complete-guide-2026-architecture-benchmarks-deployment-3en9) — confirm the April 2026 family (E2B / E4B / 26B A4B / 31B) into which 12B was later inserted.
+5. [BenchmarkList API guide](https://benchmarklist.com/agents/) and [public manifest](https://benchmarklist.com/api/v1/manifest.json) — provenance index for the cited LiveCodeBench observation.
+6. [Gemma 4 Complete Guide 2026 — codersera.com](https://codersera.com/blog/gemma-4-complete-guide-2026/) and [dev.to](https://dev.to/aniruddhaadak/gemma-4-complete-guide-2026-architecture-benchmarks-deployment-3en9) — confirm the April 2026 family (E2B / E4B / 26B A4B / 31B) into which 12B was later inserted.
 

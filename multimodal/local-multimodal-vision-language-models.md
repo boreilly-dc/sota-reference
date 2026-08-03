@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-24 |
-| Last Updated | 2026-05-25 |
-| Version | 1.1 |
+| Last Updated | 2026-08-03 |
+| Version | 1.2 |
 
 ---
 
@@ -109,6 +109,8 @@ The Vision Arena prompt distribution emphasises visual reasoning and description
 ## Independent Benchmark Rankings
 
 Data from the **HuggingFace Open VLM Leaderboard** (opencompass/open_vlm_leaderboard) — 285 VLMs evaluated across 8 benchmarks (MMBench v1.1, MMStar, MMMU, MathVista, OCRBench, AI2D, HallusionBench, MMVet). Last updated March 2026.
+
+BenchmarkList now supplies a separate verified provenance snapshot for OCRBench. Its 13 July 2026 source-linked rows list MiniCPM-V 2.6 at 852 points, Granite Vision 3.3 2B at 824, and InternVL2-1B at 779. These are OCRBench model variants and do not replace the March Open VLM multi-benchmark table below.
 
 ### Top Open-Source Models (All Sizes)
 
@@ -520,3 +522,4 @@ These provide the same base models (or close equivalents) with managed scaling, 
 17. BentoML. "Multimodal AI: The Best Open-Source Vision Language Models in 2026." https://www.bentoml.com/blog/multimodal-ai-a-guide-to-open-source-vision-language-models
 18. Park et al. "Mitigating Image Captioning Hallucinations in Vision-Language Models." May 2025. https://arxiv.org/abs/2505.03420
 19. OpenCompass. "Open VLM Leaderboard." HuggingFace Spaces. Last updated March 2026. https://huggingface.co/spaces/opencompass/open_vlm_leaderboard
+20. BenchmarkList. "OCRBench" and API guide. https://benchmarklist.com/benchmarks/ocrbench/ ; https://benchmarklist.com/agents/

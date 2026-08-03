@@ -1,0 +1,368 @@
+{
+  "metadata": {
+    "article": "agents/agentic-coding-claude-vs-openai.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [
+    {
+      "model_id": "anthropic-claude-opus-4.8",
+      "name": "Claude Opus 4.8",
+      "developer": "Anthropic",
+      "developer_id": "anthropic",
+      "isReasoningModel": true,
+      "aliases": [
+        "Claude Opus 4.8",
+        "Opus 4.8",
+        "anthropic-claude-4.8-opus-20260528",
+        "anthropic-claude-opus-4.8",
+        "anthropic/claude-4.8-opus-20260528",
+        "anthropic/claude-opus-4.8",
+        "claude-4.8-opus-20260528",
+        "claude-opus-4.8"
+      ],
+      "release_date": "2026-05-28",
+      "cost": {
+        "input_million": 5,
+        "output_million": 25
+      },
+      "openness": "api_only",
+      "links": {
+        "homepage": "https://www.anthropic.com/news/claude-opus-4-8"
+      },
+      "model_type": "llm",
+      "urls": {
+        "page": "https://benchmarklist.com/models/anthropic-claude-opus-4.8/"
+      }
+    },
+    {
+      "model_id": "openai-gpt-5.6-luna",
+      "name": "GPT-5.6 Luna",
+      "developer": "OpenAI",
+      "developer_id": "openai",
+      "family": "GPT-5.6",
+      "isReasoningModel": true,
+      "aliases": [
+        "gpt-5-6-luna",
+        "gpt-5.6-luna",
+        "gpt-5.6-luna-preview",
+        "gpt-5-6-luna-low",
+        "gpt-5-6-luna-medium",
+        "gpt-5-6-luna-high",
+        "gpt-5-6-luna-xhigh",
+        "gpt-5-6-luna-max",
+        "openai-gpt-5-6-luna-low",
+        "openai-gpt-5-6-luna-medium",
+        "openai-gpt-5-6-luna-high",
+        "openai-gpt-5-6-luna-xhigh",
+        "openai-gpt-5-6-luna-max",
+        "openai-gpt-5.6-luna",
+        "openai/gpt-5.6-luna"
+      ],
+      "release_date": "2026-07-09",
+      "cost": {
+        "input_million": 1,
+        "cache_input_million": 0.1,
+        "output_million": 6
+      },
+      "openness": "api_only",
+      "links": {
+        "homepage": "https://openai.com/index/gpt-5-6/",
+        "blog": "https://openai.com/index/gpt-5-6/",
+        "model_card": "https://deploymentsafety.openai.com/gpt-5-6-preview"
+      },
+      "source_provenance": {
+        "release": {
+          "source": "openai_gpt_5_6_launch",
+          "source_url": "https://openai.com/index/gpt-5-6/",
+          "evidence": "OpenAI launched GPT-5.6 Luna on 2026-07-09 with pricing of $1 input and $6 output per 1M tokens.",
+          "observed_at": "2026-07-09"
+        }
+      },
+      "notes": "Fastest and lowest-cost model in the GPT-5.6 family. Previewed in OpenAI's GPT-5.6 System Card on 2026-06-26 and publicly launched on 2026-07-09.",
+      "model_type": "llm",
+      "urls": {
+        "page": "https://benchmarklist.com/models/openai-gpt-5.6-luna/"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "benchmark_id": "openai_swe_bench_verified",
+      "benchmark_name": "SWE-bench Verified",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "resolved",
+      "metric_definitions": [
+        {
+          "key": "resolved",
+          "label": "Resolved",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Resolved",
+        "unit": "%",
+        "value": 88.6
+      },
+      "score": 88.6,
+      "raw_score": "88.6%",
+      "model_id": "anthropic-claude-opus-4.8",
+      "subject_id": "anthropic-claude-opus-4.8",
+      "subject_type": "model",
+      "display_name": "Claude Opus 4.8",
+      "qualifiers": {
+        "source_benchmark_label": "SWE-bench Verified",
+        "source_model_label": "Claude Opus 4.8",
+        "source_table": "Table 8.1.A capability eval summary"
+      },
+      "sampled_at": "2026-06-09",
+      "source_url": "https://www-cdn.anthropic.com/d00db56fa754a1b115b6dd7cb2e3c342ee809620.pdf",
+      "source_type": "system_card",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "blog": "https://openai.com/index/introducing-swe-bench-verified/",
+        "homepage": "https://openai.com/index/introducing-swe-bench-verified/"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/openai_swe_bench_verified/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/openai_swe_bench_verified.json",
+        "results": "https://benchmarklist.com/api/v1/results/openai_swe_bench_verified.json"
+      }
+    },
+    {
+      "benchmark_id": "swe_bench_pro",
+      "benchmark_name": "SWE-bench Pro",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Score",
+        "unit": "%",
+        "value": 69.2
+      },
+      "score": 69.2,
+      "rank": 1,
+      "raw_score": "69.2%",
+      "model_id": "anthropic-claude-opus-4.8",
+      "subject_id": "anthropic-claude-opus-4.8",
+      "subject_type": "model",
+      "display_name": "Claude Opus 4.8",
+      "qualifiers": {
+        "source_benchmark_label": "SWE-Bench Pro",
+        "source_model_label": "Opus 4.8 (max)",
+        "source_table": "Figure 44 - General capability benchmark results."
+      },
+      "sampled_at": "2026-07-10",
+      "source_url": "https://ai.meta.com/static-resource/muse-spark-1-1-evaluation-report",
+      "source_type": "evaluation_report",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "blog": "https://arxiv.org/abs/2509.16941",
+        "dataset": "https://huggingface.co/datasets/OpenEvals/leaderboard-data",
+        "homepage": "https://huggingface.co/datasets/ScaleAI/SWE-bench_Pro"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/swe_bench_pro/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/swe_bench_pro.json",
+        "results": "https://benchmarklist.com/api/v1/results/swe_bench_pro.json"
+      }
+    },
+    {
+      "benchmark_id": "swe_bench_pro",
+      "benchmark_name": "SWE-bench Pro",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 62.7,
+        "unit": "%"
+      },
+      "score": 62.7,
+      "rank": 3,
+      "raw_score": "62.7%",
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "SWE-Bench Pro (Public)",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Performance"
+      },
+      "sampled_at": "2026-07-21",
+      "source_url": "https://deepmind.google/models/gemini/flash/",
+      "source_type": "model_page",
+      "self_reported": true,
+      "benchmark_links": {
+        "blog": "https://arxiv.org/abs/2509.16941",
+        "dataset": "https://huggingface.co/datasets/OpenEvals/leaderboard-data",
+        "homepage": "https://huggingface.co/datasets/ScaleAI/SWE-bench_Pro"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/swe_bench_pro/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/swe_bench_pro.json",
+        "results": "https://benchmarklist.com/api/v1/results/swe_bench_pro.json"
+      }
+    },
+    {
+      "benchmark_id": "vals_terminal_bench_2_1",
+      "benchmark_name": "Terminal-Bench 2.1",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "stderr",
+          "label": "Std. error",
+          "unit": "percentage_points",
+          "higher_is_better": false
+        },
+        {
+          "key": "latency_s",
+          "label": "Latency",
+          "unit": "s",
+          "higher_is_better": false
+        },
+        {
+          "key": "cost_per_test_usd",
+          "label": "Cost per test",
+          "unit": "USD",
+          "higher_is_better": false
+        }
+      ],
+      "metric": {
+        "value": 85,
+        "label": "Score",
+        "unit": "%"
+      },
+      "score": 85,
+      "rank": 1,
+      "raw_score": "85.0%",
+      "model_id": "anthropic-claude-opus-4.8",
+      "subject_id": "anthropic-claude-opus-4.8",
+      "subject_type": "model",
+      "display_name": "Claude Opus 4.8",
+      "qualifiers": {
+        "source_benchmark_label": "Terminal Bench 2.1",
+        "source_model_label": "Opus-4.8",
+        "source_table": "Official release benchmark comparison"
+      },
+      "sampled_at": "2026-07-31",
+      "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V4-Flash-0731",
+      "source_type": "model_card",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "homepage": "https://www.vals.ai/benchmarks/terminal-bench-2-1"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/vals_terminal_bench_2_1/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/vals_terminal_bench_2_1.json",
+        "results": "https://benchmarklist.com/api/v1/results/vals_terminal_bench_2_1.json"
+      }
+    },
+    {
+      "benchmark_id": "vals_terminal_bench_2_1",
+      "benchmark_name": "Terminal-Bench 2.1",
+      "category": "coding",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "stderr",
+          "label": "Std. error",
+          "unit": "percentage_points",
+          "higher_is_better": false
+        },
+        {
+          "key": "latency_s",
+          "label": "Latency",
+          "unit": "s",
+          "higher_is_better": false
+        },
+        {
+          "key": "cost_per_test_usd",
+          "label": "Cost per test",
+          "unit": "USD",
+          "higher_is_better": false
+        }
+      ],
+      "metric": {
+        "value": 84.7,
+        "unit": "%"
+      },
+      "score": 84.7,
+      "rank": 1,
+      "raw_score": "84.7%",
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "harness": "Terminus-2",
+        "source_benchmark_label": "Terminal-bench 2.1",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Performance"
+      },
+      "sampled_at": "2026-07-21",
+      "source_url": "https://deepmind.google/models/gemini/flash/",
+      "source_type": "model_page",
+      "self_reported": true,
+      "benchmark_links": {
+        "homepage": "https://www.vals.ai/benchmarks/terminal-bench-2-1"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/vals_terminal_bench_2_1/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/vals_terminal_bench_2_1.json",
+        "results": "https://benchmarklist.com/api/v1/results/vals_terminal_bench_2_1.json"
+      }
+    }
+  ]
+}

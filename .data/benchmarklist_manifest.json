@@ -1,0 +1,102 @@
+{
+  "metadata": {
+    "version": 1,
+    "description": "BenchmarkList observations selected for SOTA Reference articles",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": ["sampled_at", "source_url", "subject_type"],
+      "allowed_subject_types": ["model", "model_variant"],
+      "reject_review_states": ["flagged", "needs_review"]
+    }
+  },
+  "articles": {
+    "models/frontier-models-benchmark.md": {
+      "output": "frontier-models.json",
+      "status": "migrated",
+      "model_ids": ["openai-gpt-5.6-luna", "openai-gpt-5.6-terra", "openai-gpt-5.6-sol"],
+      "observations": [
+        {"benchmark_id": "agents_last_exam", "subject_ids": ["openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "pass_rate"},
+        {"benchmark_id": "automationbench", "subject_ids": ["openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "task_success_rate"},
+        {"benchmark_id": "artificial_analysis_coding_agent_index", "subject_ids": ["openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "toolathlon", "subject_ids": ["openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "score", "prefer_model_id": true},
+        {"benchmark_id": "graphwalks_bfs_256k_f1", "subject_ids": ["openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "openai_mrcr_v2_8_needle_512k_1m", "subject_ids": ["openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "score"}
+      ]
+    },
+    "agents/open-models-coding-agents.md": {
+      "output": "open-models-coding-agents.json",
+      "status": "migrated",
+      "model_ids": ["anthropic-claude-opus-4.8", "openai-gpt-5.6-luna", "deepseek-deepseek-v4-pro", "moonshotai-kimi-k2.6", "z-ai-glm-5.2", "google-gemma-4-12b-it"],
+      "observations": [
+        {"benchmark_id": "openai_swe_bench_verified", "subject_ids": ["anthropic-claude-opus-4.8", "deepseek-deepseek-v4-pro", "moonshotai-kimi-k2.6", "z-ai-glm-5.2"], "subject_types": ["model"], "metric": "resolved"},
+        {"benchmark_id": "swe_bench_pro", "subject_ids": ["anthropic-claude-opus-4.8", "openai-gpt-5.6-luna", "deepseek-deepseek-v4-pro", "moonshotai-kimi-k2.6", "z-ai-glm-5.2"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "vals_terminal_bench_2_1", "subject_ids": ["anthropic-claude-opus-4.8", "openai-gpt-5.6-luna", "deepseek-deepseek-v4-pro", "moonshotai-kimi-k2.6", "z-ai-glm-5.2"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "livecodebench_official", "subject_ids": ["deepseek-deepseek-v4-pro", "moonshotai-kimi-k2.6", "google-gemma-4-12b-it"], "subject_types": ["model"], "metric": "pass_at_1"}
+      ]
+    },
+    "agents/agentic-coding-claude-vs-openai.md": {
+      "output": "agentic-coding-claude-vs-openai.json",
+      "status": "migrated",
+      "model_ids": ["anthropic-claude-opus-4.8", "openai-gpt-5.6-luna"],
+      "observations": [
+        {"benchmark_id": "openai_swe_bench_verified", "subject_ids": ["anthropic-claude-opus-4.8"], "subject_types": ["model"], "metric": "resolved"},
+        {"benchmark_id": "swe_bench_pro", "subject_ids": ["anthropic-claude-opus-4.8", "openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "vals_terminal_bench_2_1", "subject_ids": ["anthropic-claude-opus-4.8", "openai-gpt-5.6-luna"], "subject_types": ["model"], "metric": "score"}
+      ]
+    },
+    "models/local-llms-consumer-hardware.md": {
+      "output": "local-llms-consumer-hardware.json",
+      "status": "migrated",
+      "model_ids": ["z-ai-glm-5.2", "google-gemma-4-12b-it"],
+      "observations": [
+        {"benchmark_id": "swe_bench_pro", "subject_ids": ["z-ai-glm-5.2"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "vals_terminal_bench_2_1", "subject_ids": ["z-ai-glm-5.2"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "livecodebench_official", "subject_ids": ["google-gemma-4-12b-it"], "subject_types": ["model"], "metric": "pass_at_1"}
+      ]
+    },
+    "models/glm-5-2.md": {
+      "output": "glm-5-2.json",
+      "status": "migrated",
+      "model_ids": ["z-ai-glm-5.2"],
+      "observations": [
+        {"benchmark_id": "swe_bench_pro", "subject_ids": ["z-ai-glm-5.2"], "subject_types": ["model"], "metric": "score"},
+        {"benchmark_id": "vals_terminal_bench_2_1", "subject_ids": ["z-ai-glm-5.2"], "subject_types": ["model"], "metric": "score"}
+      ]
+    },
+    "models/gemma-4-12b.md": {
+      "output": "gemma-4-12b.json",
+      "status": "migrated",
+      "model_ids": ["google-gemma-4-12b-it"],
+      "observations": [
+        {"benchmark_id": "livecodebench_official", "subject_ids": ["google-gemma-4-12b-it"], "subject_types": ["model"], "metric": "pass_at_1"}
+      ]
+    },
+    "multimodal/ocr-models.md": {
+      "output": "ocr-models.json",
+      "status": "migrated",
+      "model_ids": [],
+      "observations": [
+        {"benchmark_id": "ocrbench", "subject_ids": ["ocrbench_minicpm_v_2_6_1", "ocrbench_granite_vision_3_3_2b_2", "ocrbench_internvl2_1b_5"], "subject_types": ["model_variant"], "metric": "final_score"}
+      ]
+    },
+    "multimodal/local-multimodal-vision-language-models.md": {
+      "output": "local-multimodal-vision-language-models.json",
+      "status": "migrated",
+      "model_ids": [],
+      "observations": [
+        {"benchmark_id": "ocrbench", "subject_ids": ["ocrbench_minicpm_v_2_6_1", "ocrbench_granite_vision_3_3_2b_2", "ocrbench_internvl2_1b_5"], "subject_types": ["model_variant"], "metric": "final_score"}
+      ]
+    },
+    "models/molmo2.md": {"status": "blocked", "reason": "The verified aggregate record has no metric definitions; retain the primary Ai2 paper until BenchmarkList exposes typed metrics."},
+    "multimodal/local-audio-language-models.md": {"status": "blocked", "reason": "The MMAU record has no verified review state; retain peer-reviewed primary sources."}
+  },
+  "later_wave": [
+    "rag/embedding-models.md",
+    "rag/rag-chatbot-benchmarks.md",
+    "evaluation/chatbot-evaluation-llm-as-judge.md",
+    "media-generation/audio-generation-ai.md",
+    "media-generation/video-generation-ai.md",
+    "multimodal/facial-recognition-deepfake-impersonation-detection.md",
+    "evaluation/ai-observability.md"
+  ]
+}

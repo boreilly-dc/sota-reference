@@ -2,6 +2,12 @@
 
 Research articles on state-of-the-art topics in AI and software engineering.
 
+## Benchmark provenance
+
+Benchmark-heavy articles use [BenchmarkList](https://benchmarklist.com/) as a discovery and provenance index where it has suitable verified coverage. The repository keeps the underlying paper, model card, benchmark, or independent leaderboard as a source because BenchmarkList usually indexes published observations rather than independently rerunning them. Imported records must have a verified review state, dated snapshot, source URL, metric direction, and explicit subject type. Scores from unrelated benchmarks, harnesses, or versions are not combined into a universal ranking.
+
+Selections are declared in [`.data/benchmarklist_manifest.json`](.data/benchmarklist_manifest.json), generated per-article records live in [`.data/benchmarklist/`](.data/benchmarklist/), and [`.data/benchmarklist_coverage.json`](.data/benchmarklist_coverage.json) records migrated, blocked, and later-wave articles.
+
 Articles are organised into topic folders. Survey-style articles compare options across a field; canonical blueprints live under [`reference-designs/`](reference-designs/).
 
 ## Models

@@ -36,6 +36,12 @@ SLUG_MAP = {
     "gpt-5.5":                        "GPT-5.5",
     "gpt-5.5-high":                   "GPT-5.5",
     "gpt-5.5-instant":                None,  # skip — separate variant we don't track
+    "gpt-5.6-luna":                   "GPT-5.6 Luna",
+    "gpt-5.6-terra":                  "GPT-5.6 Terra",
+    "gpt-5.6-sol":                    "GPT-5.6 Sol",
+    "gpt-5.6-sol-high":               "GPT-5.6 Sol",
+    "gpt-5.6-sol-max":                "GPT-5.6 Sol",
+    "gpt-5.6-sol-xhigh":              "GPT-5.6 Sol",
     "gpt-5.1-high":                   None,  # GPT-5.1 not tracked
     "gpt-5.3-chat-latest":            None,  # GPT-5.3 not tracked
     "gpt-5.4-mini-high":              None,  # mini variant not tracked
@@ -61,6 +67,10 @@ SLUG_MAP = {
     "claude-opus-4-8-thinking":       "Claude Opus 4.8",
     "claude-fable-5":                 "Claude Fable 5",
     "claude-fable-5-thinking":        "Claude Fable 5",
+    "claude-opus-5-high":             "Claude Opus 5",
+    "claude-opus-5-max":              "Claude Opus 5",
+    "gemini-3.5-flash-high":          None,
+    "gemini-3.6-flash":               None,
     "claude-mythos-5":                None,  # restricted-access sibling, not on public arena
 
     # Google DeepMind
@@ -467,17 +477,22 @@ def estimate_drift(latest_date: str, discovered: dict | None = None, days_back: 
     return round(statistics.median(shifts))
 
 
-def check_monotonicity(models: list[dict], families: dict) -> list[str]:
+def check_monotonicity(models: list[dict], families: dict, exceptions: list[dict] | None = None) -> list[str]:
     model_map = {m["name"]: m for m in models}
+    exception_pairs = {
+        (item["predecessor"], item["successor"])
+        for item in (exceptions or [])
+    }
     warnings = []
     for family_name, members in families.items():
         prev_elo = None
         prev_name = None
         for name in members:
-            if name not in model_map:
+            if name not in model_map or not model_map[name].get("plot", True):
                 continue
             elo = model_map[name]["elo"]
-            if prev_elo is not None and elo <= prev_elo:
+            if (prev_elo is not None and elo <= prev_elo
+                    and (prev_name, name) not in exception_pairs):
                 warnings.append(
                     f"  {family_name}: {prev_name} ({prev_elo}) >= {name} ({elo})"
                 )
@@ -593,7 +608,9 @@ def main():
             else:
                 data["families"][family_name] = [m["name"]]
 
-    mono_warnings = check_monotonicity(data["models"], data["families"])
+    mono_warnings = check_monotonicity(
+        data["models"], data["families"], data["metadata"].get("monotonicity_exceptions")
+    )
     if mono_warnings:
         print(f"\n  Monotonicity warnings:")
         for w in mono_warnings:

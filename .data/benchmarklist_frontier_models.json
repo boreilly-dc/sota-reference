@@ -1,0 +1,547 @@
+{
+  "metadata": {
+    "description": "Focused BenchmarkList metadata and source observations for the OpenAI GPT-5.6 family",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "sources": [
+      "https://benchmarklist.com/api/v1/manifest.json",
+      "https://benchmarklist.com/api/v1/models.json",
+      "https://benchmarklist.com/api/v1/benchmarks.json",
+      "https://benchmarklist.com/models/openai-gpt-5.6-luna/"
+    ],
+    "model_ids": [
+      "openai-gpt-5.6-luna",
+      "openai-gpt-5.6-terra",
+      "openai-gpt-5.6-sol"
+    ],
+    "benchmark_ids": [
+      "agents_last_exam",
+      "automationbench",
+      "artificial_analysis_coding_agent_index",
+      "toolathlon",
+      "graphwalks_bfs_256k_f1",
+      "openai_mrcr_v2_8_needle_512k_1m",
+      "osworld2_0_benchmarking_computer_use_agents_on_long_horizon_real_world_tasks"
+    ],
+    "notes": "Each benchmark remains a separate source observation. Raw scores are not combined across benchmarks. Direct model rows are selected; model variants, agents, and systems are excluded."
+  },
+  "models": [
+    {
+      "model_id": "openai-gpt-5.6-luna",
+      "name": "GPT-5.6 Luna",
+      "developer": "OpenAI",
+      "developer_id": "openai",
+      "family": "GPT-5.6",
+      "isReasoningModel": true,
+      "aliases": [
+        "gpt-5-6-luna",
+        "gpt-5.6-luna",
+        "gpt-5.6-luna-preview",
+        "gpt-5-6-luna-low",
+        "gpt-5-6-luna-medium",
+        "gpt-5-6-luna-high",
+        "gpt-5-6-luna-xhigh",
+        "gpt-5-6-luna-max",
+        "openai-gpt-5-6-luna-low",
+        "openai-gpt-5-6-luna-medium",
+        "openai-gpt-5-6-luna-high",
+        "openai-gpt-5-6-luna-xhigh",
+        "openai-gpt-5-6-luna-max",
+        "openai-gpt-5.6-luna",
+        "openai/gpt-5.6-luna"
+      ],
+      "release_date": "2026-07-09",
+      "cost": {
+        "input_million": 1,
+        "cache_input_million": 0.1,
+        "output_million": 6
+      },
+      "openness": "api_only",
+      "links": {
+        "homepage": "https://openai.com/index/gpt-5-6/",
+        "blog": "https://openai.com/index/gpt-5-6/",
+        "model_card": "https://deploymentsafety.openai.com/gpt-5-6-preview"
+      },
+      "source_provenance": {
+        "release": {
+          "source": "openai_gpt_5_6_launch",
+          "source_url": "https://openai.com/index/gpt-5-6/",
+          "evidence": "OpenAI launched GPT-5.6 Luna on 2026-07-09 with pricing of $1 input and $6 output per 1M tokens.",
+          "observed_at": "2026-07-09"
+        }
+      },
+      "notes": "Fastest and lowest-cost model in the GPT-5.6 family. Previewed in OpenAI's GPT-5.6 System Card on 2026-06-26 and publicly launched on 2026-07-09.",
+      "model_type": "llm",
+      "urls": {
+        "page": "https://benchmarklist.com/models/openai-gpt-5.6-luna/"
+      }
+    },
+    {
+      "model_id": "openai-gpt-5.6-terra",
+      "name": "GPT-5.6 Terra",
+      "developer": "OpenAI",
+      "developer_id": "openai",
+      "family": "GPT-5.6",
+      "isReasoningModel": true,
+      "aliases": [
+        "gpt-5-6-terra",
+        "gpt-5.6-terra",
+        "gpt-5.6-terra-preview",
+        "gpt-5-6-terra-low",
+        "gpt-5-6-terra-medium",
+        "gpt-5-6-terra-high",
+        "gpt-5-6-terra-xhigh",
+        "gpt-5-6-terra-max",
+        "openai-gpt-5-6-terra-low",
+        "openai-gpt-5-6-terra-medium",
+        "openai-gpt-5-6-terra-high",
+        "openai-gpt-5-6-terra-xhigh",
+        "openai-gpt-5-6-terra-max",
+        "openai-gpt-5.6-terra",
+        "openai/gpt-5.6-terra"
+      ],
+      "release_date": "2026-07-09",
+      "cost": {
+        "input_million": 2.5,
+        "cache_input_million": 0.25,
+        "output_million": 15
+      },
+      "openness": "api_only",
+      "links": {
+        "homepage": "https://openai.com/index/gpt-5-6/",
+        "blog": "https://openai.com/index/gpt-5-6/",
+        "model_card": "https://deploymentsafety.openai.com/gpt-5-6-preview"
+      },
+      "source_provenance": {
+        "release": {
+          "source": "openai_gpt_5_6_launch",
+          "source_url": "https://openai.com/index/gpt-5-6/",
+          "evidence": "OpenAI launched GPT-5.6 Terra on 2026-07-09 with pricing of $2.50 input and $15 output per 1M tokens.",
+          "observed_at": "2026-07-09"
+        }
+      },
+      "notes": "Lower-cost model in the GPT-5.6 family. Previewed in OpenAI's GPT-5.6 System Card on 2026-06-26 and publicly launched on 2026-07-09.",
+      "model_type": "llm",
+      "urls": {
+        "page": "https://benchmarklist.com/models/openai-gpt-5.6-terra/"
+      }
+    },
+    {
+      "model_id": "openai-gpt-5.6-sol",
+      "name": "GPT-5.6 Sol",
+      "developer": "OpenAI",
+      "developer_id": "openai",
+      "family": "GPT-5.6",
+      "isReasoningModel": true,
+      "aliases": [
+        "gpt-5-6-sol",
+        "gpt-5.6-sol",
+        "gpt-5.6-sol-preview",
+        "gpt-5-6-sol-low",
+        "gpt-5-6-sol-medium",
+        "gpt-5-6-sol-high",
+        "gpt-5-6-sol-xhigh",
+        "gpt-5-6-sol-max",
+        "openai-gpt-5-6-sol-low",
+        "openai-gpt-5-6-sol-medium",
+        "openai-gpt-5-6-sol-high",
+        "openai-gpt-5-6-sol-xhigh",
+        "openai-gpt-5-6-sol-max",
+        "openai-gpt-5.6-sol",
+        "openai/gpt-5.6-sol"
+      ],
+      "release_date": "2026-07-09",
+      "cost": {
+        "input_million": 5,
+        "cache_input_million": 0.5,
+        "output_million": 30
+      },
+      "openness": "api_only",
+      "links": {
+        "homepage": "https://openai.com/index/gpt-5-6/",
+        "blog": "https://openai.com/index/gpt-5-6/",
+        "model_card": "https://deploymentsafety.openai.com/gpt-5-6-preview"
+      },
+      "source_provenance": {
+        "release": {
+          "source": "openai_gpt_5_6_launch",
+          "source_url": "https://openai.com/index/gpt-5-6/",
+          "evidence": "OpenAI launched GPT-5.6 Sol on 2026-07-09 with pricing of $5 input and $30 output per 1M tokens.",
+          "observed_at": "2026-07-09"
+        }
+      },
+      "notes": "Flagship model of the GPT-5.6 family. Previewed in OpenAI's GPT-5.6 System Card on 2026-06-26 and publicly launched on 2026-07-09.",
+      "model_type": "llm",
+      "urls": {
+        "page": "https://benchmarklist.com/models/openai-gpt-5.6-sol/"
+      }
+    }
+  ],
+  "observations": [
+    {
+      "benchmark_id": "agents_last_exam",
+      "benchmark_name": "Agents' Last Exam",
+      "category": "agentic",
+      "primary_metric": "pass_rate",
+      "metric_definitions": [
+        {
+          "key": "pass_rate",
+          "label": "Pass Rate",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "avg_score",
+          "label": "Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "total_runtime_seconds",
+          "label": "Total Runtime",
+          "unit": "seconds",
+          "higher_is_better": false
+        },
+        {
+          "key": "total_input_tokens",
+          "label": "Total Input Tokens",
+          "unit": "tokens",
+          "higher_is_better": false
+        },
+        {
+          "key": "total_output_tokens",
+          "label": "Total Output Tokens",
+          "unit": "tokens",
+          "higher_is_better": false
+        }
+      ],
+      "score": 50.3,
+      "rank": 3,
+      "raw_score": "50.3%",
+      "metrics": {
+        "score": {
+          "label": "Score",
+          "unit": "%",
+          "value": 50.3
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "Agents' Last Exam",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Professional Work"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/agents_last_exam/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/agents_last_exam.json",
+        "results": "https://benchmarklist.com/api/v1/results/agents_last_exam.json"
+      }
+    },
+    {
+      "benchmark_id": "automationbench",
+      "benchmark_name": "AutomationBench",
+      "category": "agentic",
+      "primary_metric": "task_success_rate",
+      "metric_definitions": [
+        {
+          "key": "task_success_rate",
+          "label": "Task Success Rate",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "cost_per_task",
+          "label": "Cost / Task",
+          "unit": "USD",
+          "higher_is_better": false
+        },
+        {
+          "key": "medium_effort_task_success_rate",
+          "label": "Medium-effort task success rate",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "medium_effort_cost_per_task",
+          "label": "Medium-effort cost per task",
+          "unit": "USD",
+          "higher_is_better": false
+        }
+      ],
+      "score": 69.6,
+      "rank": 4,
+      "raw_score": "69.6%",
+      "metrics": {
+        "score": {
+          "label": "Score",
+          "unit": "%",
+          "value": 69.6
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "AutomationBench",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Tool Use"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/automationbench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/automationbench.json",
+        "results": "https://benchmarklist.com/api/v1/results/automationbench.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_coding_agent_index",
+      "benchmark_name": "Artificial Analysis Coding Agent Index",
+      "category": "coding",
+      "primary_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Index score",
+          "higher_is_better": true
+        }
+      ],
+      "score": 74.6,
+      "rank": 5,
+      "raw_score": "74.6",
+      "metrics": {
+        "score": {
+          "label": "Score",
+          "value": 74.6
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "Artificial Analysis Coding Agent Index",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Coding"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_coding_agent_index/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_coding_agent_index.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_coding_agent_index.json"
+      }
+    },
+    {
+      "benchmark_id": "toolathlon",
+      "benchmark_name": "Toolathlon",
+      "category": "agentic",
+      "primary_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        },
+        {
+          "key": "normalized_score",
+          "label": "Normalized Score",
+          "higher_is_better": true
+        },
+        {
+          "key": "pass_at_1",
+          "label": "Pass@1",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "pass_at_3",
+          "label": "Pass@3",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "pass_3",
+          "label": "Pass^3",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "avg_turns",
+          "label": "Average turns",
+          "unit": "turns",
+          "higher_is_better": false
+        }
+      ],
+      "score": 74.6,
+      "rank": 4,
+      "raw_score": "74.6%",
+      "metrics": {
+        "score": {
+          "label": "Score",
+          "unit": "%",
+          "value": 74.6
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "Toolathlon",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Tool Use"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/toolathlon/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/toolathlon.json",
+        "results": "https://benchmarklist.com/api/v1/results/toolathlon.json"
+      }
+    },
+    {
+      "benchmark_id": "graphwalks_bfs_256k_f1",
+      "benchmark_name": "Graphwalks BFS 256k F1",
+      "category": "long_context",
+      "primary_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "F1",
+          "higher_is_better": true
+        }
+      ],
+      "score": 92.5,
+      "rank": 3,
+      "raw_score": "92.5%",
+      "metrics": {
+        "f1": {
+          "label": "Score",
+          "unit": "%",
+          "value": 92.5
+        },
+        "score": {
+          "label": "Score",
+          "unit": "%",
+          "value": 92.5
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "GraphWalks BFS 256K",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Long Context"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/graphwalks_bfs_256k_f1/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/graphwalks_bfs_256k_f1.json",
+        "results": "https://benchmarklist.com/api/v1/results/graphwalks_bfs_256k_f1.json"
+      }
+    },
+    {
+      "benchmark_id": "openai_mrcr_v2_8_needle_512k_1m",
+      "benchmark_name": "OpenAI MRCR v2 8-needle 512K-1M",
+      "category": "long_context",
+      "primary_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        }
+      ],
+      "score": 43.3,
+      "rank": 4,
+      "raw_score": "43.3%",
+      "metrics": {
+        "score": {
+          "label": "Score",
+          "unit": "%",
+          "value": 43.3
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "OpenAI MRCR v2 8-needle 512K-1M",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Long Context"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/openai_mrcr_v2_8_needle_512k_1m/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/openai_mrcr_v2_8_needle_512k_1m.json",
+        "results": "https://benchmarklist.com/api/v1/results/openai_mrcr_v2_8_needle_512k_1m.json"
+      }
+    },
+    {
+      "benchmark_id": "osworld2_0_benchmarking_computer_use_agents_on_long_horizon_real_world_tasks",
+      "benchmark_name": "OSWorld2.0: Benchmarking Computer Use Agents on Long-Horizon Real-World Tasks",
+      "category": "uncategorized",
+      "primary_metric": "binary",
+      "metric_definitions": [],
+      "score": 45.6,
+      "rank": 5,
+      "raw_score": "45.6%",
+      "metrics": {
+        "partial": {
+          "label": "Score",
+          "unit": "%",
+          "value": 45.6
+        }
+      },
+      "model_id": "openai-gpt-5.6-luna",
+      "subject_id": "openai-gpt-5.6-luna",
+      "subject_type": "model",
+      "display_name": "GPT-5.6 Luna",
+      "qualifiers": {
+        "source_benchmark_label": "OSWorld 2.0 partial score",
+        "source_model_label": "GPT-5.6 Luna",
+        "source_table": "Evaluations - Computer Use"
+      },
+      "sampled_at": "2026-07-09",
+      "source_url": "https://openai.com/index/gpt-5-6/",
+      "source_type": "launch_blog_post",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/osworld2_0_benchmarking_computer_use_agents_on_long_horizon_real_world_tasks/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/osworld2_0_benchmarking_computer_use_agents_on_long_horizon_real_world_tasks.json",
+        "results": "https://benchmarklist.com/api/v1/results/osworld2_0_benchmarking_computer_use_agents_on_long_horizon_real_world_tasks.json"
+      }
+    }
+  ]
+}

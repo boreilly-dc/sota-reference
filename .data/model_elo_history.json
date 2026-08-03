@@ -7,7 +7,24 @@
       "frontier-models-benchmark.md (this repo)"
     ],
     "notes": "Elo scale was recalibrated several times by LMSYS/LMArena. Models with plot:true have confirmed current arena scores; plot:false models retain their last-known score but are excluded from charts. For models with multiple variants (e.g. -high, -thinking), the best-performing variant is used.",
-    "last_updated": "2026-07-20"
+    "last_updated": "2026-08-03",
+    "monotonicity_exceptions": [
+      {
+        "predecessor": "Claude Opus 4.6",
+        "successor": "Claude Opus 4.7",
+        "reason": "Observed current Arena ratings can regress as votes and the comparison population change; accepted from the 2026-08-02 snapshot."
+      },
+      {
+        "predecessor": "Claude Opus 4.7",
+        "successor": "Claude Opus 4.8",
+        "reason": "Observed current Arena ratings can regress as votes and the comparison population change; accepted from the 2026-08-02 snapshot."
+      },
+      {
+        "predecessor": "Gemini 3 Pro",
+        "successor": "Gemini 3.1 Pro Preview",
+        "reason": "Observed current Arena ratings can regress as votes and the comparison population change; accepted from the 2026-08-02 snapshot."
+      }
+    ]
   },
   "labs": {
     "OpenAI": {
@@ -46,7 +63,8 @@
       "GPT-5",
       "GPT-5.2",
       "GPT-5.4",
-      "GPT-5.5"
+      "GPT-5.5",
+      "GPT-5.6 Sol"
     ],
     "GPT (pro)": [
       "GPT-5.2 Pro",
@@ -128,9 +146,6 @@
     ],
     "Muse Spark": [
       "Muse Spark 1.1"
-    ],
-    "GPT-5.6 Sol": [
-      "GPT-5.6 Sol"
     ]
   },
   "models": [
@@ -148,7 +163,7 @@
       "lab": "OpenAI",
       "family": "GPT-5",
       "release_date": "2026-03-05",
-      "elo": 1478,
+      "elo": 1477,
       "open_source": false,
       "plot": true
     },
@@ -193,7 +208,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-02-05",
-      "elo": 1504,
+      "elo": 1505,
       "open_source": false,
       "plot": true
     },
@@ -211,7 +226,7 @@
       "lab": "Google DeepMind",
       "family": "Gemini 3",
       "release_date": "2026-02-19",
-      "elo": 1505,
+      "elo": 1485,
       "open_source": false,
       "plot": true
     },
@@ -292,7 +307,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-04-16",
-      "elo": 1505,
+      "elo": 1502,
       "open_source": false,
       "plot": true
     },
@@ -310,7 +325,7 @@
       "lab": "Anthropic",
       "family": "Claude 4.6",
       "release_date": "2026-05-28",
-      "elo": 1512,
+      "elo": 1484,
       "open_source": false,
       "plot": true
     },
@@ -319,7 +334,7 @@
       "lab": "Anthropic",
       "family": "Claude 5",
       "release_date": "2026-06-09",
-      "elo": 1507,
+      "elo": 1509,
       "open_source": false,
       "plot": true
     },
@@ -328,7 +343,7 @@
       "lab": "Meta",
       "family": "Muse",
       "release_date": "2026-04-10",
-      "elo": 1487,
+      "elo": 1488,
       "open_source": false,
       "plot": true
     },
@@ -634,16 +649,16 @@
       "lab": "Meta",
       "family": "Muse Spark",
       "release_date": "2026-07-20",
-      "elo": 1493,
+      "elo": 1490,
       "open_source": false,
       "plot": true
     },
     {
       "name": "GPT-5.6 Sol",
       "lab": "OpenAI",
-      "family": "GPT-5.6 Sol",
-      "release_date": "2026-07-20",
-      "elo": 1486,
+      "family": "GPT-5",
+      "release_date": "2026-07-09",
+      "elo": 1483,
       "open_source": false,
       "plot": true
     }

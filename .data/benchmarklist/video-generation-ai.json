@@ -1,0 +1,662 @@
+{
+  "metadata": {
+    "article": "media-generation/video-generation-ai.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [],
+  "observations": [
+    {
+      "benchmark_id": "artificial_analysis_text_to_video",
+      "benchmark_name": "Artificial Analysis Text-to-Video Arena (With Audio)",
+      "category": "multimodal",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1229
+      },
+      "score": 1229,
+      "rank": 2,
+      "subject_id": "dreamina_seedance_2_0_720p",
+      "subject_type": "model",
+      "display_name": "Dreamina Seedance 2.0 720p",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+        "leaderboard": "https://artificialanalysis.ai/video/leaderboard/text-to-video"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_text_to_video/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_text_to_video.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_text_to_video.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_text_to_video",
+      "benchmark_name": "Artificial Analysis Text-to-Video Arena (With Audio)",
+      "category": "multimodal",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1247
+      },
+      "score": 1247,
+      "rank": 1,
+      "subject_id": "gemini_omni_flash",
+      "subject_type": "model",
+      "display_name": "Gemini Omni Flash",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+        "leaderboard": "https://artificialanalysis.ai/video/leaderboard/text-to-video"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_text_to_video/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_text_to_video.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_text_to_video.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_text_to_video",
+      "benchmark_name": "Artificial Analysis Text-to-Video Arena (With Audio)",
+      "category": "multimodal",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1113
+      },
+      "score": 1113,
+      "rank": 6,
+      "subject_id": "kling_3_0_1080p_pro",
+      "subject_type": "model",
+      "display_name": "Kling 3.0 1080p (Pro)",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+        "leaderboard": "https://artificialanalysis.ai/video/leaderboard/text-to-video"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_text_to_video/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_text_to_video.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_text_to_video.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_text_to_video",
+      "benchmark_name": "Artificial Analysis Text-to-Video Arena (With Audio)",
+      "category": "multimodal",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1165
+      },
+      "score": 1165,
+      "rank": 3,
+      "subject_id": "wan2_7_260612",
+      "subject_type": "model",
+      "display_name": "Wan2.7-260612",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/video/leaderboard/text-to-video",
+        "leaderboard": "https://artificialanalysis.ai/video/leaderboard/text-to-video"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_text_to_video/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_text_to_video.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_text_to_video.json"
+      }
+    },
+    {
+      "benchmark_id": "vbench_video_generation",
+      "benchmark_name": "VBench Video Generation Leaderboard",
+      "category": "creative_media",
+      "review_state": "verified",
+      "selected_metric": "total_score",
+      "metric_definitions": [
+        {
+          "key": "total_score",
+          "label": "Total Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "quality_score",
+          "label": "Quality Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "semantic_score",
+          "label": "Semantic Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "selected_score",
+          "label": "Selected Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "subject_consistency",
+          "label": "subject consistency",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "background_consistency",
+          "label": "background consistency",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "temporal_flickering",
+          "label": "temporal flickering",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "motion_smoothness",
+          "label": "motion smoothness",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "dynamic_degree",
+          "label": "dynamic degree",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "aesthetic_quality",
+          "label": "aesthetic quality",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "imaging_quality",
+          "label": "imaging quality",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "object_class",
+          "label": "object class",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "multiple_objects",
+          "label": "multiple objects",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "human_action",
+          "label": "human action",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "color",
+          "label": "color",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "spatial_relationship",
+          "label": "spatial relationship",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "scene",
+          "label": "scene",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "appearance_style",
+          "label": "appearance style",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "temporal_style",
+          "label": "temporal style",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "overall_consistency",
+          "label": "overall consistency",
+          "unit": "%",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Total Score",
+        "unit": "%",
+        "value": 88.26
+      },
+      "score": 88.26,
+      "rank": 1,
+      "subject_id": "vbench_video_generation_ipow_1",
+      "subject_type": "model",
+      "display_name": "IPOW",
+      "sampled_at": "2026-06-30",
+      "source_url": "https://github.com/SAIS-FUXI/IPO",
+      "source_type": "public_leaderboard_config_extracted",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "dataset": "https://vchitect-vbench-leaderboard.hf.space/config",
+        "homepage": "https://vchitect.github.io/VBench-project/",
+        "leaderboard": "https://vchitect.github.io/VBench-project/"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/vbench_video_generation/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/vbench_video_generation.json",
+        "results": "https://benchmarklist.com/api/v1/results/vbench_video_generation.json"
+      }
+    },
+    {
+      "benchmark_id": "vbench_video_generation",
+      "benchmark_name": "VBench Video Generation Leaderboard",
+      "category": "creative_media",
+      "review_state": "verified",
+      "selected_metric": "total_score",
+      "metric_definitions": [
+        {
+          "key": "total_score",
+          "label": "Total Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "quality_score",
+          "label": "Quality Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "semantic_score",
+          "label": "Semantic Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "selected_score",
+          "label": "Selected Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "subject_consistency",
+          "label": "subject consistency",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "background_consistency",
+          "label": "background consistency",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "temporal_flickering",
+          "label": "temporal flickering",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "motion_smoothness",
+          "label": "motion smoothness",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "dynamic_degree",
+          "label": "dynamic degree",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "aesthetic_quality",
+          "label": "aesthetic quality",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "imaging_quality",
+          "label": "imaging quality",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "object_class",
+          "label": "object class",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "multiple_objects",
+          "label": "multiple objects",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "human_action",
+          "label": "human action",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "color",
+          "label": "color",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "spatial_relationship",
+          "label": "spatial relationship",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "scene",
+          "label": "scene",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "appearance_style",
+          "label": "appearance style",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "temporal_style",
+          "label": "temporal style",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "overall_consistency",
+          "label": "overall consistency",
+          "unit": "%",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Total Score",
+        "unit": "%",
+        "value": 85.06
+      },
+      "score": 85.06,
+      "rank": 8,
+      "subject_id": "vbench_video_generation_veo_3_8",
+      "subject_type": "model",
+      "display_name": "Veo 3",
+      "sampled_at": "2026-06-30",
+      "source_url": "https://cloud.google.com/vertex-ai/generative-ai/docs/models/veo/3-0-generate-001?hl=zh-cn",
+      "source_type": "public_leaderboard_config_extracted",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "dataset": "https://vchitect-vbench-leaderboard.hf.space/config",
+        "homepage": "https://vchitect.github.io/VBench-project/",
+        "leaderboard": "https://vchitect.github.io/VBench-project/"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/vbench_video_generation/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/vbench_video_generation.json",
+        "results": "https://benchmarklist.com/api/v1/results/vbench_video_generation.json"
+      }
+    },
+    {
+      "benchmark_id": "vbench_video_generation",
+      "benchmark_name": "VBench Video Generation Leaderboard",
+      "category": "creative_media",
+      "review_state": "verified",
+      "selected_metric": "total_score",
+      "metric_definitions": [
+        {
+          "key": "total_score",
+          "label": "Total Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "quality_score",
+          "label": "Quality Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "semantic_score",
+          "label": "Semantic Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "selected_score",
+          "label": "Selected Score",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "subject_consistency",
+          "label": "subject consistency",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "background_consistency",
+          "label": "background consistency",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "temporal_flickering",
+          "label": "temporal flickering",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "motion_smoothness",
+          "label": "motion smoothness",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "dynamic_degree",
+          "label": "dynamic degree",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "aesthetic_quality",
+          "label": "aesthetic quality",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "imaging_quality",
+          "label": "imaging quality",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "object_class",
+          "label": "object class",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "multiple_objects",
+          "label": "multiple objects",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "human_action",
+          "label": "human action",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "color",
+          "label": "color",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "spatial_relationship",
+          "label": "spatial relationship",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "scene",
+          "label": "scene",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "appearance_style",
+          "label": "appearance style",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "temporal_style",
+          "label": "temporal style",
+          "unit": "%",
+          "higher_is_better": true
+        },
+        {
+          "key": "overall_consistency",
+          "label": "overall consistency",
+          "unit": "%",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Total Score",
+        "unit": "%",
+        "value": 86.22
+      },
+      "score": 86.22,
+      "rank": 5,
+      "subject_id": "vbench_video_generation_wan2_1_2025_02_24_5",
+      "subject_type": "model",
+      "display_name": "Wan2.1 (2025-02-24)",
+      "sampled_at": "2026-06-30",
+      "source_url": "https://tongyi.aliyun.com/wanxiang/videoCreation",
+      "source_type": "public_leaderboard_config_extracted",
+      "self_reported": true,
+      "verified": false,
+      "benchmark_links": {
+        "dataset": "https://vchitect-vbench-leaderboard.hf.space/config",
+        "homepage": "https://vchitect.github.io/VBench-project/",
+        "leaderboard": "https://vchitect.github.io/VBench-project/"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/vbench_video_generation/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/vbench_video_generation.json",
+        "results": "https://benchmarklist.com/api/v1/results/vbench_video_generation.json"
+      }
+    }
+  ]
+}

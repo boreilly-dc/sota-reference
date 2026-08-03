@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-08 |
-| Last Updated | 2026-06-08 |
-| Version | 1.0 |
+| Last Updated | 2026-08-03 |
+| Version | 1.1 |
 
 ---
 
@@ -140,7 +140,9 @@ Notes and caveats:
 
 ### Leaderboards and Best-in-Class by Use Case
 
-The main public preference benchmark is the **Artificial Analysis Video Arena** — a blind-vote, Elo-style leaderboard analogous to LMArena for LLMs. **Treat its absolute rankings with heavy caution**: snapshots taken months apart are **not comparable** (Elo in a growing participant pool drifts), and the two snapshots gathered for this article disagree sharply. In a January 2026 snapshot Runway Gen-4.5 sat at #1 (~Elo 1247); by an April 2026 snapshot it had fallen to ~#10 (~1178), and the nominal #1 was **"HappyHorse-1.0"** — a model with **no identifiable team and no public API**, which by itself should make a reader sceptical of the leaderboard as procurement evidence. What the snapshots *do* agree on is the **cluster of genuine leaders**: Seedance 2.0, Kling 3.0, Veo 3.x, Hailuo, and Runway are consistently near the top (sources: [Artificial Analysis Video Arena](https://artificialanalysis.ai/video/leaderboard/text-to-video); [Jan 2026 snapshot](https://www.dualview.ai/blog/ai-tools/best-ai-video-models.html); [Apr 2026 snapshot](https://oakgen.ai/blog/best-ai-video-generators-april-2026-leaderboard)).
+The main public preference benchmark is the **Artificial Analysis Video Arena** — a blind-vote, Elo-style leaderboard analogous to LMArena for LLMs. **Treat its absolute rankings with heavy caution**: snapshots taken months apart are **not comparable** because Elo in a growing participant pool drifts. BenchmarkList's verified 27 July 2026 text-to-video snapshot records Gemini Omni Flash at 1247, Dreamina Seedance 2.0 720p at 1229, Wan2.7-260612 at 1165, and Kling 3.0 1080p Pro at 1113. This is a source-linked Artificial Analysis snapshot, not an independent BenchmarkList rerun, and it supersedes the older January/April figures for current standing.
+
+The objective **VBench Video Generation** record is a different metric family and must not be merged with arena Elo. Its 30 June 2026 snapshot reports total score 88.26 for IPOW, 86.22 for Wan2.1 (2025-02-24), and 85.06 for Veo 3. VBench decomposes quality and semantics across multiple dimensions; it does not measure the same human preference signal as the arena.
 
 A more durable way to choose is by **use case** (consensus across multiple comparisons):
 
@@ -394,13 +396,14 @@ Realistic synthetic video is a dual-use technology, and 2026's frontier models i
 48. [Movie Gen Bench repository](https://github.com/facebookresearch/MovieGenBench) — Meta. Credibility 0.95.
 49. [Artificial Analysis Text-to-Video Leaderboard](https://artificialanalysis.ai/video/leaderboard/text-to-video). Credibility 0.85.
 50. [Video Embedding Benchmark 2026 (small-sample)](https://mixpeek.com/blog/video-embedding-benchmark-2026) — Mixpeek. Credibility 0.70.
+51. [BenchmarkList Artificial Analysis Text-to-Video](https://benchmarklist.com/benchmarks/artificial_analysis_text_to_video/), [VBench Video Generation](https://benchmarklist.com/benchmarks/vbench_video_generation/), and [API guide](https://benchmarklist.com/agents/) — source-linked snapshots used for the August 2026 update.
 
 ### Hardware, speed-ups, and managed services
-51. [CausVid: Fast Autoregressive Video Diffusion](https://github.com/tianweiy/CausVid) — CVPR 2025. Credibility 0.90.
-52. [TeaCache for ComfyUI](https://www.stablediffusiontutorials.com/2025/01/teacache.html). Credibility 0.80.
-53. [SageAttention2++ benchmarks](https://v12h.substack.com/p/sageattention-sageattention2-sageattention2). Credibility 0.75.
-54. [Sora 2 video generation on Azure AI Foundry (official)](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/video-generation) — Microsoft. Credibility 0.95.
-55. [Amazon Nova Reel review](https://chatforest.com/reviews/amazon-nova-reel-aws-bedrock-video-generation/) — corroborated against AWS pricing. Credibility 0.65.
-56. [Oracle Cloud GPU pricing](https://oraclelicensingexperts.com/blog/oracle-cloud-gpu-skus-pricing/). Credibility 0.80.
-57. [AI video API landscape 2026](https://ice-ice-bear.github.io/posts/2026-04-07-ai-video-api-landscape/). Credibility 0.70.
+52. [CausVid: Fast Autoregressive Video Diffusion](https://github.com/tianweiy/CausVid) — CVPR 2025. Credibility 0.90.
+53. [TeaCache for ComfyUI](https://www.stablediffusiontutorials.com/2025/01/teacache.html). Credibility 0.80.
+54. [SageAttention2++ benchmarks](https://v12h.substack.com/p/sageattention-sageattention2-sageattention2). Credibility 0.75.
+55. [Sora 2 video generation on Azure AI Foundry (official)](https://learn.microsoft.com/en-us/azure/foundry/openai/concepts/video-generation) — Microsoft. Credibility 0.95.
+56. [Amazon Nova Reel review](https://chatforest.com/reviews/amazon-nova-reel-aws-bedrock-video-generation/) — corroborated against AWS pricing. Credibility 0.65.
+57. [Oracle Cloud GPU pricing](https://oraclelicensingexperts.com/blog/oracle-cloud-gpu-skus-pricing/). Credibility 0.80.
+58. [AI video API landscape 2026](https://ice-ice-bear.github.io/posts/2026-04-07-ai-video-api-landscape/). Credibility 0.70.
 

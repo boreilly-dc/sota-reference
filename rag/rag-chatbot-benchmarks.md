@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-20 |
-| Last Updated | 2026-03-20 |
-| Version | 1.0 |
+| Last Updated | 2026-08-03 |
+| Version | 1.1 |
 
 ---
 
@@ -99,6 +99,8 @@ The following metrics are consistently cited across academic literature, open-so
 ## 4. Purpose-Built RAG Benchmarks
 
 ### RGB (Retrieval-Augmented Generation Benchmark)
+
+BenchmarkList now provides a verified, source-linked snapshot of the original RGB noise-robustness results. Its 27 May 2026 index of the paper's results records mean English/Chinese noise-robustness accuracy of 89.068 for ChatGPT, 86.567 for Qwen-7B-Chat, and 85.434 for ChatGLM-6B. These historical model scores describe the RGB paper setup; they are not current frontier-model rankings or an independent BenchmarkList rerun.
 
 - **Paper**: Chen et al., AAAI 2024
 - **What it tests**: Four fundamental RAG abilities — noise robustness, negative rejection, information integration, counterfactual robustness.
@@ -402,3 +404,5 @@ Current RAG benchmarks have several well-documented limitations:
 13. Evidently AI. (2025). "7 RAG Benchmarks." [https://www.evidentlyai.com/blog/rag-benchmarks](https://www.evidentlyai.com/blog/rag-benchmarks)
 
 14. Gao, Y., Xiong, Y., Gao, X. et al. (2023). "Retrieval-Augmented Generation for Large Language Models: A Survey." *arXiv:2312.10997*. [https://arxiv.org/abs/2312.10997](https://arxiv.org/abs/2312.10997)
+
+15. BenchmarkList. "RGB" benchmark record and API guide. [https://benchmarklist.com/benchmarks/rgb/](https://benchmarklist.com/benchmarks/rgb/), [https://benchmarklist.com/agents/](https://benchmarklist.com/agents/)

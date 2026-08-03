@@ -67,38 +67,112 @@
     "multimodal/local-audio-language-models.md": {
       "status": "blocked",
       "reason": "The MMAU record has no verified review state; retain peer-reviewed primary sources."
+    },
+    "rag/rag-chatbot-benchmarks.md": {
+      "status": "migrated",
+      "output": ".data/benchmarklist/rag-chatbot-benchmarks.json",
+      "observation_count": 3,
+      "benchmark_count": 1,
+      "quality_failures": 0
+    },
+    "evaluation/chatbot-evaluation-llm-as-judge.md": {
+      "status": "migrated",
+      "output": ".data/benchmarklist/chatbot-evaluation-llm-as-judge.json",
+      "observation_count": 6,
+      "benchmark_count": 2,
+      "quality_failures": 0
+    },
+    "media-generation/audio-generation-ai.md": {
+      "status": "migrated",
+      "output": ".data/benchmarklist/audio-generation-ai.json",
+      "observation_count": 7,
+      "benchmark_count": 2,
+      "quality_failures": 0
+    },
+    "media-generation/video-generation-ai.md": {
+      "status": "migrated",
+      "output": ".data/benchmarklist/video-generation-ai.json",
+      "observation_count": 7,
+      "benchmark_count": 2,
+      "quality_failures": 0
+    },
+    "rag/embedding-models.md": {
+      "status": "primary_source_only",
+      "reason": "MTEB remains authoritative; BenchmarkList lacks the complete current suite aggregates used by this article."
+    },
+    "multimodal/facial-recognition-deepfake-impersonation-detection.md": {
+      "status": "primary_source_only",
+      "reason": "NIST FRTE/FATE and primary detection papers provide stronger coverage than the available BenchmarkList records."
+    },
+    "evaluation/ai-observability.md": {
+      "status": "not_applicable",
+      "reason": "The article covers evaluation infrastructure rather than comparative model benchmark results."
+    },
+    "agents/agentic-harnesses.md": {
+      "status": "not_applicable",
+      "reason": "Framework survey; benchmark mentions are contextual rather than result rankings."
+    },
+    "agents/frameworks-research-agents.md": {
+      "status": "later_wave",
+      "reason": "Research-agent evaluations need a dedicated harness and benchmark identity review."
+    },
+    "agents/grounded-search-for-llms.md": {
+      "status": "later_wave",
+      "reason": "Search-agent benchmark coverage needs a dedicated provenance pass."
+    },
+    "agents/mcp-alternatives-and-tool-calling-strategies.md": {
+      "status": "not_applicable",
+      "reason": "Protocol survey; benchmark mentions do not form comparative result tables."
+    },
+    "evaluation/chatbot-topic-hijacking-prevention.md": {
+      "status": "later_wave",
+      "reason": "Safety benchmark coverage needs task- and attack-version mapping."
+    },
+    "media-generation/deepfake-creation-models-and-accessibility.md": {
+      "status": "not_applicable",
+      "reason": "Threat and accessibility survey; no central comparative benchmark ranking."
+    },
+    "media-generation/local-image-generation-models.md": {
+      "status": "later_wave",
+      "reason": "Image-generation arenas and objective metrics require separate scale handling."
+    },
+    "models/current-best-frontier-llms.md": {
+      "status": "not_applicable",
+      "reason": "Its BenchmarkList provenance is shared with models/frontier-models-benchmark.md."
+    },
+    "models/turboquant-mac-qwen3-5.md": {
+      "status": "primary_source_only",
+      "reason": "Systems-performance claims are better supported by the TurboQuant paper and implementation measurements."
+    },
+    "multimodal/real-time-voice-llms.md": {
+      "status": "later_wave",
+      "reason": "Voice quality, latency, and tool-use metrics require separate benchmark families."
+    },
+    "rag/embedding-pre-screening-chatbot-topic-relevance.md": {
+      "status": "not_applicable",
+      "reason": "Design guidance rather than a current model leaderboard."
+    },
+    "rag/large-document-llm-methods.md": {
+      "status": "not_applicable",
+      "reason": "Method survey; benchmark mentions are supporting evidence rather than rankings."
+    },
+    "rag/rag-and-context-engineering.md": {
+      "status": "not_applicable",
+      "reason": "Architecture survey; comparative benchmark claims are not central."
+    },
+    "rag/turbovec-vector-quantization.md": {
+      "status": "primary_source_only",
+      "reason": "Performance claims must remain tied to the turbovec and TurboQuant implementations."
     }
   },
-  "later_wave": [
-    "rag/embedding-models.md",
-    "rag/rag-chatbot-benchmarks.md",
-    "evaluation/chatbot-evaluation-llm-as-judge.md",
-    "media-generation/audio-generation-ai.md",
-    "media-generation/video-generation-ai.md",
-    "multimodal/facial-recognition-deepfake-impersonation-detection.md",
-    "evaluation/ai-observability.md"
-  ],
-  "unclassified_benchmark_articles": [
-    "agents/agentic-harnesses.md",
-    "agents/frameworks-research-agents.md",
-    "agents/grounded-search-for-llms.md",
-    "agents/mcp-alternatives-and-tool-calling-strategies.md",
-    "evaluation/chatbot-topic-hijacking-prevention.md",
-    "media-generation/deepfake-creation-models-and-accessibility.md",
-    "media-generation/local-image-generation-models.md",
-    "models/current-best-frontier-llms.md",
-    "models/turboquant-mac-qwen3-5.md",
-    "multimodal/real-time-voice-llms.md",
-    "rag/embedding-pre-screening-chatbot-topic-relevance.md",
-    "rag/large-document-llm-methods.md",
-    "rag/rag-and-context-engineering.md",
-    "rag/turbovec-vector-quantization.md"
-  ],
+  "unclassified_benchmark_articles": [],
   "summary": {
     "benchmark_articles_discovered": 31,
-    "migrated": 8,
+    "migrated": 12,
     "blocked": 2,
-    "later_wave": 7,
-    "unclassified": 14
+    "primary_source_only": 4,
+    "not_applicable": 8,
+    "later_wave": 5,
+    "unclassified": 0
   }
 }

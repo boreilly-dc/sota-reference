@@ -1,0 +1,325 @@
+{
+  "metadata": {
+    "article": "evaluation/chatbot-evaluation-llm-as-judge.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [],
+  "observations": [
+    {
+      "benchmark_id": "arena_hard_v2",
+      "benchmark_name": "Arena-Hard v2",
+      "category": "general_knowledge",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        },
+        {
+          "key": "normalized_score",
+          "label": "Normalized Score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Score",
+        "unit": "fraction",
+        "value": 0.862
+      },
+      "score": 0.862,
+      "rank": 1,
+      "subject_id": "mimo-v2-flash",
+      "subject_type": "model",
+      "display_name": "MiMo-V2-Flash",
+      "qualifiers": {
+        "analysis_method": "Creative Writing",
+        "self_reported": true
+      },
+      "sampled_at": "2026-07-13",
+      "source_url": "https://api.zeroeval.com/leaderboard/benchmarks/arena-hard-v2/details",
+      "benchmark_links": {
+        "homepage": "https://github.com/lmarena/arena-hard-auto"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/arena_hard_v2/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/arena_hard_v2.json",
+        "results": "https://benchmarklist.com/api/v1/results/arena_hard_v2.json"
+      }
+    },
+    {
+      "benchmark_id": "arena_hard_v2",
+      "benchmark_name": "Arena-Hard v2",
+      "category": "general_knowledge",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        },
+        {
+          "key": "normalized_score",
+          "label": "Normalized Score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Score",
+        "unit": "fraction",
+        "value": 0.797
+      },
+      "score": 0.797,
+      "rank": 3,
+      "subject_id": "qwen3-235b-a22b-thinking-2507",
+      "subject_type": "model",
+      "display_name": "Qwen3-235B-A22B-Thinking-2507",
+      "qualifiers": {
+        "analysis_method": "GPT-4 evaluated win rates",
+        "self_reported": true
+      },
+      "sampled_at": "2026-07-13",
+      "source_url": "https://api.zeroeval.com/leaderboard/benchmarks/arena-hard-v2/details",
+      "benchmark_links": {
+        "homepage": "https://github.com/lmarena/arena-hard-auto"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/arena_hard_v2/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/arena_hard_v2.json",
+        "results": "https://benchmarklist.com/api/v1/results/arena_hard_v2.json"
+      }
+    },
+    {
+      "benchmark_id": "arena_hard_v2",
+      "benchmark_name": "Arena-Hard v2",
+      "category": "general_knowledge",
+      "review_state": "verified",
+      "selected_metric": "score",
+      "metric_definitions": [
+        {
+          "key": "score",
+          "label": "Score",
+          "higher_is_better": true
+        },
+        {
+          "key": "normalized_score",
+          "label": "Normalized Score",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "label": "Score",
+        "unit": "fraction",
+        "value": 0.827
+      },
+      "score": 0.827,
+      "rank": 2,
+      "subject_id": "qwen3-next-80b-a3b-instruct",
+      "subject_type": "model",
+      "display_name": "Qwen3-Next-80B-A3B-Instruct",
+      "qualifiers": {
+        "analysis_method": "GPT-4.1 evaluated win rates",
+        "self_reported": true
+      },
+      "sampled_at": "2026-07-13",
+      "source_url": "https://api.zeroeval.com/leaderboard/benchmarks/arena-hard-v2/details",
+      "benchmark_links": {
+        "homepage": "https://github.com/lmarena/arena-hard-auto"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/arena_hard_v2/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/arena_hard_v2.json",
+        "results": "https://benchmarklist.com/api/v1/results/arena_hard_v2.json"
+      }
+    },
+    {
+      "benchmark_id": "mt_bench",
+      "benchmark_name": "MT-Bench",
+      "category": "generalization",
+      "review_state": "verified",
+      "selected_metric": "mt_bench_score",
+      "metric_definitions": [
+        {
+          "key": "mt_bench_score",
+          "label": "MT-Bench average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "turn_1_score",
+          "label": "Turn 1 average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "turn_2_score",
+          "label": "Turn 2 average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "judgment_count",
+          "label": "GPT-4 single judgments",
+          "unit": "count",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "higher_is_better": true,
+        "label": "MT-Bench average score",
+        "unit": "points",
+        "value": 7.9
+      },
+      "score": 7.9,
+      "rank": 3,
+      "raw_score": "7.9",
+      "subject_id": "mt_bench_claude_v1",
+      "subject_type": "model",
+      "display_name": "claude-v1",
+      "sampled_at": "2026-05-27",
+      "source_url": "https://huggingface.co/spaces/lmsys/mt-bench/resolve/main/data/mt_bench/model_judgment/gpt-4_single.jsonl",
+      "benchmark_links": {
+        "dataset": "https://huggingface.co/spaces/lmsys/mt-bench/tree/main/data/mt_bench/model_judgment",
+        "homepage": "https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/mt_bench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/mt_bench.json",
+        "results": "https://benchmarklist.com/api/v1/results/mt_bench.json"
+      }
+    },
+    {
+      "benchmark_id": "mt_bench",
+      "benchmark_name": "MT-Bench",
+      "category": "generalization",
+      "review_state": "verified",
+      "selected_metric": "mt_bench_score",
+      "metric_definitions": [
+        {
+          "key": "mt_bench_score",
+          "label": "MT-Bench average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "turn_1_score",
+          "label": "Turn 1 average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "turn_2_score",
+          "label": "Turn 2 average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "judgment_count",
+          "label": "GPT-4 single judgments",
+          "unit": "count",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "higher_is_better": true,
+        "label": "MT-Bench average score",
+        "unit": "points",
+        "value": 7.94375
+      },
+      "score": 7.94375,
+      "rank": 2,
+      "raw_score": "7.94375",
+      "subject_id": "mt_bench_gpt_3_5_turbo",
+      "subject_type": "model",
+      "display_name": "gpt-3.5-turbo",
+      "sampled_at": "2026-05-27",
+      "source_url": "https://huggingface.co/spaces/lmsys/mt-bench/resolve/main/data/mt_bench/model_judgment/gpt-4_single.jsonl",
+      "benchmark_links": {
+        "dataset": "https://huggingface.co/spaces/lmsys/mt-bench/tree/main/data/mt_bench/model_judgment",
+        "homepage": "https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/mt_bench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/mt_bench.json",
+        "results": "https://benchmarklist.com/api/v1/results/mt_bench.json"
+      }
+    },
+    {
+      "benchmark_id": "mt_bench",
+      "benchmark_name": "MT-Bench",
+      "category": "generalization",
+      "review_state": "verified",
+      "selected_metric": "mt_bench_score",
+      "metric_definitions": [
+        {
+          "key": "mt_bench_score",
+          "label": "MT-Bench average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "turn_1_score",
+          "label": "Turn 1 average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "turn_2_score",
+          "label": "Turn 2 average score",
+          "unit": "points",
+          "higher_is_better": true
+        },
+        {
+          "key": "judgment_count",
+          "label": "GPT-4 single judgments",
+          "unit": "count",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "higher_is_better": true,
+        "label": "MT-Bench average score",
+        "unit": "points",
+        "value": 8.990625
+      },
+      "score": 8.990625,
+      "rank": 1,
+      "raw_score": "8.990625",
+      "subject_id": "mt_bench_gpt_4",
+      "subject_type": "model",
+      "display_name": "gpt-4",
+      "sampled_at": "2026-05-27",
+      "source_url": "https://huggingface.co/spaces/lmsys/mt-bench/resolve/main/data/mt_bench/model_judgment/gpt-4_single.jsonl",
+      "benchmark_links": {
+        "dataset": "https://huggingface.co/spaces/lmsys/mt-bench/tree/main/data/mt_bench/model_judgment",
+        "homepage": "https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_judge"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/mt_bench/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/mt_bench.json",
+        "results": "https://benchmarklist.com/api/v1/results/mt_bench.json"
+      }
+    }
+  ]
+}

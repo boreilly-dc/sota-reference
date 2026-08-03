@@ -1,0 +1,359 @@
+{
+  "metadata": {
+    "article": "media-generation/audio-generation-ai.md",
+    "description": "BenchmarkList observations and source provenance selected for this article",
+    "last_updated": "2026-08-03",
+    "api_version": "1",
+    "quality_policy": {
+      "required_review_state": "verified",
+      "required_fields": [
+        "sampled_at",
+        "source_url",
+        "subject_type"
+      ],
+      "allowed_subject_types": [
+        "model",
+        "model_variant"
+      ],
+      "reject_review_states": [
+        "flagged",
+        "needs_review"
+      ]
+    },
+    "notes": "BenchmarkList indexes source observations; it does not independently rerun every evaluation. Do not combine unrelated raw metrics."
+  },
+  "models": [],
+  "observations": [
+    {
+      "benchmark_id": "artificial_analysis_provider_voice",
+      "benchmark_name": "Artificial Analysis Speech Arena — Provider Voices",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1215
+      },
+      "score": 1215,
+      "rank": 3,
+      "subject_id": "gemini_3_1_flash_tts",
+      "subject_type": "model",
+      "display_name": "Gemini 3.1 Flash TTS",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+        "leaderboard": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_provider_voice/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_provider_voice.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_provider_voice.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_provider_voice",
+      "benchmark_name": "Artificial Analysis Speech Arena — Provider Voices",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1234
+      },
+      "score": 1234,
+      "rank": 1,
+      "subject_id": "qwen_audio_3_0_tts_plus",
+      "subject_type": "model",
+      "display_name": "Qwen-Audio-3.0-TTS-Plus",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+        "leaderboard": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_provider_voice/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_provider_voice.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_provider_voice.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_provider_voice",
+      "benchmark_name": "Artificial Analysis Speech Arena — Provider Voices",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1230
+      },
+      "score": 1230,
+      "rank": 2,
+      "subject_id": "simba_3_2",
+      "subject_type": "model",
+      "display_name": "Simba 3.2",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+        "leaderboard": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_provider_voice/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_provider_voice.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_provider_voice.json"
+      }
+    },
+    {
+      "benchmark_id": "artificial_analysis_provider_voice",
+      "benchmark_name": "Artificial Analysis Speech Arena — Provider Voices",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo",
+      "metric_definitions": [
+        {
+          "key": "elo",
+          "label": "Elo",
+          "higher_is_better": true
+        },
+        {
+          "key": "confidence_interval",
+          "label": "95% confidence interval",
+          "higher_is_better": false
+        },
+        {
+          "key": "samples",
+          "label": "Samples",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1208
+      },
+      "score": 1208,
+      "rank": 4,
+      "subject_id": "sonic_3_5",
+      "subject_type": "model",
+      "display_name": "Sonic 3.5",
+      "sampled_at": "2026-07-27",
+      "source_url": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+      "benchmark_links": {
+        "homepage": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice",
+        "leaderboard": "https://artificialanalysis.ai/text-to-speech/leaderboard/provider-voice"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/artificial_analysis_provider_voice/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/artificial_analysis_provider_voice.json",
+        "results": "https://benchmarklist.com/api/v1/results/artificial_analysis_provider_voice.json"
+      }
+    },
+    {
+      "benchmark_id": "speech_arena",
+      "benchmark_name": "Speech Arena",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo_rating",
+      "metric_definitions": [
+        {
+          "key": "elo_rating",
+          "label": "ELO Rating",
+          "higher_is_better": true
+        },
+        {
+          "key": "matches_played",
+          "label": "Matches Played",
+          "higher_is_better": true
+        },
+        {
+          "key": "wins",
+          "label": "Wins",
+          "higher_is_better": true
+        },
+        {
+          "key": "losses",
+          "label": "Losses",
+          "higher_is_better": false
+        },
+        {
+          "key": "win_rate",
+          "label": "Win Rate",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1576
+      },
+      "score": 1576,
+      "rank": 3,
+      "subject_id": "cartesia_sonic_turbo",
+      "subject_type": "model",
+      "display_name": "Sonic Turbo",
+      "sampled_at": "2026-07-26",
+      "source_url": "https://www.speecharena.org/leaderboard",
+      "benchmark_links": {
+        "homepage": "https://www.speecharena.org/",
+        "leaderboard": "https://www.speecharena.org/leaderboard"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/speech_arena/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/speech_arena.json",
+        "results": "https://benchmarklist.com/api/v1/results/speech_arena.json"
+      }
+    },
+    {
+      "benchmark_id": "speech_arena",
+      "benchmark_name": "Speech Arena",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo_rating",
+      "metric_definitions": [
+        {
+          "key": "elo_rating",
+          "label": "ELO Rating",
+          "higher_is_better": true
+        },
+        {
+          "key": "matches_played",
+          "label": "Matches Played",
+          "higher_is_better": true
+        },
+        {
+          "key": "wins",
+          "label": "Wins",
+          "higher_is_better": true
+        },
+        {
+          "key": "losses",
+          "label": "Losses",
+          "higher_is_better": false
+        },
+        {
+          "key": "win_rate",
+          "label": "Win Rate",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1631
+      },
+      "score": 1631,
+      "rank": 1,
+      "subject_id": "elevenlabs_v3",
+      "subject_type": "model",
+      "display_name": "V3",
+      "sampled_at": "2026-07-26",
+      "source_url": "https://www.speecharena.org/leaderboard",
+      "benchmark_links": {
+        "homepage": "https://www.speecharena.org/",
+        "leaderboard": "https://www.speecharena.org/leaderboard"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/speech_arena/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/speech_arena.json",
+        "results": "https://benchmarklist.com/api/v1/results/speech_arena.json"
+      }
+    },
+    {
+      "benchmark_id": "speech_arena",
+      "benchmark_name": "Speech Arena",
+      "category": "audio",
+      "review_state": "verified",
+      "selected_metric": "elo_rating",
+      "metric_definitions": [
+        {
+          "key": "elo_rating",
+          "label": "ELO Rating",
+          "higher_is_better": true
+        },
+        {
+          "key": "matches_played",
+          "label": "Matches Played",
+          "higher_is_better": true
+        },
+        {
+          "key": "wins",
+          "label": "Wins",
+          "higher_is_better": true
+        },
+        {
+          "key": "losses",
+          "label": "Losses",
+          "higher_is_better": false
+        },
+        {
+          "key": "win_rate",
+          "label": "Win Rate",
+          "higher_is_better": true
+        }
+      ],
+      "metric": {
+        "value": 1593
+      },
+      "score": 1593,
+      "rank": 2,
+      "subject_id": "open_ai_gpt_4o_mini_tts",
+      "subject_type": "model",
+      "display_name": "GPT-4o-Mini-TTS",
+      "sampled_at": "2026-07-26",
+      "source_url": "https://www.speecharena.org/leaderboard",
+      "benchmark_links": {
+        "homepage": "https://www.speecharena.org/",
+        "leaderboard": "https://www.speecharena.org/leaderboard"
+      },
+      "benchmark_urls": {
+        "page": "https://benchmarklist.com/benchmarks/speech_arena/",
+        "api": "https://benchmarklist.com/api/v1/benchmarks/speech_arena.json",
+        "results": "https://benchmarklist.com/api/v1/results/speech_arena.json"
+      }
+    }
+  ]
+}

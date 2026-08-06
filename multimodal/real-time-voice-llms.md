@@ -3,417 +3,470 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-05-30 |
-| Last Updated | 2026-05-30 |
-| Version | 1.0 |
+| Last Updated | 2026-08-06 |
+| Version | 2.0 |
 
 ---
 
-- [Architecture Taxonomy](#architecture-taxonomy)
-- [Cloud Speech-to-Speech APIs](#cloud-speech-to-speech-apis)
-- [Open-Source Models for Local Deployment](#open-source-models-for-local-deployment)
-- [Hardware Requirements and Deployment Tiers](#hardware-requirements-and-deployment-tiers)
-- [Latency Benchmarks: Local vs Cloud](#latency-benchmarks-local-vs-cloud)
-- [Accuracy and Quality](#accuracy-and-quality)
-- [Expressiveness and Conversational Dynamics](#expressiveness-and-conversational-dynamics)
-- [Orchestration Frameworks](#orchestration-frameworks)
-- [Tool Use and Function Calling](#tool-use-and-function-calling)
+- [Executive Summary](#executive-summary)
+- [Terms and Architecture Taxonomy](#terms-and-architecture-taxonomy)
+- [Open Models and Local Deployment](#open-models-and-local-deployment)
+- [Managed Real-Time Voice Models](#managed-real-time-voice-models)
+- [Voice-to-Voice Tool Calling on Phone Hardware](#voice-to-voice-tool-calling-on-phone-hardware)
+- [Tool-Calling Research and Benchmarks](#tool-calling-research-and-benchmarks)
+- [Latency, Turn-Taking, and Voice Quality](#latency-turn-taking-and-voice-quality)
+- [Open-Source Orchestration](#open-source-orchestration)
 - [Multilingual Support](#multilingual-support)
+- [Security and Production Controls](#security-and-production-controls)
 - [Decision Framework](#decision-framework)
-- [Areas of Uncertainty](#areas-of-uncertainty)
+- [Caveats and Limitations](#caveats-and-limitations)
 - [References](#references)
 
-## Architecture Taxonomy
+## Executive Summary
 
-Three distinct architectures exist for real-time voice AI in 2026, each with different tradeoffs between latency, flexibility, and observability.
+Real-time voice systems now use two main designs. A **native speech-to-speech model** accepts audio and emits speech directly. A **cascaded voice agent** connects voice activity detection (VAD), speech recognition, a text LLM, and speech synthesis. Native models usually provide more natural turn-taking and preserve tone. Cascades provide better observability, simpler tool integration, and more control over each component.
 
-### 1. Chained Pipeline (STT → LLM → TTS)
+The most important change since the May 2026 version of this survey is the arrival of explicit **speech-native action models**. **DuplexSLA** adds a structured action channel to a full-duplex speech model. It can emit tool calls while it continues to speak. However, its checkpoint and inference code were still unreleased on 6 August 2026. It is a research result, not a deployable product. **Full-Duplex-Bench-v3** and **Audio2Tool** also show that tool selection alone is not sufficient. Voice agents must pass correct arguments, handle a user who changes their mind, avoid acting on background speech, and confirm the result in speech.
 
-Three separate models in sequence: speech recognition, language model reasoning, and speech synthesis. Each stage can be independently swapped and evaluated.
+For production systems, the strongest managed voice-to-voice models with tool calling include **OpenAI Realtime**, **Google Gemini 3.1 Flash Live**, **Amazon Nova 2 Sonic**, and models exposed through **Azure Voice Live**. These run in the cloud. A phone can be the client, but the model does not run on the phone.
 
-- **Typical latency**: 600–2800ms end-to-end (400–800ms with streaming overlap)
-- **Strengths**: Full observability (transcripts and traces at each stage), independent component evaluation, widest vendor choice
-- **Weaknesses**: Latency compounds across stages; paralinguistic information (tone, emotion) is lost at the STT boundary
-- **Best for**: Enterprise deployments requiring auditability, regulated industries, custom LLM logic
+A phone can run a fully offline voice agent with tool calling, but the verified practical design is a **cascade**:
 
-### 2. Half-Cascade Speech-to-Speech
+```text
+on-device VAD/ASR → small on-device tool-calling LLM → allowlisted app tool → on-device TTS
+```
 
-Audio input is encoded directly, processed by a text-based LLM for reasoning, then synthesised back to speech. No intermediate text transcript is exposed to the user.
+On Android, **Gemma 4 E2B or E4B with LiteRT-LM** provides the reasoning and structured tool-call component. Google reports that E2B can use less than 1.5 GB of memory on some devices. On Apple devices that support Apple Intelligence, the **Foundation Models framework** provides guided generation and tool calling. The app must add Apple Speech and speech synthesis around it. These are voice-to-voice systems at the application level, but they are not single native speech-to-speech models.
 
-- **Typical latency**: 300–700ms steady-state (0.78–2.98s TTFT depending on provider)
-- **Strengths**: Lower latency than cascaded; retains some prosodic cues; tool calling supported
-- **Weaknesses**: TTS quality typically lower than specialist TTS models; less observable than cascaded
-- **Examples**: OpenAI gpt-realtime-1.5, Google Gemini 3.1 Flash Live, xAI Grok Voice Agent, Ultravox
+As of 6 August 2026, this review found **no downloadable, general-purpose native voice-to-voice model with both verified tool calling and verified real-time execution on production phone hardware**. MiniCPM-o provides strong open full-duplex speech, but the current 9B MiniCPM-o 4.5 needs at least 10–11 GB in its quantised builds and its documented local real-time targets are Macs and GPUs. Its documentation does not show a native structured tool channel. DuplexSLA has that channel, but it is a 7B research model without released deployment artefacts.
 
-### 3. Native Audio End-to-End
+## Terms and Architecture Taxonomy
 
-A single model processes audio input and generates audio output directly, reasoning in audio/latent space without an explicit text stage.
+The terms in this field are often used inconsistently. This article uses the following definitions.
 
-- **Typical latency**: 160–300ms model-level
-- **Strengths**: Lowest latency; maintains emotional tone; full-duplex conversation possible; natural interruption handling
-- **Weaknesses**: Opaque reasoning (no text trace); harder to debug; limited flexibility for voice customisation
-- **Examples**: Moshi (Kyutai), NVIDIA PersonaPlex, Step-Audio R1.1, Amazon Nova 2 Sonic, Kimi-Audio
+- **Speech-to-speech (S2S) or voice-to-voice**: audio input and spoken output. The internal model can still use text or hidden representations.
+- **Half-duplex**: one side speaks at a time. Barge-in can stop the assistant, but simultaneous listening and speaking are not native model behaviours.
+- **Full-duplex**: the system listens while it speaks. It can distinguish an interruption from a short acknowledgement such as “mm-hmm”.
+- **Native audio**: audio is represented inside the model rather than first being finalised as an external transcript.
+- **Tool calling**: the model selects an executable function and produces structured arguments. The host application executes the function.
 
-### Architecture at a Glance
+### 1. Cascaded voice agent
 
-| Dimension | Chained Pipeline | Half-Cascade S2S | Native Audio |
-|-----------|-----------------|------------------|--------------|
-| End-to-end latency | 600–2800ms | 300–700ms | 160–300ms |
-| Paralinguistic awareness | No | Partial | Full |
+```text
+VAD / turn detector → ASR → text LLM + tools → TTS
+```
+
+Each stage is separate. This remains the safest default for enterprise and on-device systems.
+
+- **Strengths**: transcripts and tool calls are inspectable; each component is replaceable; small mobile models are available; policy checks can run before execution.
+- **Weaknesses**: ASR errors propagate; text loses some prosody; sequential processing adds latency; turn handling needs external logic.
+- **Best fit**: regulated work, phone deployment, offline use, complex tool policy, and systems that need traceable decisions.
+
+### 2. Audio-input LLM with speech output
+
+The model accepts audio directly, reasons through an LLM, and emits text or speech. A separate speech decoder can be attached to the model. Qwen Omni, Ultravox, and some managed live models fit this broad class.
+
+- **Strengths**: fewer ASR boundary errors; access to prosody; tool calls can use a text reasoning layer.
+- **Weaknesses**: speech generation and turn control can still be separate; the system is less observable than a cascade.
+
+### 3. Native full-duplex speech model
+
+A single backbone consumes user audio while it produces assistant audio. Moshi, PersonaPlex, MiniCPM-o 4.5, and DuplexSLA are examples of the research direction.
+
+- **Strengths**: natural overlap, backchannels, interruption, and low model-level delay.
+- **Weaknesses**: high continuous compute; difficult debugging; limited phone support; most open models do not expose a reliable structured action channel.
+
+### Architecture comparison
+
+| Dimension | Cascaded | Audio-input LLM | Native full-duplex |
+|---|---|---|---|
+| External transcript | Yes | Optional | Usually no |
+| Prosody retained | Limited | Partial to strong | Strong |
+| Tool-call integration | Mature | Good when a text channel exists | Emerging |
+| Turn-taking | External VAD/semantic detector | Model plus external control | Native |
 | Observability | High | Medium | Low |
-| Component swappability | Full | Limited | None |
-| Turn-taking / interruption | Requires VAD | Built-in | Native full-duplex |
-| Enterprise readiness (2026) | Dominant | Growing | Emerging |
+| Component replacement | Full | Limited | Minimal |
+| Phone viability | **Yes** | Limited | Not yet verified for a general tool-using model |
 
-## Cloud Speech-to-Speech APIs
+## Open Models and Local Deployment
 
-Production cloud APIs as of May 2026, measured by Artificial Analysis and independent benchmarks.
+The table separates released models from research-only systems. “Open” does not mean that a model runs on a phone.
 
-### Proprietary Platforms
+| Model | Architecture | Tool calling | Full-duplex | Local hardware evidence | Licence / maturity |
+|---|---|---:|---:|---|---|
+| **DuplexSLA** | 7B native Speech–Language–Action model | **Native structured action channel** | Yes | Paper uses mainstream inference accelerators; no phone recipe | MIT repository; weights and code still “coming soon” |
+| **MiniCPM-o 4.5** | 9B end-to-end omni model | No documented native tool channel | Yes | 19 GB BF16; 10–11 GB quantised; Mac/GPU demos | Apache 2.0; released |
+| **MiniCPM-o 2.6** | 8B omni model | No documented native tool channel | Limited live streaming | Quantised edge builds exist; old “on your phone” title does not prove the complete tool-using S2S stack | Apache 2.0; legacy release |
+| **Moshi** | 7.6B codec-based native speech model | No native tools | Yes | CUDA, MLX, and Rust paths; laptop/workstation class | CC-BY 4.0 weights; released |
+| **PersonaPlex** | 7B Moshi-derived speech model | No native tools | Yes | Consumer GPU / workstation class | Open research release |
+| **Ultravox v0.7** | Audio encoder plus text LLM | Yes | Framework-managed rather than native duplex | Server GPU; size depends on backbone | Open weights; released |
+| **GLM-4-Voice** | End-to-end spoken dialogue | No verified general tool channel | No | GPU; int4 builds exist | Open weights |
+| **Qwen3-Omni** | Thinker–Talker omni model | Model-dependent text tools | Streaming, not equivalent to native duplex in all releases | 30B-A3B class; workstation/server | Apache 2.0 |
+| **Step-Audio 2 mini** | 7B speech model | Tool ability depends on integration | Streaming | Accelerator class | Apache 2.0; base for DuplexSLA |
+| **Freeze-Omni / SALMONN-omni / Mini-Omni** | Research speech models | No mature general tool interface | Varies | GPU research deployment | Research releases |
 
-| Provider | Model | Architecture | TTFT | Big Bench Audio | Pricing | Languages |
-|----------|-------|-------------|------|----------------|---------|-----------|
-| xAI | Grok Voice Agent | Half-Cascade | ~0.78s | ~93% | ~$0.05/min | 20+ |
-| OpenAI | gpt-realtime-1.5 | Half-Cascade | ~0.82s | ~81% | ~$0.06–0.30/min | 50+ |
-| Amazon | Nova 2 Sonic | Native Audio | ~1.14s | ~88% | ~$0.02/min | 7 |
-| Google | Gemini 3.1 Flash Live | Unified S2S | ~2.98s | ~96% | ~$0.02/min | 90+ |
-| Alibaba | Qwen3.5 Omni Flash Realtime | Thinker-Talker MoE | ~0.79s | — | API pricing | 119 written / 10 voice |
-| StepFun | Step-Audio R1.1 | Native Audio | ~1.51s | 97% | Community hosted | Multi |
-| Hume | EVI 3 | Unified S2S | — | — | Premium tier | Multi |
-
-**Pricing notes**: OpenAI gpt-realtime-1.5 costs $32/1M audio input tokens + $64/1M audio output tokens (~2,200 tokens/minute of audio). Google and Amazon are approximately 7–12x cheaper per minute. OpenAI's realtime-mini tier (early 2026) reduced costs ~5x from original GPT-4o-realtime pricing.
-
-### Real-World vs Vendor-Reported Latency
-
-Vendor-reported latencies (300–500ms) represent optimal conditions. Real-world measurements via automated phone calls (voicebenchmark.ai, May 2026) show significantly higher end-to-end latencies:
-
-| Platform | Current Latency | Median (24h) |
-|----------|----------------|--------------|
-| Dasha | 1,075ms | 1,079ms |
-| Retell AI | 1,354ms | 1,403ms |
-| LiveKit | 1,560ms | 1,925ms |
-| OpenAI Realtime | 1,587ms | 1,414ms |
-| ElevenLabs | 1,692ms | 1,999ms |
-| VAPI | 2,647ms | 2,714ms |
-
-The 2–5x gap between vendor claims and phone-call measurements comes from PSTN overhead, network conditions, full conversation context accumulation, and real-world load.
-
-## Open-Source Models for Local Deployment
-
-### Full Speech-to-Speech Models (End-to-End)
+### Important corrections to older guidance
 
-| Model | Params | VRAM (FP16) | Latency | Full-Duplex | License | Notes |
-|-------|--------|-------------|---------|-------------|---------|-------|
-| **Moshi** (Kyutai) | 7.6B | 16–20GB | ~200ms | Yes | CC-BY | Pioneer of full-duplex; PyTorch/MLX/Rust backends |
-| **PersonaPlex** (NVIDIA) | 7B | 16–20GB | 170ms turn-taking | Yes | MIT | Zero-shot voice cloning; built on Moshi |
-| **GLM-4-Voice** (Zhipu AI) | 9B | ~18GB (bf16) / ~9GB (int4) | Real-time streaming | No | Open | Chinese + English; CosyVoice decoder |
-| **Ultravox** (Fixie.ai) | 355B (MoE) | H100/B200 class | <300ms | No | Open | Half-cascade; NOT consumer-hardware viable |
-| **Step-Audio R1.1** (StepFun) | Large | Datacenter only | ~1.5s TTFT | — | Apache 2.0 | 97% Big Bench Audio; Dual-Brain Architecture |
-
-### Text-to-Speech Models (for Cascaded Pipelines)
-
-| Model | Params | Size | VRAM | RTF on Consumer GPU | Quality (MOS) | License |
-|-------|--------|------|------|-------------------|---------------|---------|
-| **Kokoro** (hexgrad) | 82M | 330MB | CPU real-time | 6.5x (RTX 4070 browser) | ~4.5 | Apache 2.0 |
-| **Orpheus** (Canopy Labs) | 3B | 3.5GB | ~6GB (FP8) | Real-time (RTX 3090+) | ~4.6 | Apache 2.0 |
-| **Sesame CSM** (Sesame AI) | 1B | ~2GB | 2–8GB | Faster-than-RT | ~4.7 | Apache 2.0 |
-| **Dia 1.6B** (Nari Labs) | 1.6B | ~3GB | ~10GB (FP16) | 1.0–2.2x (RTX 4090) | High | Apache 2.0 |
-| **F5-TTS** (SWivid) | ~1B | 1.6GB | GPU required | Sub-7s all lengths | High | MIT |
-| **Piper** (Rhasspy) | 15–65M | <100MB | CPU only | 50x real-time (CPU) | Good (below LLM-TTS) | MIT |
-| **Fish Speech 1.5** | ~500M–1B | — | GPU required | Real-time capable | High | CC-BY-NC-SA 4.0 |
-
-### Speech Recognition (ASR) Models
-
-| Model | Params | WER (English) | Latency | Hardware | License |
-|-------|--------|---------------|---------|----------|---------|
-| **Whisper large-v3** | 1.55B | ~2–3% (LibriSpeech) | 300–600ms | GPU recommended | MIT |
-| **Whisper large-v3-turbo** | 809M | Near-identical to v3 | 5–6x faster | GPU / Apple Silicon | MIT |
-| **Deepgram Nova-3** | Proprietary | 6.84% (streaming) | Sub-300ms | Cloud API | Commercial |
-| **NVIDIA Parakeet TDT 0.6B** | 600M | SOTA (Open ASR Leaderboard) | 50x faster than Whisper v3 | GPU | CC-BY-4.0 |
-| **Kimi-Audio** (Moonshot) | 7B+ | 1.28% (LibriSpeech, SOTA) | Streaming | A100+ class | Apache 2.0 |
-| **Kyutai STT 2.6B** | 2.6B | Top Open ASR | 500ms streaming | GPU | CC-BY-4.0 |
-
-## Hardware Requirements and Deployment Tiers
-
-### Tier 1: High-End Consumer GPU (RTX 4090, 24GB VRAM)
-
-- **Full S2S**: Moshi single-session at FP16 (16–20GB)
-- **Cascaded pipeline**: Whisper small.en + Qwen 14B (Q4) + Orpheus/Kokoro → **1.5–3s end-to-end**
-- **TTS options**: Orpheus (FP8), Dia (FP16), Sesame CSM — all real-time
-- Can run both LLM and TTS on same GPU with careful memory management
+- **Ultravox is not one fixed 355B model.** It is a family that combines an audio encoder with different text backbones. Its deployment cost depends on the selected checkpoint.
+- **MiniCPM-o 4.5 is the current MiniCPM omni release**, not 2.6. It provides strong full-duplex capabilities but is not a phone-scale model: the project reports 10–11 GB for quantised variants and at least 16 GB RAM for some Mac half-duplex paths.
+- **Moshi and PersonaPlex are conversational speech models, not complete voice agents.** An application needs a separate planner if it must call tools.
+- **DuplexSLA is the clearest native tool-calling design**, but it cannot yet be treated as a deployable open model because the repository has not released its checkpoint, inference server, or benchmark data.
 
-### Tier 2: Mid-Range GPU (RTX 3060 12GB / RTX 4060 8GB)
-
-- **Cascaded pipeline**: Whisper base.en + Qwen 3.5B (Q4) + Kokoro → **2–4s end-to-end**
-- **TTS options**: Kokoro (trivial), Sesame CSM (6–8GB), Orpheus (FP8 tight fit at 12GB)
-- Cannot run Moshi at full precision; quantised variants may work
-
-### Tier 3: Apple Silicon (M3/M4 Pro, 36GB+ unified memory)
-
-- **Cascaded pipeline**: Whisper Turbo + Llama 8B + Piper/Kokoro → **2–4s end-to-end**
-- **Moshi**: MLX backend available; performance data limited
-- Advantage: Large unified memory pool avoids VRAM constraints
-- Bandwidth (400–614 GB/s) is the constraint, not capacity
-
-### Tier 4: CPU-Only / Raspberry Pi
-
-- **Cascaded (CPU-only PC)**: Whisper tiny.en + Qwen 3B + Piper → **5–10s end-to-end**
-- **Raspberry Pi 5**: Whisper tiny.en (~6s per 10s audio) + Piper (50x RT) — simple command patterns only
-- **Home Assistant Speech-to-Phrase**: Near-instant on Pi 4 for predefined phrases
-- Full conversational AI is not viable on Pi-class hardware
-
-### Tier 5: Datacenter (H100/B200)
-
-- **Concurrent S2S**: Moshi 3–4 sessions per L40S (48GB), 8+ per H100 (80GB)
-- **Orpheus production**: 16–25 concurrent real-time streams per H100
-- **Ultravox**: Requires B200/H100 class for 355B MoE backbone
-- **Cloud APIs**: All proprietary models run on datacenter-class hardware
-
-## Latency Benchmarks: Local vs Cloud
-
-| Deployment | Configuration | End-to-End Latency | Notes |
-|-----------|--------------|-------------------|-------|
-| Cloud S2S (optimal) | OpenAI/Grok/Gemini | 300–700ms | Vendor-reported, controlled conditions |
-| Cloud S2S (real-world phone) | Same via PSTN | 1,000–2,700ms | Includes network + telephony overhead |
-| Local Moshi (RTX 4090) | Native audio | ~200ms model-level | Single session, excludes I/O |
-| Local cascaded (RTX 4090) | Whisper + Qwen 14B + Kokoro | 1,500–3,000ms | Full pipeline with streaming |
-| Local cascaded (RTX 3060) | Whisper base + Qwen 4B + Kokoro | 2,000–4,000ms | |
-| Local cascaded (M3 Pro) | Whisper Turbo + Llama 8B + Piper | 2,000–4,000ms | Unified memory advantage |
-| Local cascaded (CPU only) | Whisper tiny + Qwen 3B + Piper | 5,000–10,000ms | Not conversational |
-| Docker local-voice-ai (GPU) | LiveKit + Nemotron + Qwen + Kokoro | 500–1,500ms | Optimised stack with GPU |
-| Human conversational response | — | ~200ms | Target benchmark |
-
-**Key insight**: Local cascaded pipelines on consumer GPUs are 2–5x slower than cloud S2S APIs but provide full privacy. The primary bottlenecks are STT and LLM inference, not TTS. Moshi on RTX 4090 is the only local option approaching cloud-competitive latency.
-
-## Accuracy and Quality
-
-### ASR Accuracy (Word Error Rate)
-
-| Model | LibriSpeech test-clean | Streaming WER | Notes |
-|-------|----------------------|---------------|-------|
-| Kimi-Audio | 1.28% | — | Current SOTA (May 2026) |
-| NVIDIA Parakeet TDT | ~1.6% | — | #1 on Open ASR Leaderboard |
-| Ultravox (GLM-4.6) | 2.28% | — | Full speech-to-speech model |
-| Whisper large-v3 | ~2–3% | — | Batch processing |
-| Deepgram Nova-3 | — | 6.84% | Production streaming |
-| AssemblyAI Universal-2 | — | 6.88% | With intelligence features |
-| Whisper V3 (avg across langs) | — | 7.4% | 99+ languages |
-
-### TTS Quality (Mean Opinion Score)
-
-MOS scores from different benchmarks are not directly comparable. Within the CodeSOTA leaderboard (April 2026):
-
-| Model | MOS | Notes |
-|-------|-----|-------|
-| ElevenLabs Turbo v2.5 | ~4.8 | Commercial SOTA |
-| Sesame CSM | ~4.7 | Open-source, conversational context |
-| Orpheus 3B | ~4.6 | Open-source, emotion tags |
-| Kokoro-82M | ~4.5 | Open-source, runs on CPU |
-| Piper | ~3.5–4.0 | Lightweight, CPU-optimised |
-
-Open-source TTS models are now in the same quality band as commercial APIs. The gap has effectively closed for English.
-
-### Voice Quality Benchmarks
-
-| Benchmark | What it Measures | Notable Results |
-|-----------|-----------------|-----------------|
-| Big Bench Audio | Audio reasoning + comprehension | Step-Audio R1.1: 97%, Gemini 3.1: 96% |
-| VoiceBench | Multi-task speech model evaluation | Ultravox: 87.05/90.75 |
-| Full-Duplex-Bench | Turn-taking, interruption, backchanneling | Moshi: best overall |
-| VocalBench | 24k instances, 27 models, 4 dimensions | Comprehensive 2026 benchmark |
-| TTS Spaces Arena | Community TTS quality ranking | Kokoro-82M: #1 |
-
-## Expressiveness and Conversational Dynamics
-
-### Emotion and Prosody Control
-
-| Model | Approach | Capabilities |
-|-------|---------|-------------|
-| **Orpheus** | Explicit emotion tags | 8 tags: `<laugh>`, `<chuckle>`, `<sigh>`, `<cough>`, `<sniffle>`, `<groan>`, `<yawn>`, `<gasp>` |
-| **Sesame CSM** | Implicit context-driven | Natural pauses, hesitations ("umms", "uhhs"), mouth sounds from conversational context |
-| **Dia** | Audio conditioning | Laughter, coughing, throat clearing via transcript notation |
-| **Hume EVI 3** | Multimodal emotional reasoning | 30 distinct emotions; detects sarcasm, adapts tone mid-speech |
-| **PersonaPlex** | Native full-duplex | Contextual backchannels ("uh-huh", "yeah", "oh okay") without explicit programming |
-| **Moshi** | Full-duplex architecture | Can laugh, sigh, whisper; listens and speaks simultaneously |
-| **GPT-4o Voice** | Integrated | Can sing, laugh, cry (since May 2025); responds to user emotions |
-
-### Conversational Dynamics
-
-Full-duplex models (Moshi, PersonaPlex) handle turn-taking and interruption natively:
-
-| Metric | Moshi | PersonaPlex | GPT-4o |
-|--------|-------|-------------|--------|
-| Turn-taking latency | 112ms | 170ms | — |
-| Interruption response | 37ms | 240ms | 620ms |
-| Full-duplex | Yes | Yes | Semi (barge-in) |
-| Backchanneling | Native | Native | No |
-
-For cascaded pipelines, turn-taking requires external handling:
-- **Deepgram Flux**: ~260ms end-of-turn detection with EagerEndOfTurn events for speculative LLM generation
-- **LiveKit Agents**: Semantic transformer model for turn detection (86% precision, 100% recall)
-- **Krisp**: Dedicated model distinguishing backchannels from intentional interruptions
-
-### Voice Cloning
-
-| Model | Method | Data Required | Notes |
-|-------|--------|---------------|-------|
-| PersonaPlex | Zero-shot audio prompt | Single reference clip | No fine-tuning needed |
-| Sesame CSM | Reference utterances as context | A few example segments | Context-based adaptation |
-| Orpheus | Zero-shot + 6 built-in voices | Reference audio | GGUF format available |
-| Hume EVI 3 | Natural language description | None (text prompt) | "Speak with a warm, confident tone" |
-| Open-source LoRA | Fine-tuning | Minutes of audio | Single 16GB GPU sufficient |
-
-## Orchestration Frameworks
-
-### Open-Source Frameworks for Local Voice Assistants
-
-| Framework | Focus | Key Feature | Transport | License |
-|-----------|-------|-------------|-----------|---------|
-| **Pipecat** | Voice agents | 40+ service integrations, linear pipeline | WebRTC, WebSocket | Open source |
-| **LiveKit Agents** | Real-time comms | Semantic turn detection, SIP telephony, self-hostable server | WebRTC, SIP | Open source |
-| **Home Assistant Voice** | Smart home | Wyoming protocol for modular voice components | Wyoming, local | Open source |
-| **OpenVoiceOS (OVOS)** | General assistant | Mycroft successor, HiveMind distributed | Various | Open source |
-| **local-voice-ai** | Quick start | Docker Compose one-click setup | WebRTC (LiveKit) | Open source |
-| **TEN Framework** | Visual builder | Directed graph, drag-and-drop TMAN Designer | Multi-transport | Open source |
-
-### Production Platforms (Cloud)
-
-| Platform | Latency | Cost | Notes |
-|----------|---------|------|-------|
-| Retell AI | ~620ms E2E | $0.07/min | HIPAA included |
-| Vapi | Sub-500ms avg | Varies | 300M+ calls processed |
-| ElevenLabs Conversational | v3 quality | $0.10/min base | Premium voice quality |
-| Deepgram Voice Agent | Sub-400ms | Bundled | Self-hosted option with Flux STT |
-
-## Tool Use and Function Calling
-
-A critical capability for voice assistants is the ability to call external tools (APIs, databases, calendars, search) mid-conversation. This distinguishes a voice *agent* from a voice *chatbot*.
-
-### How Tool Calling Works in Voice-to-Voice Models
-
-In speech-to-speech models, tool calling follows this pattern:
-1. User speaks a request requiring external data
-2. Model generates a structured tool-call request (JSON) internally
-3. System executes the tool call against an external service
-4. Tool result is fed back to the model
-5. Model resumes generating spoken audio incorporating the result
-
-The challenge is **latency**: tool execution adds round-trip time (typically 200–2000ms) during a live conversation. Advanced models use conversational preambles ("let me check that for you") to fill silence during tool execution.
-
-### Tool Use Support by Platform
-
-| Platform | Tool Calling | MCP Support | Parallel Calls | Notes |
-|----------|-------------|-------------|----------------|-------|
-| **OpenAI gpt-realtime-1.5/2** | Yes (GA) | Remote MCP servers | Yes | 128K context; preambles during execution; SIP integration |
-| **Google Gemini 3.1 Flash Live** | Yes | Via open-source client | Yes | 90.8% on ComplexFuncBench Audio; Google Search built-in |
-| **Amazon Nova 2 Sonic** | Yes | Via Bedrock | Yes | Native tool use on Bedrock runtime |
-| **xAI Grok Voice Agent** | Yes | OpenAI-compatible schema | Yes | Follows OpenAI Realtime tool-call spec |
-| **Moshi** (open-source) | No | No | — | Pure audio model; no text reasoning layer for tool calls |
-| **Ultravox** | Yes (text output) | — | Yes | Outputs text for tool calls; pairs with downstream TTS |
-| **ElevenLabs Conversational** | Yes | — | Yes | Function calling + RAG in bundled agent platform |
-
-### MCP (Model Context Protocol) for Voice Agents
-
-MCP is emerging as the standard protocol for connecting voice agents to external tools. Key integrations as of May 2026:
-
-- **OpenAI Realtime API**: Supports remote MCP servers natively (GA since August 2025). Developers register MCP server URLs and the model can invoke tools during live audio sessions.
-- **Azure Voice Live SDK**: Direct MCP server connection for real-time tool calling via the VoiceLive SDK.
-- **LiveKit Agents**: Native MCP support — agents can discover and call MCP tools during voice sessions.
-- **Pipecat**: MCP integration via pipeline services; tools execute as pipeline stages.
-
-### Local Tool Calling
-
-For fully local voice assistants, tool calling requires a text-based LLM in the pipeline (cascaded architecture). The LLM generates structured tool calls which are executed locally:
-
-- **LiveKit local-voice-ai**: Supports tool definitions via the LLM (Qwen3-4B or larger)
-- **Home Assistant**: Native Ollama integration handles structured tool calls for smart home control; Qwen 3.5 9B handles these reliably on 8GB GPU
-- **Moshi limitation**: As a native audio model without a text reasoning layer, Moshi cannot natively call tools. It must be paired with a text LLM for agentic behaviour.
-
-### Practical Considerations
-
-- **Latency budget**: Tool calls add 200–2000ms. Models like GPT-Realtime-2 use filler speech ("let me look that up") to maintain conversational flow.
-- **Parallel tool calls**: GPT-Realtime-2 and Gemini support multiple concurrent tool calls — critical for complex workflows (e.g., checking calendar AND looking up a contact simultaneously).
-- **Reasoning effort**: GPT-Realtime-2 offers adjustable reasoning effort (`minimal` to `xhigh`). Lower effort = faster but less accurate tool-call decisions. Default is `low` for latency.
-- **Failure recovery**: GPT-Realtime-2 specifically highlights "more natural recovery behaviour when something fails" — important for production voice agents where tool calls can timeout.
-- **Open-source gap**: No open-source native-audio model currently supports tool calling. For local deployments needing tool use, a cascaded pipeline with a tool-calling LLM (Qwen, Llama) is required.
+### Deployment classes
+
+| Class | Practical options | Main limit |
+|---|---|---|
+| **Phone** | On-device ASR + 1–4B tool LLM + system or small TTS | RAM, thermal throttling, battery, app model size |
+| **Laptop / Apple Silicon** | Hugging Face cascade; Moshi MLX; MiniCPM-o quantised on high-memory Macs | Sustained memory bandwidth and heat |
+| **Consumer GPU** | MiniCPM-o, Moshi, PersonaPlex, Ultravox, local cascades | One concurrent full-duplex session can occupy most VRAM |
+| **Data centre** | Batch and concurrent serving of open models | Cost, scaling, and audio-session state |
+| **Cloud API** | OpenAI, Gemini, Nova Sonic, Azure Voice Live | Network, data governance, recurring cost |
+
+## Managed Real-Time Voice Models
+
+The following services provide audio input, spoken output, and tool use. Exact model names and preview status change quickly, so applications should pin model versions where the provider permits it.
+
+| Hyperscaler | Model or service | Tool path | Notes |
+|---|---|---|---|
+| **AWS** | **Amazon Nova 2 Sonic** through Bedrock | Native tool-use events in the bidirectional stream | AWS provides an official speech-to-speech tool-use example. |
+| **Azure** | **Voice Live API** and Azure OpenAI Realtime | Function calling and remote MCP servers | Voice Live combines model, speech, noise suppression, echo cancellation, and avatar options. |
+| **GCP** | **Gemini 3.1 Flash Live Preview** | Function calling and Google Search through the Live API | Low-latency audio-to-audio model; preview status requires production review. |
+| **IBM** | watsonx Assistant plus Speech to Text / Text to Speech | Assistant actions and orchestration | A managed cascade, not a frontier native audio-to-audio model. |
+| **Oracle** | OCI Speech plus an OCI-hosted LLM | Application-defined orchestration | OCI Speech documentation is transcription-focused; no first-party native S2S tool model was found. |
+
+OpenAI is not a hyperscaler, but its **Realtime API** is a key reference point. It supports streaming speech, function tools, remote MCP servers, server-side controls, and SIP. The service is cloud-hosted even when the client runs on a phone.
+
+Independent results are more useful than vendor latency claims. Full-Duplex-Bench-v3 evaluated GPT-Realtime, Gemini Live 2.5 and 3.1, Grok, Ultravox v0.7, and a Whisper→GPT-4o→TTS cascade with the same LiveKit harness. On this benchmark, GPT-Realtime had the best Pass@1 at 0.600. Gemini Live 3.1 was second at 0.540 and had the fastest measured task-completion latency at 4.25 seconds, but it did not produce a spoken response in 22% of cases. These are full multi-tool task times, not time-to-first-audio measurements.
+
+## Voice-to-Voice Tool Calling on Phone Hardware
+
+### Three different claims
+
+A “voice model on a phone” can mean three different systems. They must not be treated as equivalent.
+
+1. **Native phone-resident model**: one local model accepts speech, produces speech, and emits structured tool calls.
+2. **Phone-resident voice-agent cascade**: local ASR, a local tool-calling LLM, local app tools, and local TTS form one voice experience.
+3. **Phone client for a cloud model**: the phone captures and plays audio, but a remote service performs inference and tool selection.
+
+Only the first claim proves that a voice-to-voice LLM itself runs on phone hardware. The third is common in product marketing but says nothing about on-device inference.
+
+### Capability matrix
+
+| Candidate | Direct audio input | Spoken output | Tool channel | Full-duplex | Phone execution evidence | August 2026 assessment |
+|---|---:|---:|---|---:|---|---|
+| **DuplexSLA** | Yes | Yes | **Native, structured and time-aligned** | Yes | None; 7B accelerator-oriented design | Best research match, not deployable on a phone |
+| **MiniCPM-o 4.5** | Yes | Yes | No documented native function-call stream | Yes | Current documented minimum is 10–11 GB quantised; local targets are Macs/GPUs | Native voice, but neither phone-ready nor a verified tool caller |
+| **MiniCPM-o 2.6** | Yes | Yes | No verified native function-call stream | Partial/live streaming | Project used “on your phone”, but current evidence does not show the complete S2S + tools system on a production phone | Do not count as a verified phone tool-calling model |
+| **Gemma 4 E2B/E4B + mobile speech components** | Audio through separate ASR | Through separate TTS | **Native LLM tool calling / structured output** | No; application-managed barge-in | Android and iOS support through LiteRT-LM; E2B below 1.5 GB on some devices | Best open phone reasoning component; complete system is a cascade |
+| **Apple Foundation Models + Speech + AVSpeechSynthesizer** | Through Apple Speech | Through system TTS | **Foundation Models `Tool` API** | No; application-managed | Runs on Apple Intelligence-capable devices | Best first-party iPhone cascade |
+| **Android ML Kit ASR + Gemma 4 + Android TTS** | Through on-device ASR | Through Android TTS | **Gemma/LiteRT-LM tool calling** | No; application-managed | Supported mobile components; exact performance varies by device | Best documented open Android design |
+| **OpenAI / Gemini / Nova / Azure mobile client** | Streamed to cloud | Streamed from cloud | Cloud model tools | Model-dependent | Phone is only a client | Production option, not on-device inference |
+
+### What works now
+
+The practical offline phone design is a cascade. It can still present one continuous voice interface to the user.
+
+```text
+microphone
+  → wake word or push-to-talk
+  → on-device streaming ASR
+  → schema-constrained tool LLM
+  → policy and confirmation gate
+  → allowlisted app function
+  → short structured result
+  → on-device TTS
+```
+
+#### Android
+
+A current open Android stack can use:
+
+- **ASR**: Android or ML Kit on-device speech recognition, or a small Whisper/Parakeet port where the application can accept the extra model size.
+- **Reasoning and tools**: **Gemma 4 E2B or E4B** through **LiteRT-LM** or Android AICore. Google states that LiteRT-LM supports constrained decoding and tool calling. It reports less than 1.5 GB memory for E2B on some devices.
+- **Speech output**: Android `TextToSpeech`, or a compact local TTS model if the device has sufficient memory.
+- **Actions**: application functions, Android intents, local databases, or remote APIs behind a strict allowlist.
+
+This design can operate offline for local tools. A network tool still requires connectivity, but the user’s speech and model inference do not have to leave the phone.
+
+#### iPhone
+
+On Apple Intelligence-capable devices, an application can use:
+
+- **ASR**: Apple Speech APIs, with on-device recognition where the locale and device support it.
+- **Reasoning and tools**: the **Foundation Models framework**. Apple documents guided Swift structure generation and a `Tool` protocol for local or online functions.
+- **Speech output**: `AVSpeechSynthesizer` or another local TTS component.
+- **Actions**: app-scoped Swift tools. The framework can call a tool to gather data or perform side effects.
+
+The Foundation Models language model is text-oriented. Apple does not describe it as one native speech-to-speech model. The application owns endpointing, barge-in, speech playback cancellation, and tool confirmation.
+
+### Why a single native phone model is still difficult
+
+A full-duplex model performs continuous audio encoding and decoding even when little text is generated. It must also keep a conversational KV cache and a speech codec or decoder in memory. A 7–9B model can fit in heavily quantised form on a high-memory phone, but fitting is not enough. It must produce every audio chunk before the playback deadline without exhausting the thermal or battery budget.
+
+Current evidence illustrates the gap:
+
+- DuplexSLA uses a 7B backbone and a 160 ms clock. Its paper discusses mainstream inference accelerators, not phones.
+- MiniCPM-o 4.5 uses 19 GB in BF16 and 10–11 GB in quantised variants. Its project recommends at least 16 GB RAM for Mac half-duplex speech and 24 GB for a full-duplex Mac path.
+- Gemma 4 E2B is phone-sized, but it is a tool-calling text/audio-understanding component rather than a native speech generator.
+
+### Recommended phone architecture
+
+Use the following controls for a production phone agent:
+
+1. **Use push-to-talk or a local wake word by default.** Continuous capture increases privacy and battery risk.
+2. **Expose a small tool allowlist per screen or task.** Do not put every application function in every prompt.
+3. **Use schema-constrained output.** Reject unknown tools, extra fields, and invalid enum values before execution.
+4. **Separate read and write tools.** Execute read-only tools immediately. Require confirmation for messages, purchases, account changes, deletion, calls, and device-control actions.
+5. **Do not commit on partial speech.** Keep tool arguments provisional until endpointing or explicit confirmation. This prevents the “Rome—actually Milan” failure.
+6. **Cancel stale generations.** If the user resumes speech, cancel queued TTS and discard tool calls from the superseded turn.
+7. **Return compact tool results.** A phone model should not ingest a large API response. Filter and summarise it before the next inference step.
+8. **Set memory and thermal limits.** Unload optional TTS voices, shorten context, and fall back to system TTS before the operating system terminates the app.
+9. **Offer an explicit cloud fallback.** Use it only with user consent and indicate when audio or text leaves the device.
+10. **Keep an action audit record.** Record the final transcript, selected tool, validated arguments, confirmation, result, and spoken acknowledgement.
+
+## Tool-Calling Research and Benchmarks
+
+### DuplexSLA
+
+DuplexSLA is the first model in this survey designed around a synchronised **speech, language, and action** interface. It starts from Step-Audio 2 mini at approximately 7B parameters. Every 160 ms chunk contains:
+
+- causal user-audio features;
+- assistant audio tokens;
+- up to ten text tokens for delayed transcripts, planning, turn-control labels, or JSON-style tool calls.
+
+The separate action channel lets the model call a tool without stopping its speech. It also emits `interrupt`, `backchannel`, and response control labels from the same internal state that generates speech.
+
+On its own 900-case tool subset, the paper reports:
+
+| System | Average accuracy | Average tool-call delay |
+|---|---:|---:|
+| ASR + LLM cascade | 91.33% | 2.77 s |
+| DuplexSLA | 85.56% | **0.64 s** |
+
+DuplexSLA is about four times faster on this measurement, but the cascade is 5.77 percentage points more accurate. These are author-reported results on a new benchmark with synthetic training and evaluation design choices. The checkpoint and inference server were not released at the time of this review.
+
+### Full-Duplex-Bench-v3
+
+Full-Duplex-Bench-v3 tests real human audio with fillers, pauses, hesitations, false starts, and self-corrections. Its 100 scenarios require chained API calls across travel, finance, housing, and e-commerce. It measures tool selection, argument accuracy, spoken response quality, Pass@1, interruption, turn taking, and latency.
+
+| System | Pass@1 | Tool selection F1 | Argument accuracy | Task completion | Interruption rate |
+|---|---:|---:|---:|---:|---:|
+| GPT-Realtime | **0.600** | **0.876** | **0.680** | 6.89 s | **13.5%** |
+| Gemini Live 3.1 | 0.540 | 0.817 | 0.588 | **4.25 s** | 19.2% |
+| Gemini Live 2.5 | 0.490 | 0.786 | 0.593 | 7.26 s | 14.1% |
+| Cascaded Whisper→GPT-4o→TTS | 0.450 | 0.803 | 0.562 | 10.12 s | 33.0% |
+| Grok | 0.430 | 0.797 | 0.542 | 6.65 s | 25.5% |
+| Ultravox v0.7 | 0.410 | 0.794 | 0.513 | 8.40 s | 47.9% |
+
+The benchmark’s central result is not that one model wins. It is that **all systems fail often on self-correction**. GPT-Realtime led that category at 0.588, which still means failure in more than 40% of cases. Early tool execution reduces latency but can lock in an obsolete argument before the user finishes a correction.
+
+### Audio2Tool
+
+Audio2Tool contains approximately 30,000 queries and 152 functions across smart-car, smart-home, and wearable domains. Its eight tiers cover direct commands, parameters, multiple intents, implied intent, long irrelevant context, corrections, multi-turn dialogue, and competing speech from another speaker. It uses cloned voices and added automotive and indoor noise.
+
+The paper evaluates open SpeechLMs and Whisper→LLM cascades. It reports that:
+
+- simple direct commands often exceed 75% tool accuracy for the stronger speech models;
+- exact match and argument F1 frequently fall below 35% on multi-intent and implicit tasks;
+- long-form, corrective, and multi-turn tasks remain difficult;
+- added noise causes substantial degradation;
+- end-to-end SpeechLMs do **not** consistently outperform strong ASR→LLM cascades.
+
+Audio2Tool uses synthetic speech, while Full-Duplex-Bench-v3 uses real human recordings. They are complementary rather than directly comparable.
+
+### What to measure
+
+A useful voice-agent evaluation must report these values separately:
+
+1. **Tool selection**: did the model select every required tool and no extra tool?
+2. **Argument accuracy**: did it preserve names, dates, identifiers, units, and corrected values?
+3. **Commit timing**: did it call the tool before the user finished or confirmed?
+4. **Tool latency**: when did the executable call become available?
+5. **Task completion**: did all steps complete, including dependencies between calls?
+6. **Spoken confirmation**: did the user hear the correct result?
+7. **Turn behaviour**: did the assistant interrupt, ignore a backchannel, or stay silent?
+8. **Robustness**: what happens with noise, accents, a second speaker, and a failed tool?
+
+## Latency, Turn-Taking, and Voice Quality
+
+### Do not combine different latency measurements
+
+Voice articles often put unrelated values in one table. At least four latency definitions are in use:
+
+- **Model chunk latency**: whether a model produces the next audio unit before its playback deadline.
+- **Time to first audio**: the delay from the end of a user turn to the first assistant sound.
+- **Tool-call latency**: the delay until a complete executable function call is available.
+- **Task-completion latency**: the delay until tools finish and the assistant speaks the requested result.
+
+A 200 ms model-level figure cannot be compared with the 4.25–10.12 second multi-tool task times in Full-Duplex-Bench-v3. Telephone tests also add network, media gateway, codec, jitter-buffer, and PSTN delay.
+
+### Conversation timing
+
+Human conversation has short gaps, overlaps, and acknowledgements. A useful system must support more than VAD:
+
+- **Endpointing** decides when a user turn is complete.
+- **Barge-in** stops assistant playback when the user takes the floor.
+- **Backchannel detection** distinguishes “right” or “mm-hmm” from a new request.
+- **Pause handling** avoids replying during a hesitation.
+- **Self-correction handling** updates provisional state before an action is committed.
+
+Native full-duplex models learn some of these behaviours inside the model. Cascades can use semantic endpointing such as Pipecat Smart Turn or LiveKit turn detection. External control remains easier to test and override.
+
+### Voice quality
+
+Speech naturalness, word accuracy, and conversational intelligence are separate qualities. MOS and arena preference results from different test sets are not directly comparable. For component-level TTS choices, see [`audio-generation-ai.md`](../media-generation/audio-generation-ai.md). For speech and general audio understanding, see [`local-audio-language-models.md`](local-audio-language-models.md).
+
+Production evaluation should include:
+
+- pronunciation of names, numbers, abbreviations, and Māori or other local terms;
+- stability across long responses;
+- interruption recovery;
+- consistency between spoken output and the tool result;
+- language switching and accent robustness;
+- echo cancellation when the assistant listens while its own audio plays.
+
+## Open-Source Orchestration
+
+A model is only one part of a voice agent. These open projects provide the transport, queues, interruption logic, and tool loop.
+
+| Framework | Architecture | Tool integration | Best use |
+|---|---|---|---|
+| **LiveKit Agents** | Cascaded and realtime-model adapters | Function tools and MCP integrations | WebRTC/SIP production agents |
+| **Pipecat** | Frame-based voice pipeline | Application tools and MCP adapters | Flexible provider-neutral pipelines |
+| **Hugging Face speech-to-speech** | Modular VAD→STT→LLM→TTS | Streams text and tool calls; OpenAI Realtime-compatible API | Fully open local server and experimentation |
+| **Home Assistant Voice / Wyoming** | Local modular pipeline | Home Assistant intents and services | Private smart-home control |
+| **OpenVoiceOS** | Modular assistant | Skills and service integrations | General local assistant |
+| **TEN Framework** | Graph-based realtime pipeline | Extension-based functions | Visual composition and multimodal agents |
+
+The Hugging Face project is a useful reference implementation. Its current pipeline uses Silero VAD, Parakeet or Whisper for STT, an OpenAI-compatible or local LLM, and Qwen3-TTS, Kokoro, or Pocket TTS. It can point the LLM slot at Gemma 4 through llama.cpp. This is a server/laptop framework, not a proven mobile runtime, but the same separation of concerns applies to phone applications.
+
+### Tool-loop pattern
+
+```text
+1. Receive partial speech, but do not execute a side effect.
+2. Finalise or confirm the user turn.
+3. Ask the LLM for a schema-constrained tool call.
+4. Validate the tool and arguments against local policy.
+5. Ask for confirmation when the action is consequential.
+6. Execute the tool with a timeout and an idempotency key.
+7. Feed a compact typed result to the LLM.
+8. Speak the result and record the action outcome.
+```
+
+For long-running tools, the assistant can speak a short status message. The status message must not claim success before the tool returns.
 
 ## Multilingual Support
 
-| Model/API | Languages | Notes |
-|-----------|-----------|-------|
-| Gemini 3.1 Flash Live | 90+ (S2S) | Broadest multilingual S2S |
-| Qwen3.5 Omni Flash | 119 written / 19 voice comprehension / 10 generation | Most language coverage overall |
-| GPT-4o / Realtime | 50+ | Near-human fluency; GPT-Realtime-Translate for live translation |
-| Whisper V3 | 99+ | Best open-source multilingual ASR |
-| ElevenLabs v3 | 32+ | Commercial TTS leader |
-| Sesame CSM | English only | Limited non-English from data contamination |
-| Orpheus | English only | — |
-| Kokoro | English (US + British) | — |
-| Moshi | English primarily | Limited multi-language |
-| Piper | 30+ | Wide coverage but lower quality per language |
+Language counts from vendors often mix text understanding, speech recognition, and speech generation. A system supports a spoken language only when **input recognition, reasoning, and spoken output** all support it at acceptable quality.
 
-For English-focused applications, all open-source models perform well. For multilingual, cloud APIs (Gemini, GPT-4o, Qwen) or Whisper + Piper local stacks are required.
+- **Cloud**: Gemini Live and OpenAI Realtime provide the broadest practical multilingual coverage. Check the exact live-model documentation because supported input and output languages can differ.
+- **Open native models**: MiniCPM-o 4.5 focuses on high-quality English and Chinese speech. Moshi and PersonaPlex are primarily English. GLM-4-Voice is strongest in Chinese and English.
+- **Local cascades**: Whisper-family ASR plus a multilingual small LLM and a matching TTS voice gives the widest open language choice.
+- **Phones**: system ASR/TTS coverage varies by operating-system version, downloaded language pack, locale, and device.
+
+For New Zealand deployments, test New Zealand English, Māori names and place names, code-switching, dates, currency, and telephone-quality audio. Do not infer support from an English benchmark alone.
+
+## Security and Production Controls
+
+Voice tools can create physical or financial effects. The input channel also receives background conversations that were not intended as commands.
+
+### Required controls
+
+- **Consent and indication**: show when the microphone is active and when audio leaves the device.
+- **Wake-word or interaction gating**: do not treat all ambient speech as a command.
+- **Speaker or session binding**: use device unlock, app authentication, or speaker verification for sensitive actions. Voice alone is not strong authentication.
+- **Tool allowlists**: expose only the functions needed for the current task.
+- **Least privilege**: give each tool the minimum account and device permissions.
+- **Confirmation**: require a clear confirmation for irreversible or consequential actions.
+- **Argument display**: show the recipient, amount, date, destination, or device before execution.
+- **Prompt-injection boundaries**: treat tool results, web pages, messages, and documents as untrusted data.
+- **Timeouts and idempotency**: prevent duplicate actions when a user repeats a request or the network retries.
+- **Auditability**: retain the approved request and actual tool outcome according to the organisation’s privacy policy.
+- **Synthetic-voice disclosure**: make the assistant identity clear. Do not imply that a cloned voice is the real person.
+
+### Full-duplex-specific risk
+
+A full-duplex model can act while the user continues to speak. This creates a speed-versus-correctness problem. Use a two-stage state model:
+
+```text
+provisional intent → final/confirmed intent → executable action
+```
+
+Read-only prefetch can start from provisional state. A write action must wait for final state. If the user corrects an argument, invalidate all dependent provisional calls.
 
 ## Decision Framework
 
-### When to Use Cloud S2S APIs
+| Requirement | Recommended design | Reason |
+|---|---|---|
+| Fully offline phone agent with tools | On-device ASR + Gemma 4 or Apple Foundation Models + system TTS | Only practical verified phone design |
+| Native full-duplex research with actions | DuplexSLA | Dedicated synchronised action channel, but no released weights yet |
+| Open local natural conversation without tools | Moshi or PersonaPlex | Mature native duplex speech behaviour |
+| Open local voice agent with tools | Hugging Face speech-to-speech, LiveKit, or Pipecat cascade | Inspectable tool loop and replaceable components |
+| High-quality managed voice tools | OpenAI Realtime, Gemini Live, Nova 2 Sonic, or Azure Voice Live | Production APIs and integrated tools |
+| Regulated or high-consequence actions | Cascaded system with confirmation and audit controls | Maximum observability and policy control |
+| Broad multilingual support | Cloud live model, or Whisper + multilingual LLM + matching TTS | Native open models have narrower speech coverage |
+| Smart home | Home Assistant Voice / Wyoming | Local services and constrained tool scope |
+| Telephony | LiveKit or Pipecat with SIP plus a managed model or server cascade | Handles media transport, interruption, and call state |
 
-- Sub-second response is a hard requirement
-- Budget available ($0.02–0.30/min depending on provider)
-- Multilingual support needed beyond English
-- Production scale with SLAs required
-- Full-duplex conversation dynamics needed without local GPU
+### Recommended choices
 
-### When to Use Local Deployment
+- **Phone**: use a cascade. Treat native phone S2S tool calling as an open research target.
+- **Private workstation**: use an open cascade when tools matter; use Moshi, PersonaPlex, or MiniCPM-o when natural duplex conversation matters more than actions.
+- **Cloud production**: select between OpenAI, Gemini, Nova, and Azure using a task-specific test set. Include corrections, background speakers, tool failures, and long calls.
+- **Research**: use DuplexSLA’s action-channel design as the current reference, but wait for released artefacts before making reproducibility claims.
 
-- Privacy/data sovereignty requirements (healthcare, finance, government)
-- No recurring API costs at scale (high-volume deployments)
-- Offline operation required
-- Custom model fine-tuning needed
-- Acceptable latency: 1.5–4s on GPU, or 200ms with Moshi on RTX 4090
+## Caveats and Limitations
 
-### Recommended Local Stacks by Use Case
-
-| Use Case | Stack | Hardware | Latency |
-|----------|-------|----------|---------|
-| Best local conversational | Moshi (full-duplex) | RTX 4090 (24GB) | ~200ms |
-| Balanced quality/latency | Whisper Turbo + Qwen 9B + Orpheus | RTX 4090 or M4 Pro | 1.5–3s |
-| Budget GPU | Whisper base + Qwen 4B + Kokoro | RTX 3060 (12GB) | 2–4s |
-| Apple Silicon | Whisper Turbo + Llama 8B + Kokoro/Piper | M3/M4 Pro 36GB+ | 2–4s |
-| Smart home commands | Speech-to-Phrase / Piper | Raspberry Pi 4/5 | <1s (phrases only) |
-| Docker quick-start | local-voice-ai | 12GB RAM + any GPU | 500–1,500ms |
-
-## Areas of Uncertainty
-
-- **Gemini 3.1 Flash Live latency**: Measured 2.98s TTFT by Artificial Analysis but marketed as "real-time" — may include cold-start or measurement artifacts. Other sources show competitive latency under different conditions.
-- **Qwen3-Omni consumer deployment**: 30B parameters at Q4 could theoretically fit RTX 4090 (~17–20GB), but weight availability for local download is unconfirmed.
-- **Step-Audio R1.1 local hardware**: Tops Big Bench Audio at 97% but no VRAM/GPU requirements published for self-hosting.
-- **MOS score comparability**: Scores from different evaluation sets (CodeSOTA, TTS Arena, custom benchmarks) use different test sets and evaluators. Differences below 0.1 MOS are noise.
-- **local-voice-ai 500ms claim**: The Docker project claims 500–1500ms on 12GB RAM "no GPU required" but independent benchmarks show CPU-only pipelines at 5–10s. The lower figure likely assumes GPU acceleration despite the "no GPU" wording.
+- **Snapshot date**: this article reflects sources checked on 6 August 2026. Preview model names and API prices can change.
+- **No universal leaderboard**: VoiceBench, Full-Duplex-Bench, Audio2Tool, provider speech arenas, and telephone benchmarks test different properties. Their scores must not be merged.
+- **Research artefacts**: DuplexSLA’s paper and repository are public, but its weights, inference code, and benchmark data were still pending.
+- **Developer-reported results**: MiniCPM-o and DuplexSLA performance claims come largely from their developers. The article labels these results and does not treat them as independent replication.
+- **Phone evidence**: model fit, a mobile client, and realtime on-device speech are different claims. This review requires evidence for the complete local path before calling a native model phone-ready.
+- **Synthetic audio**: Audio2Tool uses generated voices and injected noise. Full-Duplex-Bench-v3 uses a much smaller set of real human recordings.
+- **English bias**: many tool and duplex benchmarks are English-heavy. Chinese-focused models and low-resource languages need separate evaluation.
+- **Tool safety is outside most benchmarks**: correct function selection does not prove authorisation, confirmation, rollback, or resistance to prompt injection.
+- **Energy is under-reported**: few projects publish sustained phone battery, thermal, and throttling measurements for continuous voice sessions.
 
 ## References
 
-1. [Voice AI Models in 2026: LLM Comparison Guide](https://www.coval.ai/blog/voice-ai-models-2026) — Coval, May 2026
-2. [Best Voice AI Models in May 2026](https://futureagi.com/blog/best-voice-ai-may-2026/) — FutureAGI, May 2026
-3. [Real-Time vs Turn-Based Voice Agents in 2026](https://softcery.com/lab/ai-voice-agents-real-time-vs-turn-based-tts-stt-architecture) — Softcery, April 2026
-4. [Building a Completely Local Voice AI Agent](https://themenonlab.blog/blog/local-voice-ai-complete-guide) — The Menon Lab, February 2026
-5. [Pipeline vs Realtime Architecture Voice Bot Latency](https://versatik.net/en/news/pipeline-vs-realtime-architecture-voice-bot-latency) — Versatik, April 2026
-6. [Real-Time TTS Streaming with Orpheus on RTX 3090](https://www.bitbasti.com/blog/audio-streaming-with-orpheus) — Bitbasti, April 2025
-7. [Kokoro-82M — When smaller means better in TTS](https://unfoldai.com/kokoro-82m/) — UnfoldAI, January 2025
-8. [Sesame CSM GitHub Repository](https://github.com/SesameAILabs/csm) — Sesame AI Labs
-9. [Moshi: Full-Duplex Speech-to-Speech](https://kyutai.org/2024/09/18/moshi-release.html) — Kyutai Labs, September 2024
-10. [NVIDIA PersonaPlex](https://research.nvidia.com/labs/adlr/personaplex/) — NVIDIA Research, January 2026
-11. [Dia 1.6B Installation & Deployment](https://deepwiki.com/nari-labs/dia/4-installation-and-deployment) — Nari Labs
-12. [Voice AI Leaderboard](https://voicebenchmark.ai/) — Dasha.ai, May 2026
-13. [Full-Duplex-Bench](https://full-duplex-bench.github.io/) — arXiv:2503.04721
-14. [Real-Time S2S AI on GPU Cloud](https://www.spheron.network/blog/speech-to-speech-gpu-cloud-moshi-sesame-csm-hertz-dev/) — Spheron, 2026
-15. [Building a Local Voice Assistant: Latency Benchmarks](https://www.local-llm.net/guides/local-voice-assistant/) — Local-LLM.net
-16. [Orpheus TTS GitHub Repository](https://github.com/canopyai/Orpheus-TTS) — Canopy Labs
-17. [Pipecat Framework](https://github.com/pipecat-ai/pipecat) — Daily.co
-18. [LiveKit Agents](https://github.com/livekit/agents) — LiveKit
-19. [Home Assistant Wyoming Protocol](https://www.home-assistant.io/integrations/wyoming/) — Home Assistant
-20. [Kokoro WebGPU Benchmarks](https://quick-tts.com/blog/kokoro-webgpu-benchmarks.html) — Quick TTS
-21. [Whisper large-v3-turbo Release](https://github.com/openai/whisper/discussions/2363) — OpenAI
-22. [VocalBench: Benchmarking Vocal Conversational Abilities](https://arxiv.org/abs/2505.15727) — arXiv, May 2025
-23. [Kimi-Audio GitHub Repository](https://github.com/MoonshotAI/Kimi-Audio) — MoonshotAI
-24. [GLM-4-Voice Architecture](https://deepwiki.com/zai-org/GLM-4-Voice/2.2-language-model-(9b)) — Zhipu AI
-25. [OpenVoiceOS + Home Assistant Integration](https://blog.openvoiceos.org/posts/2025-09-17-ovos_ha_dream_team) — OVOS Blog
+### Native and open voice models
+
+1. [DuplexSLA technical paper](https://arxiv.org/abs/2605.20755) and [repository](https://github.com/hyzhang24/DuplexSLA) — 7B full-duplex Speech–Language–Action model; synchronised action channel; release status.
+2. [MiniCPM-o repository](https://github.com/OpenBMB/MiniCPM-o) and [MiniCPM-o 4.5 technical report](https://arxiv.org/abs/2604.27393) — full-duplex omni model, deployment requirements, quantised memory, and Apache 2.0 licence.
+3. [Moshi paper](https://arxiv.org/abs/2410.00037) and [repository](https://github.com/kyutai-labs/moshi) — native full-duplex speech and Mimi codec.
+4. [NVIDIA PersonaPlex](https://research.nvidia.com/labs/adlr/personaplex/) — Moshi-derived full-duplex voice and role control.
+5. [Ultravox repository](https://github.com/fixie-ai/ultravox) — open audio-language family with tool use through text backbones.
+6. [Qwen3-Omni repository](https://github.com/QwenLM/Qwen3-Omni) — open Thinker–Talker omni model.
+7. [Step-Audio 2 repository](https://github.com/stepfun-ai/Step-Audio2) — open speech model and DuplexSLA base.
+8. [GLM-4-Voice repository](https://github.com/THUDM/GLM-4-Voice) — end-to-end spoken dialogue model.
+
+### Phone and edge deployment
+
+9. [Google: Gemma 4 agentic skills on the edge](https://developers.googleblog.com/en/bring-state-of-the-art-agentic-skills-to-the-edge-with-gemma-4/) — E2B/E4B, LiteRT-LM, constrained decoding, tool calling, memory, Android and iOS support.
+10. [LiteRT-LM overview](https://ai.google.dev/edge/litert-lm/overview) — mobile and edge LLM runtime.
+11. [Google on-device function-calling example](https://developers.googleblog.com/google-ai-edge-small-language-models-multimodality-rag-function-calling/) — voice input to local function execution.
+12. [Android on-device inference](https://developer.android.com/blog/posts/build-intelligent-android-apps-on-device-inference) — ML Kit on-device speech and GenAI options.
+13. [Apple Foundation Models framework](https://developer.apple.com/documentation/foundationmodels) — on-device models, guided generation, tools, and supported-device requirement.
+14. [Apple Foundation Models `Tool`](https://developer.apple.com/documentation/foundationmodels/tool) — app-defined data and side-effect tools.
+15. [Apple Speech framework](https://developer.apple.com/documentation/speech) and [AVSpeechSynthesizer](https://developer.apple.com/documentation/avfaudio/avspeechsynthesizer) — speech input and output components.
+
+### Voice tool benchmarks
+
+16. [Full-Duplex-Bench-v3 paper](https://arxiv.org/abs/2604.04847), [project page](https://daniellin94144.github.io/FDB-v3-demo/), and [code](https://github.com/DanielLin94144/Full-Duplex-Bench) — real disfluent audio, multi-step tools, accuracy, and latency.
+17. [Audio2Tool paper](https://arxiv.org/abs/2604.22821) and [repository](https://github.com/RamitPahwa/Audio2Tool) — approximately 30,000 audio-to-tool queries and eight complexity tiers.
+18. [VoiceAgentBench](https://arxiv.org/abs/2510.07978) — agentic voice tasks and multi-tool workflows.
+19. [VoiceBench](https://arxiv.org/abs/2410.17196) — broad evaluation for LLM-based voice assistants.
+20. [Full-Duplex-Bench original](https://arxiv.org/abs/2503.04721) — turn-taking and overlap evaluation.
+
+### Managed voice and orchestration
+
+21. [OpenAI Realtime guide](https://developers.openai.com/api/docs/guides/realtime) — realtime speech, function tools, MCP, SIP, and server controls.
+22. [Gemini Live API](https://ai.google.dev/gemini-api/docs/live-api), [Gemini 3.1 Flash Live Preview](https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview), and [Live API tools](https://ai.google.dev/gemini-api/docs/live-api/tools) — audio-to-audio and function calling.
+23. [Amazon Nova 2 Sonic](https://docs.aws.amazon.com/nova/latest/nova2-userguide/using-conversational-speech.html) and [tool-use example](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-code-examples.html) — Bedrock bidirectional speech and tools.
+24. [Azure Voice Live function calling](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-voice-live-function-calling) and [MCP server integration](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-voice-live-mcp-server) — managed voice tools.
+25. [IBM watsonx Assistant](https://cloud.ibm.com/docs/watson-assistant) and [IBM Text to Speech](https://www.ibm.com/products/text-to-speech) — managed assistant cascade.
+26. [OCI Speech](https://docs.oracle.com/en-us/iaas/Content/speech/using/speech.htm) — Oracle transcription service.
+27. [LiveKit Agents](https://github.com/livekit/agents) — open WebRTC/SIP voice-agent framework.
+28. [Pipecat](https://github.com/pipecat-ai/pipecat) — open realtime voice and multimodal pipeline.
+29. [Hugging Face speech-to-speech](https://github.com/huggingface/speech-to-speech) — modular open voice-agent server with streaming tool calls.
+30. [Home Assistant Wyoming protocol](https://www.home-assistant.io/integrations/wyoming/) — local modular voice services.

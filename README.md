@@ -50,7 +50,7 @@ Articles are organised into topic folders. Survey-style articles compare options
 - [Local Multimodal Vision-Language Models](multimodal/local-multimodal-vision-language-models.md) — Open-source VLMs for image identification, interpretation, and detailed description running on local hardware
 - [OCR in 2026](multimodal/ocr-models.md) — Multimodal LLMs vs specialist and traditional OCR: benchmarks, when non-LLM solutions win, reliability, hybrid pipelines, cost, and hyperscaler services
 - [Local Audio Language Models](multimodal/local-audio-language-models.md) — Open-source audio LLMs (Qwen-Omni, Audio Flamingo, Kimi-Audio, Phi-4-mm, MiniCPM-o) for audio understanding and reasoning: model landscape, architecture, benchmarks (MMAU/MMAR), VRAM/inference, quantisation, licensing, and hyperscaler services
-- [Real-Time Voice LLMs](multimodal/real-time-voice-llms.md) — Voice-to-voice models for assistants: architectures, local vs cloud deployment, latency, expressiveness, tool use, and open-source options
+- [Building Real-Time Tool-Using Voice Agents](multimodal/real-time-voice-llms.md) — Cascaded, native, and hybrid architectures; open and managed stacks; revision-aware tool protocols; deployment channels; safety controls; and evaluation
 - [Facial Recognition: Deepfake & Impersonation Detection](multimodal/facial-recognition-deepfake-impersonation-detection.md) — Modern face recognition plus the trust layers that defend it: PAD/liveness, injection detection, deepfake detection (foundation-model SOTA & the generalisation problem), morphing attack detection (NIST FATE MORPH), provenance (C2PA), demographic bias, hyperscaler liveness services, and standards/regulation (ISO 30107, FIDO, EU AI Act, BIPA)
 
 ## Evaluation & observability

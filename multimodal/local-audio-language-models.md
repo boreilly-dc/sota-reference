@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-03 |
-| Last Updated | 2026-06-03 |
-| Version | 1.0 |
+| Last Updated | 2026-08-14 |
+| Version | 1.1 |
 
 ---
 
@@ -40,12 +40,12 @@ This article is about **audio understanding and reasoning**: taking an audio cli
 
 The boundary is genuinely blurry in 2026, because "omni" models (Qwen2.5-Omni, Qwen3-Omni, MiniCPM-o, Step-Audio 2, Kimi-Audio) do *both*: they understand input audio **and** generate speech. Where such a model appears here, the focus is on its **understanding** capabilities (what it can tell you about a recording), not its speech-generation or low-latency-dialogue behaviour, which belong to the voice article. A useful mental split:
 
-| Capability | This article | `real-time-voice-llms.md` |
-|---|---|---|
-| "What instruments are in this clip? Is the speaker angry? Transcribe and summarise this 30-minute meeting." | ✅ Audio understanding/reasoning | — |
-| "Hold a low-latency spoken conversation; respond in a natural voice." | — | ✅ Voice assistant / S2S |
-| Cascaded STT→LLM→TTS, TTS quality (MOS), barge-in, latency | — | ✅ |
-| Audio encoders, audio-QA benchmarks (MMAU/MMAR), audio captioning | ✅ | — |
+| Capability | Primary article |
+|---|---|
+| "What instruments are in this clip? Is the speaker angry? Transcribe and summarise this 30-minute meeting." | This article: audio understanding and reasoning |
+| Audio encoders, audio-QA benchmarks such as MMAU/MMAR, local inference, and quantisation | This article |
+| Cascaded voice-agent architecture, live turn-taking, barge-in, tool use, and end-to-end conversational latency | [`real-time-voice-llms.md`](real-time-voice-llms.md) |
+| Standalone TTS models, voice cloning, synthesis quality or MOS, and synthesis-component latency | [`audio-generation-ai.md`](../media-generation/audio-generation-ai.md) |
 
 ## Which Model Should I Use?
 
@@ -309,7 +309,7 @@ For genuine audio *reasoning*, **GCP (Gemini)** and **Azure (GPT‑4o audio)** a
 - **Vendor-reported SOTA.** Many "beats Gemini/GPT‑4o" claims (Audio Flamingo 3, Qwen3.5-Omni, AF-Next) are from the developers' own evaluations. Where possible this article leans on peer-reviewed benchmarks (MMAU, MMAU-Pro, SAKURA, TREA, MMAR) and labels vendor claims as such.
 - **A fast-moving, partly unverified frontier.** "Qwen3.5-Omni" (early 2026) rests on a single commercial-host source and is flagged as unverified; "Qwen3-Omni" (September 2025, Apache 2.0) is the confirmed release. 2026 MMAR leaderboard numbers are community-aggregated.
 - **Benchmark contamination.** Audio benchmarks built on public datasets (AudioCaps, Clotho) risk training-data overlap; audio-specific contamination study lags the text domain.
-- **Scope boundary.** Speech-generation quality, latency, and dialogue dynamics are out of scope here — see [`real-time-voice-llms.md`](real-time-voice-llms.md).
+- **Scope boundary.** Live dialogue, turn-taking, barge-in, tool protocols, and end-to-end conversational latency are covered in [`real-time-voice-llms.md`](real-time-voice-llms.md). Standalone TTS quality, MOS, voice cloning, and synthesis-component latency are covered in [`audio-generation-ai.md`](../media-generation/audio-generation-ai.md).
 - **Coverage gaps.** No published audio-benchmark scores were found for Phi-4-multimodal; DeSTA2's exact licence is unconfirmed; Apple-Silicon/MLX support for understanding-focused audio LLMs is immature and lightly documented. Several searches hit rate limits, so this is a representative — not exhaustive — survey.
 
 ## References

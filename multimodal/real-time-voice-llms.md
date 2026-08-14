@@ -4,11 +4,12 @@
 |-------|-------|
 | Created | 2026-05-30 |
 | Last Updated | 2026-08-14 |
-| Version | 3.0 |
+| Version | 3.1 |
 
 ---
 
 - [Executive Summary](#executive-summary)
+- [Scope and Voice-Model Landscape](#scope-and-voice-model-landscape)
 - [Architecture Methods](#architecture-methods)
 - [Real-Time Conversation Control](#real-time-conversation-control)
 - [Tool-Use Protocol and Interface Contracts](#tool-use-protocol-and-interface-contracts)
@@ -40,6 +41,27 @@ For a hybrid design, let the real-time voice model manage listening, short respo
 For open orchestration, LiveKit Agents and Pipecat are strong default candidates in this comparison. This is an engineering judgement based on their documented scope, not a universal ranking. LiveKit documents open-source self-hosting and MCP support. Pipecat documents voice-agent orchestration across transports such as WebSockets and WebRTC. Assess both against the required transport, deployment and tool controls.
 
 Do not merge Full-Duplex-Bench-v3, Audio2Tool and VoiceAgentBench into one leaderboard. They differ in audio source, language, model set, task definition, interaction mode and metric. Use each benchmark to test the behaviour that it covers, and state its limitations when reporting a result.
+
+## Scope and Voice-Model Landscape
+
+This repository separates three overlapping audio topics by task. An omni model can appear in more than one article because one model can understand audio, generate speech, and hold a live conversation.
+
+| Question or task | Primary article |
+|---|---|
+| How should a live agent handle streaming media, endpointing, overlap, barge-in, tools, transport, end-to-end latency, and operational safety? | This article |
+| What does an audio recording contain, and how well can a local model transcribe, caption, or reason about it? | [`local-audio-language-models.md`](local-audio-language-models.md) |
+| Which standalone TTS, voice-cloning, music, sound, or Foley model should generate audio, and how good or fast is the synthesis component? | [`audio-generation-ai.md`](../media-generation/audio-generation-ai.md) |
+
+The table below is a representative component map, not a ranking. These models do not replace the transport, policy, tool-execution, lifecycle, and operations layers described later in this article.
+
+| Component role | Representative open or released models | Relevant boundary |
+|---|---|---|
+| Direct speech input with streaming text output | **Ultravox** | Removes a separate ASR stage, but still needs TTS for spoken output and an orchestration layer for tools and sessions. |
+| End-to-end omni speech input and speech output | **Qwen3-Omni**, **MiniCPM-o 4.5**, **Step-Audio 2 mini** | These families combine audio understanding and speech generation. Their streaming, duplex, and tool interfaces differ, so validate the exact checkpoint and runtime. |
+| Native full-duplex speech conversation | **Moshi**, **PersonaPlex** | Moshi models simultaneous user and assistant audio streams. PersonaPlex adds text-based role prompts and audio-based voice conditioning. Neither is a complete business-tool platform. |
+| Speech-native action research | **DuplexSLA** | Adds a structured action channel to a full-duplex speech model, but its repository still labels inference code, checkpoints, and benchmark artefacts as forthcoming. |
+
+For detailed audio-understanding benchmarks and local inference, use the [audio-language-model article](local-audio-language-models.md). For standalone TTS quality, naturalness, voice cloning, and synthesis latency, use the [audio-generation article](../media-generation/audio-generation-ai.md).
 
 ## Architecture Methods
 
@@ -100,9 +122,7 @@ Define a strict routing boundary. The real-time model owns the immediate convers
 
 These are implementation starting points. They are not universal rankings.
 
-### Model components are not complete orchestration stacks
-
-Do not treat a voice model or inference component as a direct replacement for an orchestration framework. Ultravox takes audio input and emits streaming text. Moshi is a speech-text foundation model and a full-duplex spoken-dialogue framework. A complete agent still needs the applicable transports, business-tool integration, lifecycle management and deployment control plane. Moshi's documented low-latency result is a product-specific report, not a universal system latency budget.
+The [voice-model landscape](#scope-and-voice-model-landscape) lists representative components. A complete agent still needs transport, tool integration, policy, lifecycle management, and deployment controls.
 
 ## Real-Time Conversation Control
 
@@ -334,9 +354,9 @@ Start with an open orchestration stack when you need control of media transport,
 
 **Vocode.** The reviewed repository asked for community maintainers, and the evidence pack records no repository push after November 2024. Treat Vocode as a legacy or maintenance-risk option for a new build. Before use, check current maintenance activity, dependency health, and ownership.
 
-### Models are not orchestration platforms
+### Model integration boundary
 
-Ultravox and Moshi can form part of a voice stack, but they do not replace an orchestration framework. Ultravox accepts audio and emits streaming text. Moshi is a speech-text foundation model and full-duplex spoken-dialogue framework; its project reports practical latency as low as 200 ms on an L4 GPU. A production system still needs transports, tool execution, policy controls, session lifecycle management, and deployment operations. Treat the latency figure as a project-specific result, not as a deployment guarantee.
+Select a model component from the [voice-model landscape](#scope-and-voice-model-landscape), then add the transport, tool execution, policy controls, session lifecycle, and deployment operations that it does not provide.
 
 ### Conditional selection guide
 
@@ -349,7 +369,7 @@ The following guidance is engineering judgement based on the reviewed capabiliti
 - Choose **OpenVoiceOS** for skills-based smart-speaker or embedded-device products.
 - Consider **TEN Framework** only after legal review accepts its restricted root licence.
 - Treat **Vocode** as an existing-system or maintenance evaluation, not as a default for a new build.
-- Add **Ultravox** or **Moshi** as model components only when the surrounding orchestration and operations design supplies the missing platform functions.
+- Add a component from the [voice-model landscape](#scope-and-voice-model-landscape) only when the surrounding orchestration and operations design supplies the missing platform functions.
 
 ## Managed hyperscaler options
 
@@ -844,25 +864,28 @@ Make the final choice only after the candidates pass the same end-to-end tests. 
 14. [TEN Framework](https://github.com/TEN-framework/ten-framework) and [root licence](https://github.com/TEN-framework/ten-framework/blob/main/LICENSE) — graph-based realtime orchestration and deployment restrictions.
 15. [Home Assistant Assist pipelines](https://developers.home-assistant.io/docs/voice/pipelines/) and [Wyoming protocol](https://github.com/rhasspy/wyoming) — local voice pipeline and peer-to-peer speech-component protocol.
 16. [OpenVoiceOS Core](https://github.com/OpenVoiceOS/ovos-core) — skills, personas, and embedded voice-device platform.
-17. [Ultravox](https://github.com/fixie-ai/ultravox) and [Moshi](https://github.com/kyutai-labs/moshi) — voice-model components rather than complete tool orchestration platforms.
-18. [Vocode](https://github.com/vocodedev/vocode-core) — cascaded voice-agent framework with current maintenance caveats.
+17. [Ultravox](https://github.com/fixie-ai/ultravox) — direct speech input with streaming text output.
+18. [Qwen3-Omni](https://github.com/QwenLM/Qwen3-Omni), [MiniCPM-o 4.5](https://github.com/OpenBMB/MiniCPM-o), and [Step-Audio 2](https://github.com/stepfun-ai/Step-Audio2) — released omni or speech-conversation model families.
+19. [Moshi](https://github.com/kyutai-labs/moshi) and [PersonaPlex](https://github.com/NVIDIA/personaplex) — native full-duplex conversational speech models.
+20. [DuplexSLA](https://github.com/hyzhang24/DuplexSLA) — full-duplex Speech–Language–Action research with a structured action channel.
+21. [Vocode](https://github.com/vocodedev/vocode-core) — cascaded voice-agent framework with current maintenance caveats.
 
 ### Managed hyperscaler services
 
-19. [Amazon Nova 2 Sonic getting started](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-getting-started.html), [code examples](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-code-examples.html), and [integrations](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-integrations.html) — streaming speech, tools, and channel integration.
-20. [Amazon Bedrock AgentCore WebRTC](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-webrtc.html) and [AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html) — managed media runtime and MCP-compatible tools.
-21. [Azure Voice Live WebRTC](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/voice-live-webrtc) and [function calling](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-voice-live-function-calling) — managed voice sessions and tools.
-22. [Azure OpenAI Realtime audio](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio) and [SIP](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio-sip) — WebSocket, WebRTC, and telephony paths.
-23. [Gemini Live API](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/live-api), [capabilities](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/live-api/configure-gemini-capabilities), and [WebSocket guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/live-api/get-started-websocket) — bidirectional media and function calling.
-24. [IBM watsonx Assistant deployment](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-deploy-assistant), [phone integration](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-deploy-phone), and [custom extensions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-build-custom-extension) — managed cascaded voice channels and REST actions.
-25. [IBM watsonx Orchestrate MCP servers](https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base?topic=tools-mcp-servers) — MCP support in Orchestrate, separate from Assistant voice sessions.
-26. [OCI Speech Live Transcribe](https://docs.oracle.com/en-us/iaas/Content/speech/using/using-live-transcribe.htm), [OCI Generative AI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/use-llms.htm), and [OCI Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm) — components for an application-composed Oracle pipeline.
+22. [Amazon Nova 2 Sonic getting started](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-getting-started.html), [code examples](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-code-examples.html), and [integrations](https://docs.aws.amazon.com/nova/latest/nova2-userguide/sonic-integrations.html) — streaming speech, tools, and channel integration.
+23. [Amazon Bedrock AgentCore WebRTC](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-webrtc.html) and [AgentCore Gateway](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway.html) — managed media runtime and MCP-compatible tools.
+24. [Azure Voice Live WebRTC](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/voice-live-webrtc) and [function calling](https://learn.microsoft.com/en-us/azure/ai-services/speech-service/how-to-voice-live-function-calling) — managed voice sessions and tools.
+25. [Azure OpenAI Realtime audio](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio) and [SIP](https://learn.microsoft.com/en-us/azure/foundry/openai/how-to/realtime-audio-sip) — WebSocket, WebRTC, and telephony paths.
+26. [Gemini Live API](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/live-api), [capabilities](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/live-api/configure-gemini-capabilities), and [WebSocket guide](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/live-api/get-started-websocket) — bidirectional media and function calling.
+27. [IBM watsonx Assistant deployment](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-deploy-assistant), [phone integration](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-deploy-phone), and [custom extensions](https://cloud.ibm.com/docs/watson-assistant?topic=watson-assistant-build-custom-extension) — managed cascaded voice channels and REST actions.
+28. [IBM watsonx Orchestrate MCP servers](https://www.ibm.com/docs/en/watsonx/watson-orchestrate/base?topic=tools-mcp-servers) — MCP support in Orchestrate, separate from Assistant voice sessions.
+29. [OCI Speech Live Transcribe](https://docs.oracle.com/en-us/iaas/Content/speech/using/using-live-transcribe.htm), [OCI Generative AI](https://docs.oracle.com/en-us/iaas/Content/generative-ai/use-llms.htm), and [OCI Responses API](https://docs.oracle.com/en-us/iaas/Content/generative-ai/responses-api.htm) — components for an application-composed Oracle pipeline.
 
 ### Safety, observability, and evaluation
 
-27. [OWASP LLM01: Prompt Injection](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md), [LLM02: Sensitive Information Disclosure](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM02_SensitiveInformationDisclosure.md), and [LLM03: Excessive Agency](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md) — tool mediation, least privilege, confirmation, and privacy guidance.
-28. [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests) — safe retries for state-changing API requests.
-29. [OpenTelemetry GenAI agent spans](https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-agent-spans.md) and [GenAI events](https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-events.md) — agent and evaluation telemetry conventions.
-30. [Full-Duplex-Bench-v3 paper](https://arxiv.org/abs/2604.04847) and [repository](https://github.com/DanielLin94144/Full-Duplex-Bench/tree/main/v3) — disfluent realtime voice-tool tasks, correction, silence, and latency.
-31. [Audio2Tool paper](https://arxiv.org/abs/2604.22821) and [repository](https://github.com/ramitpahwa/Audio2Tool) — speech tool-use tiers for correction, context, noise, and distractor intent.
-32. [VoiceAgentBench paper](https://arxiv.org/abs/2510.07978) and [repository](https://github.com/ola-krutrim/VoiceAgentBench) — dependent tools, multilingual tasks, and refusal behaviour.
+30. [OWASP LLM01: Prompt Injection](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM01_PromptInjection.md), [LLM02: Sensitive Information Disclosure](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM02_SensitiveInformationDisclosure.md), and [LLM03: Excessive Agency](https://github.com/GenAI-Security-Project/GenAI-LLM-Top10/blob/main/2026/final/LLM03_ExcessiveAgency.md) — tool mediation, least privilege, confirmation, and privacy guidance.
+31. [Stripe idempotent requests](https://docs.stripe.com/api/idempotent_requests) — safe retries for state-changing API requests.
+32. [OpenTelemetry GenAI agent spans](https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-agent-spans.md) and [GenAI events](https://github.com/open-telemetry/semantic-conventions-genai/blob/main/docs/gen-ai/gen-ai-events.md) — agent and evaluation telemetry conventions.
+33. [Full-Duplex-Bench-v3 paper](https://arxiv.org/abs/2604.04847) and [repository](https://github.com/DanielLin94144/Full-Duplex-Bench/tree/main/v3) — disfluent realtime voice-tool tasks, correction, silence, and latency.
+34. [Audio2Tool paper](https://arxiv.org/abs/2604.22821) and [repository](https://github.com/ramitpahwa/Audio2Tool) — speech tool-use tiers for correction, context, noise, and distractor intent.
+35. [VoiceAgentBench paper](https://arxiv.org/abs/2510.07978) and [repository](https://github.com/ola-krutrim/VoiceAgentBench) — dependent tools, multilingual tasks, and refusal behaviour.

@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-08 |
-| Last Updated | 2026-08-03 |
-| Version | 1.1 |
+| Last Updated | 2026-08-14 |
+| Version | 1.2 |
 
 ---
 
@@ -274,7 +274,7 @@ For self-hosting open models, all five clouds rent the GPUs in the [hardware tie
 | If you need… | Proprietary best | Open-source best | Notes |
 |---|---|---|---|
 | Expressive TTS, many voices | ElevenLabs v3 | Orpheus / Chatterbox | Chatterbox (MIT) is commercially safe |
-| Lowest-latency realtime voice | Cartesia Sonic 4 (~40 ms) | Qwen3-TTS / Orpheus | See [`real-time-voice-llms.md`](../multimodal/real-time-voice-llms.md) |
+| Lowest-latency streaming TTS component | Cartesia Sonic 4 (~40 ms) | Qwen3-TTS / Orpheus | These are synthesis-component figures; see [`real-time-voice-llms.md`](../multimodal/real-time-voice-llms.md) for end-to-end conversational latency, turn-taking, and barge-in |
 | Cheapest high-volume TTS | hyperscaler WaveNet ($4/1M) | **Kokoro** (~$0.50/1M self-hosted) | Break-even ~5M chars/month |
 | Edge / offline TTS | — | **Piper** / Kokoro (CPU) | <100 MB to <1 GB |
 | Voice cloning, permissive licence | ElevenLabs / Cartesia | Fish Speech (base), Dia2, OpenVoice v2 | Avoid F5-TTS/XTTS for commercial (NC) |

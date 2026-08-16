@@ -1,0 +1,39 @@
+{
+  "metadata": {
+    "schema_version": 1,
+    "description": "Tool-use benchmark snapshot with separate benchmark panels",
+    "sampled_at": "2026-08-17",
+    "limitations": [
+      "BFCL V4 and tau-bench rows are published leaderboard snapshots; they are not independently rerun here.",
+      "Toolathlon currently has one source-linked row in the repository provenance data.",
+      "Scores from different benchmark families are not combined."
+    ]
+  },
+  "benchmarks": [
+    {"benchmark_id":"bfcl_v4","display_name":"BFCL V4","version":"V4","domain":"function_calling","metric_key":"overall_accuracy","metric_label":"Overall accuracy","unit":"%","higher_is_better":true,"source_url":"https://gorilla.cs.berkeley.edu/leaderboard.html","sampled_at":"2026-04-12"},
+    {"benchmark_id":"tau2_airline","display_name":"τ-bench Airline","version":"tau2","domain":"airline","metric_key":"score","metric_label":"Task success","unit":"%","higher_is_better":true,"source_url":"https://github.com/sierra-research/tau2-bench","sampled_at":"2026-05-31"},
+    {"benchmark_id":"tau2_retail","display_name":"τ-bench Retail","version":"tau2","domain":"retail","metric_key":"score","metric_label":"Task success","unit":"%","higher_is_better":true,"source_url":"https://github.com/sierra-research/tau2-bench","sampled_at":"2026-05-31"},
+    {"benchmark_id":"tau2_telecom","display_name":"τ-bench Telecom","version":"tau2","domain":"telecom","metric_key":"score","metric_label":"Task success","unit":"%","higher_is_better":true,"source_url":"https://github.com/sierra-research/tau2-bench","sampled_at":"2026-05-31"},
+    {"benchmark_id":"toolathlon","display_name":"Toolathlon","version":"Toolathlon-Verified","domain":"long_horizon_tool_use","metric_key":"score","metric_label":"Score","unit":"%","higher_is_better":true,"source_url":"https://toolathlon.xyz/docs/leaderboard","sampled_at":"2026-07-09"}
+  ],
+  "observations": [
+    {"benchmark_id":"bfcl_v4","name":"Claude Opus 4.7","developer":"Anthropic","openness":"api_only","value":79.8},
+    {"benchmark_id":"bfcl_v4","name":"GLM-4.5 (FC)","developer":"Z.ai","openness":"open_weights","value":70.9},
+    {"benchmark_id":"bfcl_v4","name":"Kimi K2.5","developer":"Moonshot AI","openness":"open_weights","value":69.0},
+    {"benchmark_id":"bfcl_v4","name":"GPT-5.4","developer":"OpenAI","openness":"api_only","value":67.8},
+    {"benchmark_id":"bfcl_v4","name":"Gemini 3.1 Pro","developer":"Google DeepMind","openness":"api_only","value":65.2},
+    {"benchmark_id":"tau2_airline","name":"Claude Opus 4.7","developer":"Anthropic","openness":"api_only","value":89.0},
+    {"benchmark_id":"tau2_airline","name":"GLM-5.1","developer":"Z.ai","openness":"open_weights","value":81.5},
+    {"benchmark_id":"tau2_airline","name":"GPT-5.4","developer":"OpenAI","openness":"api_only","value":72.0},
+    {"benchmark_id":"tau2_airline","name":"Gemini 3.1 Pro","developer":"Google DeepMind","openness":"api_only","value":64.0},
+    {"benchmark_id":"tau2_retail","name":"Claude Opus 4.7","developer":"Anthropic","openness":"api_only","value":93.5},
+    {"benchmark_id":"tau2_retail","name":"Gemma 4 31B","developer":"Google DeepMind","openness":"open_weights","value":86.4},
+    {"benchmark_id":"tau2_retail","name":"GPT-5.4","developer":"OpenAI","openness":"api_only","value":84.0},
+    {"benchmark_id":"tau2_retail","name":"Qwen 3.6-27B","developer":"Alibaba","openness":"open_weights","value":80.0},
+    {"benchmark_id":"tau2_telecom","name":"Claude Opus 4.7","developer":"Anthropic","openness":"api_only","value":99.5},
+    {"benchmark_id":"tau2_telecom","name":"GPT-5.4","developer":"OpenAI","openness":"api_only","value":98.8},
+    {"benchmark_id":"tau2_telecom","name":"GLM-5.1","developer":"Z.ai","openness":"open_weights","value":95.5},
+    {"benchmark_id":"tau2_telecom","name":"Kimi K2.6","developer":"Moonshot AI","openness":"open_weights","value":94.0},
+    {"benchmark_id":"toolathlon","name":"GPT-5.6 Luna","developer":"OpenAI","openness":"api_only","value":74.6}
+  ]
+}

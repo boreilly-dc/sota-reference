@@ -2,6 +2,25 @@
 
 Research articles on state-of-the-art topics in AI and software engineering.
 
+## Benchmark and leaderboard sites
+
+Use these live source sites for current benchmark results and leaderboard snapshots. Scores from different benchmarks, harnesses, or versions are not directly comparable and must not be combined into a universal ranking.
+
+- **General model leaderboards:** [Artificial Analysis Intelligence Index](https://artificialanalysis.ai/leaderboards/models), [Vellum LLM Leaderboard](https://www.vellum.ai/llm-leaderboard), [Vellum Open LLM Leaderboard](https://www.vellum.ai/open-llm-leaderboard), and [Arena AI](https://arena.ai/leaderboard)
+- **Provenance and benchmark index:** [BenchmarkList](https://benchmarklist.com/)
+- **Coding and agent benchmarks:** [Aider Polyglot](https://aider.chat/docs/leaderboards/), [Vals.ai SWE-bench](https://www.vals.ai/benchmarks/swebench), [Vals.ai LiveCodeBench](https://www.vals.ai/benchmarks/lcb), and [Terminal-Bench](https://www.tbench.ai/leaderboard/terminal-bench/2.0)
+- **Tool use and function calling:** [BFCL](https://gorilla.cs.berkeley.edu/leaderboard.html), [Toolathlon](https://toolathlon.xyz/docs/leaderboard), and [τ-bench](https://github.com/sierra-research/tau2-bench)
+- **Tool use, retrieval, and document understanding:** [BFCL](https://gorilla.cs.berkeley.edu/leaderboard.html), [MTEB](https://leaderboard.mteb.org/), and [OCRBench](https://huggingface.co/spaces/echo840/ocrbench-leaderboard)
+- **Media and voice:** [Artificial Analysis Speech Arena](https://artificialanalysis.ai/text-to-speech/leaderboard), [Artificial Analysis Text-to-Video](https://artificialanalysis.ai/video/leaderboard/text-to-video), [VBench](https://benchmarklist.com/benchmarks/vbench_video_generation/), and [VoiceBenchmark](https://voicebenchmark.ai/)
+
+## Benchmark plots
+
+Tracked plot snapshots are generated with `python3 .scripts/plot_benchmarks.py --all`. The plots keep cost, tool use, and coding benchmarks separate; they do not form a universal model ranking.
+
+- [Cost versus intelligence](images/cost-per-intelligence.png) — Artificial Analysis Intelligence Index against a defined 1M-input + 1M-output workload cost
+- [Tool-use benchmarks](images/tool-use-benchmarks.png) — BFCL V4, τ-bench domains, and Toolathlon-Verified panels
+- [Agentic coding benchmarks](images/agentic-coding-benchmarks.png) — SWE-bench Pro, Terminal-Bench 2.1, and LiveCodeBench source observations
+
 ## Benchmark provenance
 
 Benchmark-heavy articles use [BenchmarkList](https://benchmarklist.com/) as a discovery and provenance index where it has suitable verified coverage. The repository keeps the underlying paper, model card, benchmark, or independent leaderboard as a source because BenchmarkList usually indexes published observations rather than independently rerunning them. Imported records must have a verified review state, dated snapshot, source URL, metric direction, and explicit subject type. Scores from unrelated benchmarks, harnesses, or versions are not combined into a universal ranking.
@@ -77,39 +96,3 @@ Articles are organised into topic folders. Survey-style articles compare options
 - [AI-Assisted OIA/FOI Processing Pipeline](reference-designs/oia-foi-processing-pipeline.md) — Eight-stage AI-assisted pipeline for Official Information Act and Freedom of Information request processing with mandatory human-in-the-loop at every decision point
 - [Automated Multi-Step AI Research Pipeline](reference-designs/ai-investment-research-pipeline.md) — Workflow engine for chaining LLM calls across structured analytical processes with state management, context budgeting, and human checkpoints
 - [AI-Assisted Change Impact Assessment for Mega-Projects](reference-designs/ai-change-impact-assessment-megaproject.md) — Agentic AI for assessing change request impacts against regulatory and compliance document baselines on $1B+ infrastructure projects
-
-## Model Elo Timeline
-
-LMArena (Chatbot Arena) Elo ratings for frontier AI models over time, coloured by lab with family lines connecting models of the same class.
-
-### Last 6 Months
-
-![Model Elo Timeline - Last 6 Months](images/model-elo-timeline-6m.png)
-
-### Last 2 Years
-
-![Model Elo Timeline - Last 2 Years](images/model-elo-timeline.png)
-
-## Open-Source Model Elo Timeline
-
-LMArena Elo ratings for open-weight models over time, showing the progression of each model family.
-
-![Open-Source Model Elo Timeline](images/local-model-elo-timeline.png)
-
-## Tool Use Benchmarks
-
-Scores across BFCL V4 (structured function calling) and Tau²-bench domains (airline, retail, telecom agent tool use).
-
-![Tool Use Benchmarks](images/tool-use-benchmarks.png)
-
-### Local Models (≤ 30B params)
-
-Tool use performance for models that can run locally, with frontier model reference lines. Covers BFCL V4, Docker's practical tool calling eval, and Tau²-bench Retail.
-
-![Tool Use - Local Models](images/tool-use-local-models.png)
-
-## Gemma 4 Family Benchmarks
-
-Official Google model-card scores across the Gemma 4 family, including the new **12B** (released ~3 June 2026). The 12B nears the 26B A4B MoE on reasoning, coding and agentic (Tau²) tasks at under half the memory. See the [Gemma 4 12B overview](models/gemma-4-12b.md).
-
-![Gemma 4 Family Benchmarks](images/gemma4-family-benchmarks.png)

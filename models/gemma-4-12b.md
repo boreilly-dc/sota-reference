@@ -106,8 +106,6 @@ Gemma 4 12B uses a **unified, encoder-free architecture**. Where traditional mul
 
 These are the **official numbers from the Hugging Face model card** (`google/gemma-4-12B`). Gemma 3 27B (no-think) is included as Google's previous-generation reference point. Higher is better unless marked ↓. BenchmarkList now supplies a verified, source-linked observation for the 12B model's 72.0 LiveCodeBench result. This is provenance for Google's published result, not an independent rerun.
 
-![Gemma 4 family benchmark comparison](../images/gemma4-family-benchmarks.png)
-
 | Benchmark | 31B Dense | 26B A4B | **12B Unified** | E4B | E2B | Gemma 3 27B |
 |-----------|:---------:|:-------:|:---------------:|:---:|:---:|:-----------:|
 | **MMLU Pro** | 85.2 | 82.6 | **77.2** | 69.4 | 60.0 | 67.6 |

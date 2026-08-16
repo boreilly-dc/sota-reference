@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-03-17 |
-| Last Updated | 2026-08-03 |
-| Version | 3.7 |
+| Last Updated | 2026-08-17 |
+| Version | 3.8 |
 
 ---
 
@@ -22,7 +22,7 @@
 
 ## Overview
 
-This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The LMArena Elo plot data was refreshed on 3 August 2026. The GPT-5.6 family and focused GPT-5.6 Luna workload evidence were added on 3 August 2026 from source-linked BenchmarkList observations. The Agentic Coding and Tool Use sections otherwise retain their 8 June 2026 refresh; other sections retain their May 2026 pull. Sources include LMArena (Arena AI), BenchmarkList, SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
+This article ranks current best-in-class frontier AI models across nine capability domains, synthesised from live benchmark data. The general-model plot set now uses Artificial Analysis cost/intelligence data plus separate tool-use and agentic-coding benchmark panels. The GPT-5.6 family and focused GPT-5.6 Luna workload evidence were added on 3 August 2026 from source-linked BenchmarkList observations. The Agentic Coding and Tool Use sections otherwise retain their 8 June 2026 refresh; other sections retain their May 2026 pull. Sources include Arena AI, BenchmarkList, SWE-Bench Verified/Pro, Terminal-Bench 2.0/2.1/Hard, Aider Polyglot, BFCL V4, Tau²-bench, MMMU-Pro, Artificial Analysis, BenchLM, and the OpenVLM/Open ASR leaderboards.
 
 Each model entry includes origin, release date, model lineage, licence, parameter count, context window, and throughput data where known.
 
@@ -54,6 +54,8 @@ Ranked by LMArena (Chatbot Arena) Elo ratings from human blind-preference votes,
 - GLM-5.1 (Zhipu AI, Elo 1473) is the highest-ranked open-source model on the text arena; the newer GLM-5.2 (13 June 2026, Elo 1474, 1M context, MIT) leads it on coding and sits marginally above on chat preference — see the [Open Source](#open-source) section and the [GLM-5.2 overview](glm-5-2.md).
 
 ## Agentic Coding
+
+The benchmark plot is shown separately by benchmark and harness. Do not treat the panels as a universal composite ranking. The tracked [agentic coding plot](../images/agentic-coding-benchmarks.png) uses source-linked BenchmarkList observations for SWE-bench Pro, Terminal-Bench 2.1, and LiveCodeBench.
 
 Composite ranking across SWE-Bench Verified, SWE-Bench Pro, Terminal-Bench 2.0, Terminal-Bench Hard, and Aider Polyglot — the benchmarks most representative of real-world agentic coding.
 
@@ -112,6 +114,8 @@ Use Luna first for high-volume agents, routine coding assistance, browsing, extr
 - The scaffold/harness effect remains large: the same model can swing 22+ points depending on the agent framework used.
 
 ## Tool Use
+
+The tracked [tool-use plot](../images/tool-use-benchmarks.png) keeps BFCL V4, τ-bench domains, and Toolathlon-Verified in separate panels. Their scores use different tasks and must not be combined into one rank.
 
 Ranked by the Berkeley Function Calling Leaderboard V4 (BFCL V4, last updated 12 April 2026), supplemented by Tau2-bench for business agent tool use.
 
@@ -285,7 +289,7 @@ Output token generation speed measured by Artificial Analysis (tested every 8 ho
 
 ### Artificial Analysis Intelligence Index
 
-The Intelligence Index is a composite score across multiple benchmarks. As of early June 2026:
+The [cost-versus-intelligence plot](../images/cost-per-intelligence.png) uses the Intelligence Index with a defined 1M-input + 1M-output workload cost. The Intelligence Index is a composite score across multiple benchmarks. As of early June 2026:
 
 | # | Model | Score | Notes |
 |---|-------|-------|-------|

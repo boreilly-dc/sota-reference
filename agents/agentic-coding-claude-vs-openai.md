@@ -61,7 +61,7 @@ Both tools have had recent reliability problems. Claude Code experienced a well-
 
 ## Benchmark Comparison
 
-The table below retains the May 2026 comparison baseline. For current model selection, the verified BenchmarkList provenance snapshots add Claude Opus 4.8 at 69.2% and GPT-5.6 Luna at 62.7% on SWE-bench Pro, and GPT-5.6 Luna at 84.7% on Terminal-Bench 2.1. BenchmarkList indexes source observations and does not independently rerun every evaluation. Harness and benchmark versions must remain separate.
+The tracked [agentic coding benchmark plot](../images/agentic-coding-benchmarks.png) shows separate source observations for SWE-bench Pro, Terminal-Bench 2.1, and LiveCodeBench. The table below retains the May 2026 comparison baseline. For current model selection, the verified BenchmarkList provenance snapshots add Claude Opus 4.8 at 69.2% and GPT-5.6 Luna at 62.7% on SWE-bench Pro, and GPT-5.6 Luna at 84.7% on Terminal-Bench 2.1. BenchmarkList indexes source observations and does not independently rerun every evaluation. Harness and benchmark versions must remain separate.
 
 | Benchmark | What it measures | Claude best | Score | OpenAI best | Score | Leader |
 |-----------|-----------------|------------|-------|-------------|-------|--------|

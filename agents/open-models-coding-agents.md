@@ -183,7 +183,7 @@ GLM-4.7 with only 9B parameters achieves 84.9 on LiveCodeBench and 94.2% on Huma
 
 ### LiveCodeBench (Vals.ai Standardised, June 2026)
 
-The open–closed gap on pure algorithmic coding is now negligible — open models sit within ~2 points of the closed ceiling.
+The tracked [agentic coding benchmark plot](../images/agentic-coding-benchmarks.png) keeps LiveCodeBench separate from repository-level agent benchmarks. The open–closed gap on pure algorithmic coding is now negligible — open models sit within ~2 points of the closed ceiling.
 
 | Model | Score | Type |
 |-------|-------|------|

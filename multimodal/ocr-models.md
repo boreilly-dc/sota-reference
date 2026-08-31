@@ -3,8 +3,8 @@
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-02 |
-| Last Updated | 2026-08-03 |
-| Version | 1.1 |
+| Last Updated | 2026-08-31 |
+| Version | 1.2 |
 
 ---
 
@@ -12,9 +12,10 @@
 - [How to Choose: Quick Decision Guide](#how-to-choose-quick-decision-guide)
 - [The 2026 Landscape: Four Tiers](#the-2026-landscape-four-tiers)
 - [Benchmarks and How to Read Them](#benchmarks-and-how-to-read-them)
+  - [Open-Weight Performance versus Parameter Count](#open-weight-performance-versus-parameter-count)
 - [Best Multimodal LLMs for OCR](#best-multimodal-llms-for-ocr)
   - [Frontier Proprietary VLMs and Dedicated OCR APIs](#frontier-proprietary-vlms-and-dedicated-ocr-apis)
-  - [Open-Source Specialist Document VLMs](#open-source-specialist-document-vlms)
+  - [Open-Weight Specialist Document VLMs](#open-weight-specialist-document-vlms)
   - [Open-Source General-Purpose VLMs](#open-source-general-purpose-vlms)
 - [When a Non-LLM Solution Is the Better Choice](#when-a-non-llm-solution-is-the-better-choice)
 - [Reliability and Safety of VLM-Based OCR](#reliability-and-safety-of-vlm-based-ocr)
@@ -30,11 +31,11 @@
 
 ## Executive Summary
 
-By mid-2026, "OCR" no longer means a single tool. It spans four overlapping tiers — traditional engines, specialist document vision-language models (VLMs), open general VLMs, and frontier proprietary VLMs — and the right choice depends almost entirely on the document, the volume, and the tolerance for error.
+By August 2026, "OCR" no longer means a single tool. It spans four overlapping tiers — traditional engines, specialist document vision-language models (VLMs), open general VLMs, and frontier proprietary VLMs — and the right choice depends almost entirely on the document, the volume, and the tolerance for error.
 
 The headline finding is a genuine split between two ways of measuring quality:
 
-- **On automated document-parsing benchmarks (OmniDocBench), small specialist models win.** Sub-1.5B-parameter open models — **MinerU2.5-Pro (1.2B, 95.69 on OmniDocBench v1.6)**, **GLM-OCR (0.9B, 95.22)** and **PaddleOCR-VL-1.5/1.6 (0.9B, 94.93–96.3)** — now beat the best frontier general models (Gemini 3 Pro ≈ 90.3, Qwen3-VL-235B ≈ 89.2, GPT-5.2 ≈ 85.4) by roughly **5–10 points**, at a fraction of the cost. [1][7][8][9][12]
+- **On automated document-parsing benchmarks (OmniDocBench), small specialist models win.** The current open-weight leaders on OmniDocBench v1.6 are **NaviDC-OCR (1.2B, 96.87)**, **OvisOCR2 (0.8B, 96.58)** and **PaddleOCR-VL-1.6 (0.9B, 96.33)**. They outperform much larger general-purpose VLMs on faithful page parsing while remaining small enough for local deployment. [38][39][40]
 - **On human-preference evaluation (OCR Arena) and complex reasoning, frontier VLMs win.** Gemini 3 Flash/Pro, Claude Opus 4.6+, and GPT-5.x lead when documents demand layout judgement, instruction-following, chart reasoning, or structured JSON extraction from messy real-world inputs. [2][6]
 
 For the user's core question — *is there ever a better non-LLM solution?* — the answer is **yes, frequently**, and it is one of the most important practical lessons of 2026:
@@ -55,7 +56,7 @@ The practical 2026 consensus is therefore **not "VLMs replace OCR"** but **tiere
 
 | If you need… | Best non-LLM / specialist option | Best multimodal LLM option |
 |---|---|---|
-| **Maximum document-parsing accuracy, self-hosted** | MinerU2.5-Pro, GLM-OCR, PaddleOCR-VL-1.6 (open, sub-1.5B) | — (specialists win here) |
+| **Maximum document-parsing accuracy, self-hosted** | NaviDC-OCR, OvisOCR2, PaddleOCR-VL-1.6 (open weights, sub-1.5B) | — (specialists win here) |
 | **Best results on the hardest, messiest documents** | — | Gemini 3 Pro / Claude Opus 4.6+ / GPT-5.x |
 | **Lowest cost at high volume** | Self-hosted PP-OCRv5 / DeepSeek-OCR2 (~$0.09–0.20/1k pages) | — |
 | **Lowest latency / real-time** | PP-OCRv5, Tesseract, Surya (CPU/GPU, <1–3 s) | — |
@@ -77,11 +78,11 @@ OCR in 2026 is best understood as a progression from cheap-and-narrow to expensi
 | Tier | What it is | Examples | Speed | Cost/1k pages | Best at |
 |---|---|---|---|---|---|
 | **1. Traditional engines** | Detector + recogniser, no LLM | Tesseract, PP-OCRv5, EasyOCR, Surya, docTR | 0.5–3 s/page (CPU) | ~$0.09–0.20 (self-host) | Clean printed text, high volume, determinism, edge |
-| **2. Specialist document VLMs** | Small VLMs fine-tuned for document parsing | GLM-OCR, PaddleOCR-VL, MinerU2.5, DeepSeek-OCR2, dots.ocr, olmOCR 2, GOT-OCR 2.0 | 3–8 s/page (GPU) | ~$0.09–0.70 (self-host) | PDF→Markdown, tables, formulas, reading order |
+| **2. Specialist document VLMs** | Small VLMs fine-tuned for document parsing | NaviDC-OCR, OvisOCR2, PaddleOCR-VL, GLM-OCR, MinerU2.5, HunyuanOCR, DeepSeek-OCR2 | 3–8 s/page (GPU) | ~$0.09–0.70 (self-host) | PDF→Markdown, tables, formulas, reading order |
 | **3. Open general VLMs** | Large general multimodal models | Qwen3-VL, InternVL3, Nemotron Nano V2 VL | 3–10 s/page | self-host / API | Documents needing reasoning + OCR together |
 | **4. Frontier proprietary VLMs** | Closed flagship multimodal models + dedicated OCR APIs | Gemini 3.x, GPT-5.x, Claude Opus 4.6–4.8, Mistral OCR 3 | 5–15 s/page (API) | $1.50–70 | The messiest, hardest, judgement-heavy documents |
 
-The crucial 2026 insight: **moving up a tier does not monotonically increase accuracy.** A 0.9B Tier-2 specialist now *out-scores* a 235B Tier-3/4 generalist on pure document parsing, because document parsing rewards precise localisation and faithful transcription rather than broad world knowledge. [7][10] You move up a tier for *judgement* (ambiguous layouts, reasoning, instruction-following), not for raw transcription accuracy.
+The crucial 2026 insight: **moving up a tier does not monotonically increase accuracy.** A 0.8–1.2B Tier-2 specialist now leads pure document parsing because the task rewards precise localisation and faithful transcription rather than broad world knowledge. [38][39] You move up a tier for *judgement* (ambiguous layouts, reasoning, instruction-following), not for raw transcription accuracy.
 
 ---
 
@@ -93,16 +94,26 @@ The verified indexed OCRBench snapshot lists MiniCPM-V 2.6 at 852 points, Granit
 
 Read leaderboards with three rules in mind:
 
-1. **Name *and* version matter.** OmniDocBench v1.0, v1.5 and v1.6 are **not score-comparable** (v1.6 typically runs ~0.5–1 point higher for the same model). OCRBench v1 (scored out of 1.0) and OCRBench v2 (out of 100) are completely different scales. [9][3]
+1. **Name *and* version matter.** OmniDocBench v1.0, v1.5, v1.6 and the newer v1.7 tooling are **not score-comparable** (v1.6 typically runs ~0.5–1 point higher for the same model). OCRBench v1 (scored out of 1.0) and OCRBench v2 (out of 100) are completely different scales. [9][3]
 2. **Automated vs human-preference disagree.** Automated parsing benchmarks reward faithful transcription (specialists win); human-preference arenas reward usable, well-structured output (frontier VLMs win). Cite both lenses, not one. [2][7]
 3. **Watch for conflicts of interest.** Some leaderboards are operated by vendors who also rank their own models at the top. [4]
 
-### The major benchmarks (mid-2026)
+### Open-weight performance versus parameter count
+
+![Open-weight OCR performance versus parameter count](../images/ocr-performance-vs-parameter-count.png)
+
+The tracked figure applies two hard filters: publicly downloadable weights and fewer than 50B published total parameters. **NaviDC-OCR is the current best-in-class model in the comparable OmniDocBench v1.6 panel at 96.87**, followed by OvisOCR2 at 96.58 and PaddleOCR-VL-1.6 at 96.33. All three use fewer than 1.5B parameters. The 30B-total/3B-active general-purpose Ovis2.6-30B-A3B reaches 93.62 in the same evaluation and provides a like-for-like scale comparison. [38][39][40][43]
+
+The Gemma 4 panel answers a different question: how OCR quality scales inside one general-purpose open-weight family. Google reports **normalised edit distance on OmniDocBench v1.5, where lower is better**: 0.290 (E2B), 0.181 (E4B), 0.164 (12B), 0.149 (26B-A4B), and 0.131 (31B). These values show consistent scaling, but they cannot be compared numerically with the v1.6 overall scores. The chart uses total parameters on the x-axis. Gemma 4 E2B and E4B have 2.3B and 4.5B effective parameters but 5B and 8B total parameters; the 26B mixture-of-experts model activates 3.8B parameters per token. [41]
+
+The benchmark values are vendor- or author-reported. They show efficiency on a specific parsing task, not a universal model ranking. They do not measure latency, deployment cost, hallucination rate, or general visual reasoning. OmniDocBench announced v1.7 tooling and a Qianfan-OCR leaderboard in April 2026, but the latest common cohort available in the cited model papers remains v1.6; this chart therefore uses v1.6 rather than mixing partial v1.7 results. [44]
+
+### The major benchmarks (August 2026)
 
 | Benchmark | What it measures | Current top entries | Notes |
 |---|---|---|---|
-| **OmniDocBench v1.6** | Full-page parsing: text, formulas, tables, reading order | MinerU2.5-Pro **95.69**, GLM-OCR **95.22**, PaddleOCR-VL-1.5 **94.93** | Specialists dominate; Gemini 3 Pro **90.33**, Qwen3-VL-235B **89.15**, GPT-5.2 **85.4** [7][8] |
-| **OmniDocBench v1.5** | Earlier version of the above | GLM-OCR **94.62**, PaddleOCR-VL **94.50**, DeepSeek-OCR2 **91.09**, Gemini 3 Flash **≈90.1** | Not comparable to v1.6 [1][9][12][3] |
+| **OmniDocBench v1.6** | Full-page parsing: text, formulas, tables, reading order | NaviDC-OCR **96.87**, OvisOCR2 **96.58**, PaddleOCR-VL-1.6 **96.33** | Current open-weight leaders are all sub-1.5B specialists [38][39][40] |
+| **OmniDocBench v1.5** | Earlier protocol; Gemma reports normalised edit distance | Gemma 4: 31B **0.131**, 26B-A4B **0.149**, 12B **0.164**, E4B **0.181**, E2B **0.290** (lower is better) | Not comparable to v1.6 overall scores [41] |
 | **OCRBench v2** | 10,000 human-verified QA pairs, 31 scenarios, bilingual | Qwen2.5-VL-72B **63.7/100** (Overall-CN) | Hard benchmark; most models score <50/100 [3][5] |
 | **olmOCR-bench** | PDF-linearisation quality (1,403 pages) | LightOnOCR-2-1B **83.2**, Chandra **83.1**, olmOCR v0.4 **82.4** | #1 disputed across evaluators (see below) [4][6] |
 | **OCR Arena** | Live human-preference voting | Gemini 3 Flash, then Gemini 3 Pro, Claude Opus 4.6, GPT-5.2 | Frontier VLMs lead human preference [2] |
@@ -138,15 +149,18 @@ Notes:
 - Claims of dramatic vision jumps in the newest Claude releases (e.g. "98.5% visual acuity" for Opus 4.7) come from analytical blogs using **non-standard metrics** and should be read as directional, not benchmark-grade. [6]
 - OCR-specific benchmarks for the very newest releases (Claude Opus 4.8, GPT-5.5) were **not yet published** at the time of writing.
 
-### Open-Source Specialist Document VLMs
+### Open-Weight Specialist Document VLMs
 
-This is where open source is strongest in 2026: small, cheap, self-hostable models that **top the automated document-parsing leaderboards**. Open-source-first deployments should start here.
+This is where open weights are strongest in 2026: small, cheap, self-hostable models that **top the automated document-parsing leaderboards**. Open-weight-first deployments should start here.
 
 | Model | Params | Licence | Released | Strengths |
 |---|---|---|---|---|
-| **MinerU2.5-Pro** | 1.2B | Custom (Apache-2.0-based) | Apr–May 2026 | **#1 OmniDocBench v1.6 (95.69)**; PDF/Office→Markdown/JSON; data-centric [7][8] |
-| **GLM-OCR** (Z.ai) | 0.9B | MIT (model) | Feb 2026 | 95.22 v1.6 / 94.62 v1.5; document understanding [1][12] |
-| **PaddleOCR-VL-1.5 / 1.6** | 0.9B | Apache-2.0-based | Jan / May 28 2026 | 94.5 → 96.3; polygonal detection for warped text; tables/formulas [9][18] |
+| **NaviDC-OCR** | ~1.2B | Apache-2.0 | Aug 2026 | **Current #1 OmniDocBench v1.6 (96.87)**; unified digital and camera-captured document parsing [38] |
+| **OvisOCR2** | 0.8B | Apache-2.0 | Jul 2026 | **96.58 v1.6**; end-to-end page image→Markdown; 75.06 PureDocBench Avg3 [39] |
+| **PaddleOCR-VL-1.6** | 0.9B | Apache-2.0 | May 2026 | **96.33 v1.6**; strong tables, formulas and physical-distortion robustness [40] |
+| **MinerU2.5-Pro** | 1.2B | Apache-2.0 | Apr 2026 | 95.75 in the later common v1.6 comparison (95.69 in its own paper); PDF/Office→Markdown/JSON [7][38] |
+| **GLM-OCR** (Z.ai) | 0.9B published architecture (1.33B checkpoint) | MIT | Feb 2026 | 95.22 v1.6; compact two-stage document understanding [12][38] |
+| **HunyuanOCR-1.5** | 1B published (1.12B checkpoint) | Tencent Hunyuan Community Licence | Jul 2026 | 94.74 v1.6; end-to-end OCR with accelerated long-output decoding [42] |
 | **DeepSeek-OCR / OCR2** | 3B | MIT | Oct 2025 / Jan 2026 | Contextual optical compression (7–20× fewer vision tokens); **200k+ pages/day on one A100**; Visual Causal Flow reading order [2][19][9] |
 | **dots.ocr / dots.mocr** | 1.7B | MIT code + custom weights | Jul 2025 / Mar 2026 | Unified layout+text+tables+formulas+reading order; **100+ languages** [2][20] |
 | **olmOCR 2** (AllenAI) | 7B (Qwen2.5-VL) | Apache-2.0 | Jul 2025 | Fully open (weights+data+code); **<$200/M pages**; PDF linearisation [21] |
@@ -159,9 +173,10 @@ This is where open source is strongest in 2026: small, cheap, self-hostable mode
 
 General multimodal models that do OCR well as one capability among many — choose these when the task needs **reasoning *and* OCR together** (e.g. "read this chart and explain the trend"). See the companion article [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) for local-deployment detail.
 
-- **Qwen3-VL** (2B–235B, Apache-2.0): the leading open general VLM family for OCR; native 256K context, 32 languages, robust in low light/blur. Newer Qwen 3.5/3.6-VL generations exist but lacked published OCR-specific cards at writing. [2][26]
-- **InternVL3 / InternVL3.5** (1B–241B, MIT): strong native-multimodal generalists, competitive on document tasks. [27]
-- Hardware: GOT-OCR 2.0 ~4 GB VRAM; 3B specialists ~6–8 GB at Q4; Qwen3-VL-8B Q4 ~5 GB; 72B-class needs an A100/multi-GPU; Granite Docling (258M) runs on CPU. [2][26]
+- **Gemma 4** (E2B, E4B, 12B, 26B-A4B, 31B; Apache-2.0): Google's full open-weight family is below the 50B cutoff. Its OmniDocBench v1.5 normalised edit distance improves steadily from 0.290 at E2B to 0.131 at 31B. The E2B and E4B checkpoints contain 5B and 8B total parameters despite their effective-parameter names; 26B-A4B activates 3.8B of 26B total parameters. [41]
+- **Qwen3-VL** (2B–235B, Apache-2.0): a strong open general VLM family for OCR; native 256K context, 32 languages, robust in low light/blur. Apply the article's <50B comparison only to qualifying variants. [2][26]
+- **InternVL3 / InternVL3.5** (1B–241B, MIT): strong native-multimodal generalists, competitive on document tasks. Apply the same parameter cutoff per checkpoint. [27]
+- Hardware: sub-1.5B specialists and Gemma 4 E2B/E4B target edge or modest-GPU deployment; Gemma 4 12B targets 16 GB-class hardware; the 26B-A4B and 31B models require workstation-class memory. [41]
 
 ---
 
@@ -299,11 +314,11 @@ Two structural points worth noting:
 
 This article supersedes an internal January 2026 OCR survey. The five-month delta is substantial:
 
-- **Specialists overtook frontier models on document parsing.** GLM-OCR (0.9B, Feb 2026), PaddleOCR-VL-1.5 (Jan) → 1.6 (May), and MinerU2.5-Pro (1.2B, Apr–May) now top OmniDocBench, beating 235B generalists. [1][7][9][12][18]
+- **The specialist lead changed three times.** PaddleOCR-VL-1.6 reached 96.33 in May, OvisOCR2 reached 96.58 in July, and NaviDC-OCR reached 96.87 in August on OmniDocBench v1.6. All are open-weight models below 1.5B parameters. [38][39][40]
 - **Specialist refreshes:** DeepSeek-OCR2 (Jan, Visual Causal Flow reading-order fix), dots.mocr (Mar), MinerU v3.1.0 (Apr). [9][19][20]
 - **Frontier cadence:** Claude Opus 4.6 (Feb 5) → 4.7 (Apr 16) → 4.8 (May 28); GPT-5.4 (Mar 5, ~1M context, native vision) → GPT-5.5 (~May); Gemini 3.1 Ultra (Mar, 2M context) and Gemini 3.5 Flash (May). [6]
 - **Dedicated OCR API:** Mistral OCR 3 (`mistral-ocr-2512`, Dec 2025) remains the latest; its $1–2/1k pricing reframed the managed market. [16][17]
-- **Benchmarks matured:** OmniDocBench v1.6 and Real5-OmniDocBench added; OCR Arena (human preference) gained prominence; the automated-vs-human-preference divergence became the key interpretive lesson. [3][9]
+- **Benchmarks matured:** OmniDocBench v1.6, Real5-OmniDocBench and PureDocBench added; OCR Arena (human preference) gained prominence; the automated-vs-human-preference divergence became the key interpretive lesson. [3][9][39]
 - **Architecture consensus:** tiered/hybrid pipelines with traditional cross-checks displaced "send everything to a VLM" as best practice. [13][15]
 
 ---
@@ -315,7 +330,7 @@ This article supersedes an internal January 2026 OCR survey. The five-month delt
 - **Leaderboard conflicts of interest.** The Nanonets-operated IDP Leaderboard ranks Nanonets OCR-3 #1; this is contested by other evaluators. [4]
 - **Hallucination is under-quantified.** The risk is well-documented qualitatively, but formal fabrication/omission-rate studies remain sparse as of mid-2026. [10][13]
 - **Pricing is approximate and changes.** Hyperscaler figures are from official pages where extractable; some (Oracle, parts of Azure) are behind dynamic calculators and are reported structurally. Self-hosting costs assume spot GPU pricing and exclude engineering overhead.
-- **Geographic/recency limits.** Research was English-language and current to 2026-06-02; the field moves monthly.
+- **Geographic/recency limits.** Research was English-language and current to 2026-08-31; the field moves monthly.
 
 ---
 
@@ -358,3 +373,11 @@ This article supersedes an internal January 2026 OCR survey. The five-month delt
 35. [Oracle OCI Document Understanding](https://www.oracle.com/artificial-intelligence/document-understanding/) — Oracle (official). Credibility: 8/10
 36. [BenchmarkList OCRBench](https://benchmarklist.com/benchmarks/ocrbench/) and [API guide](https://benchmarklist.com/agents/) — verified source-linked OCRBench snapshot used for provenance.
 37. [Intelligent Document Processing: The Future of Automation (2026)](https://highpeaksw.com/intelligent-document-processing/) — consultancy analysis. Credibility: 7/10
+
+38. [NaviDC-OCR: Navigating Document Parsing Across Digital and Camera-Captured Documents](https://arxiv.org/abs/2608.12898) and [model weights](https://huggingface.co/StarDoc-AI/NaviDC-OCR) — primary paper and Apache-2.0 checkpoint; 1.2B parameters and 96.87 on OmniDocBench v1.6.
+39. [OvisOCR2 Technical Report](https://arxiv.org/abs/2607.13639) and [model weights](https://huggingface.co/ATH-MaaS/OvisOCR2) — primary paper and Apache-2.0 checkpoint; 0.8B parameters and 96.58 on OmniDocBench v1.6.
+40. [PaddleOCR-VL-1.6](https://arxiv.org/abs/2606.03264) and [model weights](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.6) — primary paper and Apache-2.0 checkpoint; 0.9B parameters and 96.33 on OmniDocBench v1.6.
+41. [Gemma 4 Technical Report](https://arxiv.org/abs/2607.02770) — primary source for family parameter counts and OmniDocBench v1.5 normalised edit distance.
+42. [HunyuanOCR-1.5: Making Lightweight OCR VLMs Faster and Better](https://arxiv.org/abs/2607.04884) and [model weights](https://huggingface.co/tencent/HunyuanOCR) — primary paper and downloadable checkpoint; 1B published parameters and 94.74 on OmniDocBench v1.6.
+43. [Ovis2.6-30B-A3B model weights](https://huggingface.co/ATH-MaaS/Ovis2.6-30B-A3B) and the [NaviDC-OCR common evaluation](https://arxiv.org/abs/2608.12898) — Apache-2.0 checkpoint; 30B total / 3B active parameters and 93.62 on OmniDocBench v1.6.
+44. [OmniDocBench official repository](https://github.com/opendatalab/OmniDocBench) — benchmark release notes and current evaluation tooling.

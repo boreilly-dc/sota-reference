@@ -15,11 +15,12 @@ Use these live source sites for current benchmark results and leaderboard snapsh
 
 ## Benchmark plots
 
-Tracked plot snapshots are generated with `python3 .scripts/plot_benchmarks.py --all`. The plots keep cost, tool use, and coding benchmarks separate; they do not form a universal model ranking.
+Tracked plot snapshots are generated with `python3 .scripts/plot_benchmarks.py --all`; the OCR efficiency plot is generated with `python3 .scripts/plot_ocr_performance.py`. The plots keep cost, tool use, and coding benchmarks separate; they do not form a universal model ranking.
 
 - [Cost versus intelligence](images/cost-per-intelligence.png) — Artificial Analysis Intelligence Index against a defined 1M-input + 1M-output workload cost
 - [Tool-use benchmarks](images/tool-use-benchmarks.png) — BFCL V4, τ-bench domains, and Toolathlon-Verified panels
 - [Agentic coding benchmarks](images/agentic-coding-benchmarks.png) — SWE-bench Pro, Terminal-Bench 2.1, and LiveCodeBench source observations
+- [Open-weight OCR efficiency](images/ocr-performance-vs-parameter-count.png) — Performance versus published parameter count for current OCR specialists and the Gemma 4 family
 
 ## Benchmark provenance
 

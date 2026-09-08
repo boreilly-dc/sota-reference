@@ -1,383 +1,252 @@
-# OCR in 2026: Multimodal LLMs, Specialised Models, and When Non-LLM Solutions Still Win
+# OCR in 2026: Open Models, Handwritten PDFs, and Diacritics
 
 | Field | Value |
 |-------|-------|
 | Created | 2026-06-02 |
-| Last Updated | 2026-08-31 |
-| Version | 1.2 |
+| Last Updated | 2026-09-09 |
+| Version | 2.0 |
 
 ---
 
 - [Executive Summary](#executive-summary)
-- [How to Choose: Quick Decision Guide](#how-to-choose-quick-decision-guide)
-- [The 2026 Landscape: Four Tiers](#the-2026-landscape-four-tiers)
-- [Benchmarks and How to Read Them](#benchmarks-and-how-to-read-them)
-  - [Open-Weight Performance versus Parameter Count](#open-weight-performance-versus-parameter-count)
-- [Best Multimodal LLMs for OCR](#best-multimodal-llms-for-ocr)
-  - [Frontier Proprietary VLMs and Dedicated OCR APIs](#frontier-proprietary-vlms-and-dedicated-ocr-apis)
-  - [Open-Weight Specialist Document VLMs](#open-weight-specialist-document-vlms)
-  - [Open-Source General-Purpose VLMs](#open-source-general-purpose-vlms)
-- [When a Non-LLM Solution Is the Better Choice](#when-a-non-llm-solution-is-the-better-choice)
-- [Reliability and Safety of VLM-Based OCR](#reliability-and-safety-of-vlm-based-ocr)
-- [Hybrid Pipelines and Tiered Routing](#hybrid-pipelines-and-tiered-routing)
-- [Cost Economics](#cost-economics)
-- [Hyperscaler Managed Services](#hyperscaler-managed-services)
-- [Use-Case Recommendations](#use-case-recommendations)
-- [What Changed Since January 2026](#what-changed-since-january-2026)
-- [Caveats and Areas of Uncertainty](#caveats-and-areas-of-uncertainty)
+- [Decision Guide](#decision-guide)
+- [Model Categories](#model-categories)
+- [Best Open Models by Task](#best-open-models-by-task)
+  - [Full-Page Document Parsing](#full-page-document-parsing)
+  - [Printed and Scene Text](#printed-and-scene-text)
+  - [Handwriting](#handwriting)
+- [Handwritten PDFs](#handwritten-pdfs)
+  - [Modern Handwriting](#modern-handwriting)
+  - [Historical Handwriting](#historical-handwriting)
+- [Names and Diacritics](#names-and-diacritics)
+- [Recommended Production Pipeline](#recommended-production-pipeline)
+- [Evaluation and Acceptance Tests](#evaluation-and-acceptance-tests)
+- [Managed Services](#managed-services)
+- [Risks and Limits](#risks-and-limits)
+- [September 2026 Update](#september-2026-update)
 - [References](#references)
 
 ---
 
 ## Executive Summary
 
-By August 2026, "OCR" no longer means a single tool. It spans four overlapping tiers — traditional engines, specialist document vision-language models (VLMs), open general VLMs, and frontier proprietary VLMs — and the right choice depends almost entirely on the document, the volume, and the tolerance for error.
+As of 9 September 2026, there is no single best OCR model. The correct choice depends on whether the input is printed text, a complex page, modern handwriting, or historical handwriting.
 
-The headline finding is a genuine split between two ways of measuring quality:
+- **Best open-weight page parser in the cited common comparison:** NaviDC-OCR. Its authors report 96.87 on OmniDocBench v1.6. OvisOCR2 follows at 96.58, and PaddleOCR-VL-1.6 follows at 96.33. These are full-page parsing results, not handwriting or name-accuracy results. [1][2][3]
+- **Best open model in the new broad handwriting benchmark:** Qwen3-VL-8B led the aggregate result among 13 evaluated systems. Nanonets-OCR2-3B led the tested specialist OCR group. The ranking changes by language and formula type. [4]
+- **Best fully open workflow for historical handwriting:** kraken with eScriptorium. It supports layout and line training, correction, and structured export. In the ICDAR 2026 multilingual medieval benchmark, adapted systems such as PERO and MEDUSA beat the generic kraken CATMuS baseline. [5][6][7]
+- **Best lightweight printed and scene-text default:** PP-OCRv6. Its medium and small recognisers cover 50 languages in one model and include about 200 diacritical characters. However, PaddlePaddle's own test shows lower accuracy on handwriting than on print. [8][9]
 
-- **On automated document-parsing benchmarks (OmniDocBench), small specialist models win.** The current open-weight leaders on OmniDocBench v1.6 are **NaviDC-OCR (1.2B, 96.87)**, **OvisOCR2 (0.8B, 96.58)** and **PaddleOCR-VL-1.6 (0.9B, 96.33)**. They outperform much larger general-purpose VLMs on faithful page parsing while remaining small enough for local deployment. [38][39][40]
-- **On human-preference evaluation (OCR Arena) and complex reasoning, frontier VLMs win.** Gemini 3 Flash/Pro, Claude Opus 4.6+, and GPT-5.x lead when documents demand layout judgement, instruction-following, chart reasoning, or structured JSON extraction from messy real-world inputs. [2][6]
+For scanned handwritten PDFs that contain names with diacritics, use a **two-pass HTR pipeline with human review**. Do not use a page-parser score as proof of faithful name transcription. Preserve the page image and the raw output. Store a separate NFC-normalised value. Flag every disagreement in a name, every changed diacritic, and every low-confidence grapheme for review. Never remove accents or replace a name from an authority list without recording that change. [4][10][11]
 
-For the user's core question — *is there ever a better non-LLM solution?* — the answer is **yes, frequently**, and it is one of the most important practical lessons of 2026:
+> **Recommended starting stack:** OCRmyPDF for safe PDF preparation and searchable output; kraken/eScriptorium or pero-ocr for layout, line segmentation, and trainable HTR; Qwen3-VL-8B or a fine-tuned line recogniser as the primary transcription model; and PP-OCRv6 as an independent second pass. Add NaviDC-OCR when complex page structure, tables, or camera distortion are also important.
 
-- **Cost and throughput**: self-hosted specialist/traditional OCR runs at roughly **$0.09–0.70 per 1,000 pages** versus **$1.50–70 per 1,000 pages** for cloud APIs and frontier-VLM calls — a **10–167× gap**. [9][12][13]
-- **Latency and determinism**: traditional engines process a page in **0.5–3 s on CPU**; frontier VLMs take **5–15 s via API** and are non-deterministic. [13]
-- **Localisation and reliability**: a peer-reviewed CVPR 2026 result shows a **5M-parameter PP-OCRv5** rivalling billion-parameter VLMs on standard OCR while offering **superior text localisation and far fewer hallucinations**. [10]
-- **Low-resource scripts**: for languages such as Sinhala and Tamil, specialist engines (**Surya**, **Google Document AI**) still lead frontier models. [11]
-- **VLMs hallucinate**: they can produce fluent, internally consistent, *fabricated* text that passes spell-checks and totals — a failure mode traditional OCR does not have. [10][13][14]
+## Decision Guide
 
-The practical 2026 consensus is therefore **not "VLMs replace OCR"** but **tiered, hybrid pipelines**: cheap deterministic engines handle the ~80% of clean pages, specialist VLMs handle structured/complex pages, and frontier VLMs are reserved for the hardest documents — often with a traditional-OCR cross-check to catch hallucinations. [13][15]
-
-> Related articles in this repository: [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) (running VLMs locally), [Large Document LLM Methods](../rag/large-document-llm-methods.md) (processing long documents), and [RAG & Context Engineering](../rag/rag-and-context-engineering.md) (OCR as a pipeline stage).
-
----
-
-## How to Choose: Quick Decision Guide
-
-| If you need… | Best non-LLM / specialist option | Best multimodal LLM option |
+| Workload | Open-first recommendation | Why |
 |---|---|---|
-| **Maximum document-parsing accuracy, self-hosted** | NaviDC-OCR, OvisOCR2, PaddleOCR-VL-1.6 (open weights, sub-1.5B) | — (specialists win here) |
-| **Best results on the hardest, messiest documents** | — | Gemini 3 Pro / Claude Opus 4.6+ / GPT-5.x |
-| **Lowest cost at high volume** | Self-hosted PP-OCRv5 / DeepSeek-OCR2 (~$0.09–0.20/1k pages) | — |
-| **Lowest latency / real-time** | PP-OCRv5, Tesseract, Surya (CPU/GPU, <1–3 s) | — |
-| **Clean printed text / scanned archives** | Tesseract, PP-OCRv5 (98–99% on clean 300 dpi) | — (overkill) |
-| **Complex tables, forms, nested structure → JSON** | PaddleOCR-VL, Granite Docling | Claude Opus 4.6+, Gemini 3 Pro |
-| **Math / LaTeX** | GOT-OCR 2.0, dots.ocr | Gemini 3 Flash, GPT-5.x |
-| **Handwriting** | (mixed; specialist ICR) | Gemini 3.1 Pro, Mistral OCR 3 |
-| **Low-resource / non-Latin scripts** | Surya, Google Document AI | Qwen3-VL, Gemini 3 Ultra |
-| **Edge / mobile / CPU-only** | PP-OCRv5 mobile (3.5 MB), Granite Docling (258M) | — |
-| **Turn-key managed API** | Mistral OCR 3 ($1–2/1k) | AWS Textract / Azure DI / Google Document AI |
-| **Regulated / compliance (SOC2, HIPAA, FedRAMP)** | — | Hyperscaler managed services |
+| Printed multilingual scans | PP-OCRv6; Tesseract as a deterministic second pass | Small, local, language-aware, and suitable for text boxes |
+| Complex PDF pages | NaviDC-OCR; OvisOCR2 or PaddleOCR-VL-1.6 as alternatives | Best current open-weight page-parsing results in the cited common comparison |
+| Modern handwritten pages | Qwen3-VL-8B plus a fine-tuned line recogniser | Best aggregate result in OmniHandwritingOCR, with a separate model to detect generative errors |
+| Historical Latin-script manuscripts | kraken + eScriptorium or pero-ocr; MEDUSA for compatible medieval conventions | Trainable HTR and human correction are more important than zero-shot page parsing |
+| Very long documents | Unlimited-OCR as an experimental option | Constant KV-cache design and multi-page generation |
+| Fast GPU batch parsing | Jina-OCR-v1 after availability and licence checks | The paper reports 2.57 pages/s, but its weight link was unavailable when checked |
+| Exact names with diacritics | Two independent recognisers plus review | One wrong grapheme can change identity; no current benchmark proves a universal winner |
 
----
+## Model Categories
 
-## The 2026 Landscape: Four Tiers
+OCR now has four main categories. Do not compare their scores as if they measured the same task.
 
-OCR in 2026 is best understood as a progression from cheap-and-narrow to expensive-and-general. The field describes this as the shift from **"OCR-1.0"** (modular *detect → recognise → post-process* pipelines) to **"OCR-2.0"** (end-to-end VLMs that emit structured Markdown/JSON directly). [2]
+| Category | Input and output | Strength | Main weakness |
+|---|---|---|---|
+| Traditional OCR | Page or crop to text and boxes | Fast, deterministic, compact | Weak on cursive and complex reading order |
+| Handwritten text recognition (HTR) | Usually a line crop to exact text | Adaptable to a writer, script, period, and transcription policy | Needs segmentation and labelled data |
+| Specialist document VLM | Page image to Markdown, HTML, LaTeX, or structure | Strong page layout, tables, formulas, and reading order | Can omit or invent content; page score does not prove HTR quality |
+| General VLM | Image plus instruction to text or structured data | Handles OCR and reasoning in one call | More expensive and more likely to paraphrase or correct text |
 
-| Tier | What it is | Examples | Speed | Cost/1k pages | Best at |
-|---|---|---|---|---|---|
-| **1. Traditional engines** | Detector + recogniser, no LLM | Tesseract, PP-OCRv5, EasyOCR, Surya, docTR | 0.5–3 s/page (CPU) | ~$0.09–0.20 (self-host) | Clean printed text, high volume, determinism, edge |
-| **2. Specialist document VLMs** | Small VLMs fine-tuned for document parsing | NaviDC-OCR, OvisOCR2, PaddleOCR-VL, GLM-OCR, MinerU2.5, HunyuanOCR, DeepSeek-OCR2 | 3–8 s/page (GPU) | ~$0.09–0.70 (self-host) | PDF→Markdown, tables, formulas, reading order |
-| **3. Open general VLMs** | Large general multimodal models | Qwen3-VL, InternVL3, Nemotron Nano V2 VL | 3–10 s/page | self-host / API | Documents needing reasoning + OCR together |
-| **4. Frontier proprietary VLMs** | Closed flagship multimodal models + dedicated OCR APIs | Gemini 3.x, GPT-5.x, Claude Opus 4.6–4.8, Mistral OCR 3 | 5–15 s/page (API) | $1.50–70 | The messiest, hardest, judgement-heavy documents |
+“Open source” and “open weight” are not synonyms. Apache-2.0 and MIT releases such as NaviDC-OCR, OvisOCR2, PaddleOCR-VL-1.6, PP-OCRv6, kraken, eScriptorium, and Unlimited-OCR have clear open licences. Some downloadable models do not state a licence. Review their terms before production use.
 
-The crucial 2026 insight: **moving up a tier does not monotonically increase accuracy.** A 0.8–1.2B Tier-2 specialist now leads pure document parsing because the task rewards precise localisation and faithful transcription rather than broad world knowledge. [38][39] You move up a tier for *judgement* (ambiguous layouts, reasoning, instruction-following), not for raw transcription accuracy.
+## Best Open Models by Task
 
----
+### Full-Page Document Parsing
 
-## Benchmarks and How to Read Them
-
-Benchmark selection drives the conclusion, so read leaderboards with three rules in mind. BenchmarkList is now used as a provenance index for selected OCRBench observations: it records stable subject identities, the 13 July 2026 snapshot, metric direction, and links to the underlying Hugging Face leaderboard. It does not independently rerun OCRBench.
-
-The verified indexed OCRBench snapshot lists MiniCPM-V 2.6 at 852 points, Granite Vision 3.3 2B at 824, and InternVL2-1B at 779. These are model-variant rows from the same source and should not be mixed with OCRBench v2 or OmniDocBench scores.
-
-Read leaderboards with three rules in mind:
-
-1. **Name *and* version matter.** OmniDocBench v1.0, v1.5, v1.6 and the newer v1.7 tooling are **not score-comparable** (v1.6 typically runs ~0.5–1 point higher for the same model). OCRBench v1 (scored out of 1.0) and OCRBench v2 (out of 100) are completely different scales. [9][3]
-2. **Automated vs human-preference disagree.** Automated parsing benchmarks reward faithful transcription (specialists win); human-preference arenas reward usable, well-structured output (frontier VLMs win). Cite both lenses, not one. [2][7]
-3. **Watch for conflicts of interest.** Some leaderboards are operated by vendors who also rank their own models at the top. [4]
-
-### Open-weight performance versus parameter count
+| Model | Size and licence | Published result | Best fit | Important limit |
+|---|---|---|---|---|
+| **NaviDC-OCR** | ~1.2B, Apache-2.0 | 96.87 on OmniDocBench v1.6 | Best overall result in the cited common open-weight page-parsing table; strong on distorted and camera-captured documents | Author-reported comparison; not a handwriting-specific test [1][12] |
+| **OvisOCR2** | 0.8B, Apache-2.0 | 96.58 on OmniDocBench v1.6; 75.06 Avg3 on PureDocBench | Compact image-to-Markdown parsing with text, formulas, tables, and visual regions | The model card requires manual verification for critical uses [2][13] |
+| **PaddleOCR-VL-1.6** | 0.9B, Apache-2.0 | 96.33 on OmniDocBench v1.6 | Mature PaddleOCR integration; page parsing and element recognition | Page rank does not prove handwriting fidelity [3][14] |
+| **GLM-OCR** | 0.9B published architecture; MIT | 95.22 in the NaviDC-OCR v1.6 table | Compact local parser | Keep v1.5 and v1.6 results separate [1] |
+| **Unlimited-OCR** | 3B MoE; MIT | Long-output design | Long documents where decoder memory growth is the main constraint | It is not the top accuracy model [15] |
+| **Jina-OCR-v1** | 3B MoE; licence not confirmed | 91.14 on OmniDocBench v1.6; 83.4 on olmOCR-Bench; 2.57 pages/s | Throughput on low-budget GPUs | The paper announced public weights, but its Hugging Face URL was unavailable on 9 September [16] |
 
 ![Open-weight OCR performance versus parameter count](../images/ocr-performance-vs-parameter-count.png)
 
-The tracked figure applies two hard filters: publicly downloadable weights and fewer than 50B published total parameters. **NaviDC-OCR is the current best-in-class model in the comparable OmniDocBench v1.6 panel at 96.87**, followed by OvisOCR2 at 96.58 and PaddleOCR-VL-1.6 at 96.33. All three use fewer than 1.5B parameters. The 30B-total/3B-active general-purpose Ovis2.6-30B-A3B reaches 93.62 in the same evaluation and provides a like-for-like scale comparison. [38][39][40][43]
+The tracked figure uses one third-party OmniDocBench v1.5 overall-score table. It reports GLM-OCR at 69.23, Gemma 4 E4B IT at 59.7, and Gemma 4 E2B IT at 43.3. It does not mix benchmark versions or metrics. These exact cross-model values are **[unverified — secondary source only]**. [17]
 
-The Gemma 4 panel answers a different question: how OCR quality scales inside one general-purpose open-weight family. Google reports **normalised edit distance on OmniDocBench v1.5, where lower is better**: 0.290 (E2B), 0.181 (E4B), 0.164 (12B), 0.149 (26B-A4B), and 0.131 (31B). These values show consistent scaling, but they cannot be compared numerically with the v1.6 overall scores. The chart uses total parameters on the x-axis. Gemma 4 E2B and E4B have 2.3B and 4.5B effective parameters but 5B and 8B total parameters; the 26B mixture-of-experts model activates 3.8B parameters per token. [41]
+### Printed and Scene Text
 
-The benchmark values are vendor- or author-reported. They show efficiency on a specific parsing task, not a universal model ranking. They do not measure latency, deployment cost, hallucination rate, or general visual reasoning. OmniDocBench announced v1.7 tooling and a Qianfan-OCR leaderboard in April 2026, but the latest common cohort available in the cited model papers remains v1.6; this chart therefore uses v1.6 rather than mixing partial v1.7 results. [44]
+**PP-OCRv6** is the open-source default for fast printed OCR. It has tiny, small, and medium tiers from 1.5M to 34.5M parameters. The medium and small recognisers support 50 languages in one model. The recognition dictionary adds about 200 diacritical characters and can be extended. PaddlePaddle reports 83.2% weighted recognition accuracy for the medium model on its in-house test. It also reports 3.9 times faster CPU inference for the tiny model than PP-OCRv5 mobile. Treat these vendor results as deployment guidance, not as a universal ranking. [8][9]
 
-### The major benchmarks (August 2026)
+**Tesseract 5** remains useful as a deterministic baseline and second opinion. It is Apache-2.0, runs on CPU, and has official data for more than 100 languages and 35 scripts. It is best on clean print, not difficult handwriting. [18]
 
-| Benchmark | What it measures | Current top entries | Notes |
-|---|---|---|---|
-| **OmniDocBench v1.6** | Full-page parsing: text, formulas, tables, reading order | NaviDC-OCR **96.87**, OvisOCR2 **96.58**, PaddleOCR-VL-1.6 **96.33** | Current open-weight leaders are all sub-1.5B specialists [38][39][40] |
-| **OmniDocBench v1.5** | Earlier protocol; Gemma reports normalised edit distance | Gemma 4: 31B **0.131**, 26B-A4B **0.149**, 12B **0.164**, E4B **0.181**, E2B **0.290** (lower is better) | Not comparable to v1.6 overall scores [41] |
-| **OCRBench v2** | 10,000 human-verified QA pairs, 31 scenarios, bilingual | Qwen2.5-VL-72B **63.7/100** (Overall-CN) | Hard benchmark; most models score <50/100 [3][5] |
-| **olmOCR-bench** | PDF-linearisation quality (1,403 pages) | LightOnOCR-2-1B **83.2**, Chandra **83.1**, olmOCR v0.4 **82.4** | #1 disputed across evaluators (see below) [4][6] |
-| **OCR Arena** | Live human-preference voting | Gemini 3 Flash, then Gemini 3 Pro, Claude Opus 4.6, GPT-5.2 | Frontier VLMs lead human preference [2] |
-| **Real5-OmniDocBench** | Real-world distortion stress test | PaddleOCR-VL-1.5 **92.05** | New 2026 robustness benchmark [9] |
+### Handwriting
 
-**Contested leaderboard:** the olmOCR-bench "#1" claim varies by evaluator and version — LightOnOCR-2-1B at 83.2 (VoidSource), Nanonets OCR-3 at 87.4 (the Nanonets-operated IDP Leaderboard), Unsiloed at 88.0, Interfaze at 85.7. Treat any single "global #1" claim with caution. [4][6]
+**Qwen3-VL-8B** is the strongest overall open model in OmniHandwritingOCR. It reached 72.16 on the benchmark's aggregate accuracy measure, with 30.94 CER and 32.94 WER. Its model card states OCR support for 32 languages. It is a general VLM, so it can also correct or invent plausible text. [4][19]
 
-**Where VLMs measurably underperform specialists/traditional OCR on benchmarks:**
+**Nanonets-OCR2-3B** is the strongest specialist OCR model tested by OmniHandwritingOCR. It reached 65.46 aggregate accuracy, 42.27 CER, and 42.77 WER. Its model card states multilingual handwriting training, but it does not declare a licence. Treat it as downloadable open weights with unclear reuse terms, not as open-source software. [4][20]
 
-- **Tables** remain the hardest subtask for everyone (top scorers ~53–89% depending on the test); some general VLMs collapse here (e.g. PaddleOCR-VL scores ~85.7 on the ArXiv subtask but only ~37.8 on Tables in one evaluation). [4]
-- **ArXiv/scientific text**: some frontier flash-tier models scored poorly on the ArXiv subtask of olmOCR-bench versus dedicated parsers. [4]
-- **Reading order** on complex multi-column layouts needed a dedicated architectural fix — DeepSeek-OCR 2's *Visual Causal Flow* cut reading-order errors ~33%. [9]
+**kraken**, **pero-ocr**, **MEDUSA**, and **TrOCR** are line-oriented HTR choices. They need page or line segmentation. This can improve auditability because the system retains geometry and exposes each uncertain line for review. The stock TrOCR handwritten checkpoint is trained on IAM English line images. It is a baseline, not a multilingual PDF solution. [5][6][7][21][22][23]
 
----
+## Handwritten PDFs
 
-## Best Multimodal LLMs for OCR
+### Modern Handwriting
 
-### Frontier Proprietary VLMs and Dedicated OCR APIs
+OmniHandwritingOCR contains 77,572 labelled images across English and Chinese handwriting and handwritten formulas. Qwen3-VL-8B led its aggregate result. Nanonets-OCR2-3B led the specialist OCR group. All systems remained well short of faithful transcription. [4]
 
-These lead on the hardest, judgement-heavy documents and on human-preference evaluation. They are the most capable generalists but the most expensive and slowest, and they hallucinate (see [reliability](#reliability-and-safety-of-vlm-based-ocr)).
+The benchmark also found a critical risk for names. Generative models can correct a writer's mistake, insert plausible content, omit difficult symbols, or add explanatory formatting. A fluent result is not necessarily a faithful result. [4]
 
-| Model | Released | Context | OCR positioning | Indicative cost |
-|---|---|---|---|---|
-| **Gemini 3 Pro / 3.1 Pro** | Dec 2025 / 2026 | 1M tokens | Best frontier all-rounder for volume + handwriting; ~90.3 OmniDocBench v1.5 | ~$1.25/M input tokens [1] |
-| **Gemini 3 Flash / 3.5 Flash** | 2026 (I/O May 2026) | 1M tokens | Frontier-grade OCR at flash latency/price; tops OCR Arena | ~$0.50–1.50/M input [2][6] |
-| **Gemini 3.1 Ultra** | Mar 2026 | 2M tokens | Largest context; multilingual/non-English OCR | not confirmed |
-| **GPT-5.4 / GPT-5.5** | Mar / ~May 2026 | ~1–1.1M tokens | Single-pass dense scans, handwritten forms, diagrams, charts; ~85.8 OmniDocBench | from ~$2.50/M input [6] |
-| **Claude Opus 4.6 → 4.7 → 4.8** | Feb 5 / Apr 16 / May 28 2026 | 200K tokens | Best at complex *structured extraction* (nested tables, forms, legal/medical) and instruction-following | ~$15/M input; ~$0.025–0.035/page vision [1][6] |
-| **Mistral OCR 3** (`mistral-ocr-2512`) | Dec 2025 | — | Dedicated OCR API; 74% win-rate over OCR 2; ~96.6% tables, ~88.9% handwriting | **$2/1k pages ($1 batch)** [6][16][17] |
+PP-OCRv6 has explicit multilingual and diacritic support, but it is stronger on print. Its own test reports 67.8% recognition accuracy for English handwriting and 94.1% for printed English. Use it as a detector, a printed-text recogniser, or a second opinion. Do not use this result as evidence that it is the best HTR model. [9]
 
-Notes:
-- **Mistral OCR 3** is the standout *dedicated* (non-chat) OCR API: cheap, fast, strong on tables/handwriting, and the natural managed default when you don't need a hyperscaler's compliance story. It is SaaS-only with a self-hosting option for data residency, but lacks published SOC2/HIPAA/FedRAMP documentation. No newer Mistral OCR version was found as of June 2026. [16][17][13]
-- Claims of dramatic vision jumps in the newest Claude releases (e.g. "98.5% visual acuity" for Opus 4.7) come from analytical blogs using **non-standard metrics** and should be read as directional, not benchmark-grade. [6]
-- OCR-specific benchmarks for the very newest releases (Claude Opus 4.8, GPT-5.5) were **not yet published** at the time of writing.
+Start with a representative test set from the real collection. Include each writer, form type, pen colour, scan condition, target language, and common diacritic. Compare:
 
-### Open-Weight Specialist Document VLMs
+1. Qwen3-VL-8B for page or crop transcription.
+2. A line-level TrOCR model fine-tuned on the target collection.
+3. PP-OCRv6 as a detector and independent recogniser.
+4. Nanonets-OCR2-3B only after a licence review.
 
-This is where open weights are strongest in 2026: small, cheap, self-hostable models that **top the automated document-parsing leaderboards**. Open-weight-first deployments should start here.
+Use greedy decoding or temperature zero where the model supports it. Prompt generative models to transcribe exactly and to mark uncertain text. Do not ask them to correct spelling. A single-pass VLM is acceptable for discovery and search. It is not sufficient for authoritative identity fields.
 
-| Model | Params | Licence | Released | Strengths |
-|---|---|---|---|---|
-| **NaviDC-OCR** | ~1.2B | Apache-2.0 | Aug 2026 | **Current #1 OmniDocBench v1.6 (96.87)**; unified digital and camera-captured document parsing [38] |
-| **OvisOCR2** | 0.8B | Apache-2.0 | Jul 2026 | **96.58 v1.6**; end-to-end page image→Markdown; 75.06 PureDocBench Avg3 [39] |
-| **PaddleOCR-VL-1.6** | 0.9B | Apache-2.0 | May 2026 | **96.33 v1.6**; strong tables, formulas and physical-distortion robustness [40] |
-| **MinerU2.5-Pro** | 1.2B | Apache-2.0 | Apr 2026 | 95.75 in the later common v1.6 comparison (95.69 in its own paper); PDF/Office→Markdown/JSON [7][38] |
-| **GLM-OCR** (Z.ai) | 0.9B published architecture (1.33B checkpoint) | MIT | Feb 2026 | 95.22 v1.6; compact two-stage document understanding [12][38] |
-| **HunyuanOCR-1.5** | 1B published (1.12B checkpoint) | Tencent Hunyuan Community Licence | Jul 2026 | 94.74 v1.6; end-to-end OCR with accelerated long-output decoding [42] |
-| **DeepSeek-OCR / OCR2** | 3B | MIT | Oct 2025 / Jan 2026 | Contextual optical compression (7–20× fewer vision tokens); **200k+ pages/day on one A100**; Visual Causal Flow reading order [2][19][9] |
-| **dots.ocr / dots.mocr** | 1.7B | MIT code + custom weights | Jul 2025 / Mar 2026 | Unified layout+text+tables+formulas+reading order; **100+ languages** [2][20] |
-| **olmOCR 2** (AllenAI) | 7B (Qwen2.5-VL) | Apache-2.0 | Jul 2025 | Fully open (weights+data+code); **<$200/M pages**; PDF linearisation [21] |
-| **GOT-OCR 2.0** | 580M | Research licence | Sep 2024 | Runs on ~4 GB VRAM; Markdown/LaTeX/structured notation [22] |
-| **Nanonets-OCR-3 / -s** | 3B | Open weights | 2025–26 | Markdown with LaTeX, tables, signatures; ships confidence scores + bounding boxes [4] |
-| **NVIDIA Nemotron Nano (V2) VL** | 8B / 12B | NVIDIA open licence | Jun / Nov 2025 | Topped OCRBench v2 at release; hybrid Mamba-Transformer; single-GPU [23][24] |
-| **IBM Granite Docling** | 258M | Open source | 2025–26 | Compact; ~97.9% table accuracy; the open core of IBM's Docling stack [25] |
+### Historical Handwriting
 
-### Open-Source General-Purpose VLMs
+Use **kraken with eScriptorium** when you can annotate and correct a representative sample. kraken supports trainable layout, reading order, character recognition, word boxes, and character cuts. eScriptorium adds a browser workflow for segmentation, correction, training, and ALTO or PAGE XML export. This pair is the most practical fully open workflow in this survey for collection-specific HTR. [5][21]
 
-General multimodal models that do OCR well as one capability among many — choose these when the task needs **reasoning *and* OCR together** (e.g. "read this chart and explain the trend"). See the companion article [Local Multimodal Vision-Language Models](local-multimodal-vision-language-models.md) for local-deployment detail.
+The ICDAR 2026 CMMHWR results show why adaptation matters. On multilingual French, Latin, and Spanish manuscripts, PERO achieved 7.71% CER, compared with 9.30% for the generic kraken CATMuS baseline. MEDUSA led the Occitan task at 5.01% CER. PERO led the Czech transfer task at 10.27% CER. MEDUSA weights are under CC-BY-4.0, but they are line-level models for medieval transcription conventions. They are not a default for modern handwriting. [5][7]
 
-- **Gemma 4** (E2B, E4B, 12B, 26B-A4B, 31B; Apache-2.0): Google's full open-weight family is below the 50B cutoff. Its OmniDocBench v1.5 normalised edit distance improves steadily from 0.290 at E2B to 0.131 at 31B. The E2B and E4B checkpoints contain 5B and 8B total parameters despite their effective-parameter names; 26B-A4B activates 3.8B of 26B total parameters. [41]
-- **Qwen3-VL** (2B–235B, Apache-2.0): a strong open general VLM family for OCR; native 256K context, 32 languages, robust in low light/blur. Apply the article's <50B comparison only to qualifying variants. [2][26]
-- **InternVL3 / InternVL3.5** (1B–241B, MIT): strong native-multimodal generalists, competitive on document tasks. Apply the same parameter cutoff per checkpoint. [27]
-- Hardware: sub-1.5B specialists and Gemma 4 E2B/E4B target edge or modest-GPU deployment; Gemma 4 12B targets 16 GB-class hardware; the 26B-A4B and 31B models require workstation-class memory. [41]
+**pero-ocr** is a useful alternative page pipeline. It supplies paragraph and line detection, transcription, language-model refinement, line crops, and PAGE XML or ALTO XML output. [23]
 
----
+## Names and Diacritics
 
-## When a Non-LLM Solution Is the Better Choice
+A name can be wrong when only one visible character is wrong. Word accuracy and a good-looking page are therefore insufficient.
 
-This is the section to read if your instinct is "just send everything to a frontier VLM." In 2026 that is often the *wrong* default. There are five situations where a non-LLM or specialist tool is clearly better.
+Apply these controls:
 
-**1. High volume and tight budgets.** The cost gap is enormous and decisive. Self-hosted traditional/specialist OCR runs at roughly **$0.09–0.70 per 1,000 pages**; frontier-VLM API calls run **$1.50–15+** and structured cloud extraction up to **$70**. At 10M pages/month, that is **~$200–1,000 self-hosted vs $20,000–25,000+ on cloud APIs** — a 40–125× difference. [9][13][28]
+- **Keep three values:** the source crop, raw model text, and reviewed text.
+- **Normalise safely:** store an NFC-normalised value for comparison and indexing. Keep the raw string unchanged. Do not use NFKD plus mark removal on the authoritative field. Unicode normalisation makes canonically equivalent sequences comparable; it does not justify accent removal. [10]
+- **Score grapheme clusters:** treat a visible letter plus combining mark as one user-perceived character. OCR-D defines OCR characters as grapheme clusters represented in NFC. [11]
+- **Use target-language alphabets:** confirm that the recogniser contains each expected character. PP-OCRv6 adds about 200 diacritical characters and allows dictionary extension. [9]
+- **Compare independent outputs:** flag a name if the HTR and second-pass result disagree after NFC normalisation.
+- **Use authority lists as suggestions:** show likely matches from a roster or gazetteer, but do not overwrite the transcription. Record the proposed value, source, reviewer, and decision.
+- **Require review:** send each low-confidence name, out-of-vocabulary grapheme, diacritic disagreement, and probable proper noun to a human reviewer.
+- **Evaluate actual fields:** report name exact-match rate, diacritic error rate, grapheme CER, omission rate, and review rate. Keep page-level metrics as secondary measures.
 
-**2. Latency-sensitive or real-time work.** Traditional engines return a page in **0.5–3 s on CPU**; specialist VLMs take **3–8 s on a GPU**; frontier VLMs take **5–15 s via API**, with variable tail latency. If a human is waiting or you are in an interactive loop, the deterministic engine wins. [13]
+## Recommended Production Pipeline
 
-**3. Clean, high-volume printed text.** **Tesseract** still hits **98–99% accuracy on clean 300 dpi printed documents** across 100+ languages at zero inference cost on CPU. A frontier VLM adds cost, latency, and hallucination risk for no accuracy gain. [13]
+Use the following open-first pipeline for scanned handwritten PDFs.
 
-**4. Precise localisation, determinism, and edge deployment.** A peer-reviewed CVPR 2026 result is the clearest statement of the case: a **5M-parameter PP-OCRv5** rivals billion-parameter VLMs on standard OCR benchmarks while offering **superior bounding-box localisation and demonstrably fewer hallucinations**, and compresses to a **3.5 MB mobile build**. VLMs, by design, forgo the precise text localisation that pipeline users rely on. [10]
+1. **Preserve the source.** Keep the original PDF, its checksum, and immutable page images. Extract an existing text layer, but do not assume that it is correct.
+2. **Rasterise for recognition.** Use a consistent page resolution. Keep colour or greyscale masters. Make separate enhanced derivatives for rotation, deskew, contrast, and noise removal.
+3. **Segment before HTR.** Detect regions, reading order, and text lines with kraken, pero-ocr, or a compatible layout model. Keep bounding polygons in ALTO or PAGE XML. [6][23]
+4. **Run a primary recogniser.** For modern mixed handwriting, test Qwen3-VL-8B and a fine-tuned line model. For historical collections, start with kraken/eScriptorium and fine-tune it on corrected lines.
+5. **Run an independent second pass.** Use a model with a different architecture, such as PP-OCRv6 or TrOCR. Do not let the second model see the first output.
+6. **Compare at grapheme level.** Convert copies to NFC, align the outputs, and flag substitutions, insertions, deletions, and diacritic changes. Keep both raw outputs.
+7. **Detect names conservatively.** Use document fields, dictionaries, or named-entity detection to identify likely names. Do not use these tools to silently rewrite OCR output.
+8. **Review risk fields.** Require a person to review uncertain names, dates, identifiers, signatures, and monetary values. Show the source crop, both outputs, confidence or disagreement, and the suggested authority match.
+9. **Create outputs.** Store reviewed Unicode text and geometry in ALTO or PAGE XML. Build a searchable derivative PDF. OCRmyPDF can preserve image resolution, apply deskew or cleanup, use multiple Tesseract language packs, and produce validated PDF/A. It is a PDF wrapper and output tool, not the main HTR model. [24]
+10. **Retain provenance.** Record the model and checkpoint, prompt, decoding settings, preprocessing operations, page coordinates, raw output, reviewer changes, and software versions.
 
-**5. Low-resource and non-Latin scripts.** For Sinhala, **Surya** leads (WER 2.61%); for Tamil, **Google Document AI** leads (CER 0.78%); Tesseract and EasyOCR are significantly weaker on these scripts. Latin-script OCR is essentially solved, but low-resource scripts remain an open problem where specialist engines beat frontier generalists. [11]
+## Evaluation and Acceptance Tests
 
-### The leading non-LLM / specialist engines
+Build a held-out test set before you select a model. It must represent the target collection. Include repeated examples of each important name form and diacritic. Keep samples from the same writer or document in one split to prevent leakage.
 
-| Engine | Type | Strengths | Notes |
-|---|---|---|---|
-| **PP-OCRv5 (PaddleOCR)** | Detector + recogniser | 106+ languages, 3.5 MB mobile build, top accuracy among traditional engines, GPU-optional | Best traditional default; CVPR 2026 5M variant rivals VLMs [10][13] |
-| **Surya** | Detection + layout + recognition | 90+ languages, layout analysis, reading order, table recognition, LaTeX; the go-to layout stage in hybrid pipelines | Open source [11][29] |
-| **Tesseract** | Recogniser | 100+ languages, CPU-only, zero inference cost, fully deterministic | Weak on handwriting/complex layouts [13] |
-| **docTR** | Det+rec toolkit | Modular DBNet/CRNN etc., ONNX deployment, production-friendly | MIT |
-| **EasyOCR** | Recogniser | Quick Python integration | Lower accuracy than PaddleOCR |
+Report:
 
-### A note on Mathpix and math OCR
+- grapheme-cluster CER after NFC normalisation;
+- exact match for complete personal names;
+- diacritic precision and recall;
+- omission and insertion rates;
+- page and line segmentation recall;
+- percentage of fields sent to review;
+- accuracy after review; and
+- throughput on the target hardware.
 
-Math was historically a niche where the specialist tool (**Mathpix**) was unbeatable. That moat has eroded: an independent 2026 benchmark found **Gemini 3 Flash both cheaper (~$0.004 vs $0.025/page) and more accurate** than Mathpix on multi-column mathematical content, with Mathpix making critical semantic errors. The same benchmark, however, is a cautionary tale about VLMs: **Grok 4.1 Fast completely fabricated content — only 1–4% similarity to the source page** while producing plausible-looking LaTeX. The lesson is not "VLMs always win math" but "evaluate per model, and verify output." [14]
+Set acceptance thresholds from the business impact. For identity, legal, archival, or clinical use, no uncertain name must pass without review. This control is necessary because generative OCR can produce plausible unsupported text. [4]
 
----
+Use a fixed evaluation contract:
 
-## Reliability and Safety of VLM-Based OCR
+- keep punctuation and case rules explicit;
+- state whether spaces count;
+- normalise both reference and prediction to NFC for comparison;
+- do not strip diacritics from the primary score;
+- score names separately from body text;
+- report each language and script separately; and
+- publish the model revision, prompt, image resolution, and decoding settings.
 
-The single biggest reason *not* to default to a VLM is reliability. Traditional OCR fails *visibly* (garbled characters, low confidence scores); VLM OCR can fail *invisibly*.
+## Managed Services
 
-- **Hallucination / fabrication.** VLMs can emit contextually plausible but factually wrong text. The dangerous variant is *internally consistent* fabrication — e.g. altering a line item *and* adjusting the total to match — which passes spell-checks and arithmetic checks. Traditional OCR errors are statistically random and easy to flag; VLM errors are coherent and self-consistent, so they are harder to detect. [10][13]
-- **Complete fabrication under stress.** On degraded or unusual inputs, some models generate output with near-zero relationship to the source (the Grok 4.1 Fast case: 1–4% similarity). [14]
-- **Silent omission.** VLMs can skip content (a paragraph, a column, a page) without any error signal. Formal measurement of omission rates is still sparse as of mid-2026. [13]
-- **Non-determinism.** The same page can yield different transcriptions across runs at temperature > 0 — a problem for audit and reproducibility.
-- **Visual prompt injection.** Because a VLM *reads and may act on* text inside an image, instructions embedded in a document (a "screenshot jailbreak") can bypass text-only safety filters. This is an attack surface that traditional OCR simply does not have, and it matters for any pipeline that processes untrusted documents. [30] See also [Preventing Topic Hijacking](../evaluation/chatbot-topic-hijacking-prevention.md).
+Use a managed service when procurement, data residency, support, or an existing cloud platform matters more than model control. Test the same name-and-diacritic set before selection.
 
-**Mitigation patterns (2026 best practice):**
-
-1. **Traditional cross-check.** Run a cheap deterministic engine alongside the VLM; agreement between two independent methods is a strong correctness signal because their error modes differ. [13][15]
-2. **Confidence routing.** Use models/engines that emit confidence scores and bounding boxes (e.g. PaddleOCR, Nanonets-OCR-3) and escalate only low-confidence regions.
-3. **Sequence alignment.** Align VLM output against traditional-OCR output (e.g. Needleman–Wunsch) to localise and correct divergences. [15]
-4. **Treat document text as untrusted data** for injection-hardening; never let extracted text become executable instructions to a downstream agent. [30]
-
----
-
-## Hybrid Pipelines and Tiered Routing
-
-The dominant production architecture in 2026 is a **confidence-based tiered fallback**, not a single model. A representative pipeline: [13][15]
-
-- **Tier 0 — Embedded text extraction.** If the PDF already has a text layer, extract it directly (free, perfect). 
-- **Tier 1 — Traditional engine** (PaddleOCR / Tesseract) handles the ~80% of clean pages at lowest cost and latency.
-- **Tier 2 — Specialist document VLM** (dots.ocr / PaddleOCR-VL / Qwen3-VL) for pages where Tier-1 confidence is moderate (~0.70–0.90) or structure is complex.
-- **Tier 3 — Frontier VLM** (Gemini 3 / GPT-5.x / Claude Opus 4.6+) only for the hardest, lowest-confidence pages.
-
-A common open-source variant pairs **Surya for layout/reading-order detection** with a **local VLM (olmOCR / GLM-OCR / Qwen3-VL) for recognition**, plus a **sequence-alignment correction step** against traditional OCR — giving fully offline, hallucination-checked, searchable output on consumer hardware. [15]
-
----
-
-## Cost Economics
-
-Cost per 1,000 pages spans nearly three orders of magnitude. This is the dominant driver of architecture decisions at scale.
-
-| Solution | Cost / 1,000 pages | Notes |
+| Hyperscaler | Service | Position for this use case |
 |---|---|---|
-| Self-hosted traditional (CPU) | **~$0.09–0.20** | Cheapest; clean text [13][28] |
-| Self-hosted open VLM (A100 spot) | **~$0.10** | ~$1,000/mo for 10M pages [28] |
-| Self-hosted open VLM (H100) | **~$0.14–0.70** | olmOCR ~$0.19; vs GPT-4o-class API ~$12.48 [12][13] |
-| **Mistral OCR 3** | **$1–2** | $1 batch; cheapest managed API [16][17] |
-| AWS Textract — basic text | **$1.50** ($0.60 >1M) | [13][28] |
-| Azure DI — Read (basic OCR) | **~$1.50** | [31] |
-| Google Document AI — Enterprise OCR | **$1.50** ($0.60 >5M) | [32] |
-| Google Document AI — Form Parser / Custom | **$30** ($20 >1M) | generative custom extractor priced same [32] |
-| AWS Textract — Forms+Tables+Queries | **$70** ($55 >1M) | structured extraction [33] |
+| AWS | Amazon Textract | Supports handwriting only in English. Printed OCR supports English, French, German, Italian, Portuguese, and Spanish and lists many common Latin diacritics. Do not use it as the only engine for multilingual handwritten names. [25] |
+| Azure | Azure AI Document Intelligence | Version 4.0 lists handwriting support for 12 languages, including English, French, German, Italian, Portuguese, and Spanish. Validate the target names. [26] |
+| GCP | Cloud Vision and Document AI | Cloud Vision supports Latin, Japanese, and Korean handwriting, accepts language hints, and lists several other handwriting scripts as experimental. Validate the exact script and output normalisation. [27] |
+| IBM | Docling for watsonx / open Docling | The open Docling stack converts PDFs and images to structured Markdown and JSON. It is not a dedicated HTR leader, so add a handwriting recogniser for difficult pages. [28] |
+| Oracle | OCI Document Understanding | Returns words, lines, bounding polygons, and confidence, but the documented OCR limit is English. It is not a primary choice for multilingual handwritten names. [29] |
 
-**Self-host vs cloud break-even** (community estimate): roughly **50,000 pages/month** for basic OCR, but only **~5,000 pages/month** for tables/forms extraction — because cloud structured-extraction pricing ($30–70/1k) is so much higher than basic OCR. Self-hosting estimates assume GPU spot pricing and exclude engineering/maintenance overhead, so true TCO is higher. [28]
+Do not select a service from its language count alone. Check character coverage, handwriting support, region availability, confidence semantics, output geometry, and data-handling terms.
 
-The market has visibly **bifurcated**: a *commodity* tier (Mistral OCR 3 at $1–2/1k; open-source at $0.09–0.70/1k) competing purely on price, and an *enterprise* tier (hyperscalers at $1.50–70/1k) competing on compliance, SLAs, custom training, and ecosystem integration. [17]
+## Risks and Limits
 
----
+- **Hallucinated correction:** a generative model can replace unusual spelling or a rare name with a plausible common form.
+- **Diacritic loss:** one missed mark can change an identity even when page accuracy is high.
+- **Silent omission:** a model can skip a word, line, or marginal note.
+- **Benchmark mismatch:** printed-page, handwriting, and historical-manuscript scores are not interchangeable.
+- **Licence ambiguity:** downloadable weights do not always have an open-source licence.
+- **Untraceable post-correction:** a language model or authority list can hide the original OCR error.
+- **Source bias:** most 2026 page-parsing comparisons are published by model authors. Reproduce tests on the target documents before adoption.
+- **No direct diacritic-name leaderboard:** no credible public benchmark found in this review isolates modern personal names with Latin diacritics. The pipeline recommendations therefore rely on Unicode standards, HTR evidence, and risk controls rather than a claimed winning score.
 
-## Hyperscaler Managed Services
+## September 2026 Update
 
-Per this repository's conventions, managed services are noted only for the five major hyperscalers (AWS, Azure, GCP, IBM, Oracle). For most teams the **open-source-first** path (self-hosted specialist VLM, or Mistral OCR 3 as a managed API) is cheaper; the hyperscaler case rests on **compliance (SOC2/HIPAA/FedRAMP), SLAs, data residency, custom model training, and native cloud integration**.
+Jina-OCR-v1 was submitted on 2 September 2026. It reports 91.14 on OmniDocBench v1.6, 83.4 on olmOCR-Bench, and 2.57 pages per second. This makes it notable for throughput, not for top page-parsing accuracy. The paper links public weights, but the linked Hugging Face repository was unavailable when checked on 9 September 2026. Confirm availability and licence before adoption. [16]
 
-| Cloud | Service | OCR / basic | Structured extraction | 2026 notes |
-|---|---|---|---|---|
-| **AWS** | Textract | $1.50/1k ($0.60 >1M) | Forms+Tables+Queries $70/1k; Expense $10/1k | Custom Queries; S3/Lambda-native [33] |
-| **Azure** | AI Document Intelligence (ex–Form Recognizer) | Read ~$1.50/1k | Prebuilt ~$10–15/1k; Custom | New **custom *generative* extraction** tier; on-prem containers [31] |
-| **GCP** | Document AI | Enterprise OCR $1.50/1k ($0.60 >5M) | Form Parser / Custom $30/1k; Layout Parser $10/1k | Gemini-powered custom extractor priced same as custom model [32] |
-| **IBM** | **Docling** + watsonx Orchestrate | (no per-page API) | self-hosted workflow | IBM offers **open-source Docling** (Granite Docling model) on Code Engine, not a per-page OCR API [25][34] |
-| **Oracle** | OCI Document Understanding | per-transaction; 5,000 free/mo | OCR, Document Extraction, Custom Extraction, Custom Training | exact per-1k rates only via dynamic calculator [35] |
+The main conclusions are stable:
 
-Two structural points worth noting:
-
-- **IBM is the open-source-first hyperscaler here**: rather than a metered OCR endpoint, IBM ships the open **Docling** library and the compact **Granite Docling** model, deployed on your own infrastructure — which doubles as an excellent self-hostable option in any cloud. [25][34]
-- All three of AWS/Azure/GCP now offer **LLM/generative-AI-powered custom extraction** at the same price as their classic custom models — the frontier-VLM capability folded into the managed IDP stack. The broader 2026 trend is **"agentic IDP"**: document pipelines that combine extraction, reasoning, validation, routing, and action rather than just returning text. [32][36]
-
----
-
-## Use-Case Recommendations
-
-**By document type:**
-
-| Document type | Recommended approach |
-|---|---|
-| Clean printed text / scanned archives | PP-OCRv5 or Tesseract (self-hosted) |
-| Scientific papers / math / LaTeX | GOT-OCR 2.0 or dots.ocr (open); Gemini 3 Flash / GPT-5.x (frontier) |
-| Complex tables & forms → JSON | PaddleOCR-VL or Granite Docling (open); Claude Opus 4.6+ / Gemini 3 Pro (hardest) |
-| Invoices / receipts (IDP) | AWS Textract / Azure DI / Google Document AI; or Mistral OCR 3 + extraction |
-| Legal / medical (compliance) | Hyperscaler managed service; frontier VLM behind a compliant boundary |
-| Handwriting | Gemini 3.1 Pro or Mistral OCR 3; verify output |
-| Low-resource / non-Latin scripts | Surya or Google Document AI; Qwen3-VL / Gemini 3 Ultra |
-| Mixed/messy real-world documents | Frontier VLM (Gemini 3 / Claude Opus / GPT-5.x), with traditional cross-check |
-
-**By deployment constraint:**
-
-| Constraint | Recommended approach |
-|---|---|
-| Lowest cost at scale | Self-hosted PP-OCRv5 / DeepSeek-OCR2 |
-| Air-gapped / on-prem | PaddleOCR-VL, MinerU, Granite Docling, Azure DI containers |
-| Edge / mobile / CPU | PP-OCRv5 mobile (3.5 MB), Granite Docling (258M) |
-| Consumer GPU self-host | dots.ocr, GLM-OCR, Qwen3-VL-8B, olmOCR 2 |
-| Turn-key managed | Mistral OCR 3 (commodity) or a hyperscaler (enterprise) |
-
----
-
-## What Changed Since January 2026
-
-This article supersedes an internal January 2026 OCR survey. The five-month delta is substantial:
-
-- **The specialist lead changed three times.** PaddleOCR-VL-1.6 reached 96.33 in May, OvisOCR2 reached 96.58 in July, and NaviDC-OCR reached 96.87 in August on OmniDocBench v1.6. All are open-weight models below 1.5B parameters. [38][39][40]
-- **Specialist refreshes:** DeepSeek-OCR2 (Jan, Visual Causal Flow reading-order fix), dots.mocr (Mar), MinerU v3.1.0 (Apr). [9][19][20]
-- **Frontier cadence:** Claude Opus 4.6 (Feb 5) → 4.7 (Apr 16) → 4.8 (May 28); GPT-5.4 (Mar 5, ~1M context, native vision) → GPT-5.5 (~May); Gemini 3.1 Ultra (Mar, 2M context) and Gemini 3.5 Flash (May). [6]
-- **Dedicated OCR API:** Mistral OCR 3 (`mistral-ocr-2512`, Dec 2025) remains the latest; its $1–2/1k pricing reframed the managed market. [16][17]
-- **Benchmarks matured:** OmniDocBench v1.6, Real5-OmniDocBench and PureDocBench added; OCR Arena (human preference) gained prominence; the automated-vs-human-preference divergence became the key interpretive lesson. [3][9][39]
-- **Architecture consensus:** tiered/hybrid pipelines with traditional cross-checks displaced "send everything to a VLM" as best practice. [13][15]
-
----
-
-## Caveats and Areas of Uncertainty
-
-- **Benchmark versions are not comparable.** OmniDocBench v1.0/v1.5/v1.6 and OCRBench v1/v2 use different scales and datasets. All figures here are labelled by version; do not compare across them.
-- **Some proprietary OCR figures are provisional.** Vision metrics for the newest closed models (Claude Opus 4.8, GPT-5.5) lacked published OCR-specific benchmarks at writing; some cited percentages (e.g. "98.5% visual acuity") come from analytical blogs using non-standard metrics. [6]
-- **Leaderboard conflicts of interest.** The Nanonets-operated IDP Leaderboard ranks Nanonets OCR-3 #1; this is contested by other evaluators. [4]
-- **Hallucination is under-quantified.** The risk is well-documented qualitatively, but formal fabrication/omission-rate studies remain sparse as of mid-2026. [10][13]
-- **Pricing is approximate and changes.** Hyperscaler figures are from official pages where extractable; some (Oracle, parts of Azure) are behind dynamic calculators and are reported structurally. Self-hosting costs assume spot GPU pricing and exclude engineering overhead.
-- **Geographic/recency limits.** Research was English-language and current to 2026-08-31; the field moves monthly.
-
----
+1. Use **NaviDC-OCR** for leading open-weight full-page parsing in the cited v1.6 comparison.
+2. Use **PP-OCRv6** for compact printed or scene text and as an independent second pass.
+3. Use **Qwen3-VL-8B plus a fine-tuned line recogniser** for modern handwriting trials.
+4. Use **kraken/eScriptorium or pero-ocr** for trainable, auditable historical HTR.
+5. Use **OCRmyPDF** for searchable PDF/A output, not as the primary handwriting model.
+6. Treat every uncertain name and diacritic as a review item.
 
 ## References
 
-1. [Best LLM for OCR 2026: 7 Models Ranked](https://ofox.ai/blog/best-ai-model-for-ocr-2026/) — Ofox.ai (commercial aggregator; benchmark figures cross-referenced). Credibility: 6/10
-2. [The Definitive Guide to OCR in 2026: From Pipelines to VLMs](https://slavadubrov.github.io/blog/2026/03/04/the-definitive-guide-to-ocr-in-2026-from-pipelines-to-vlms/) — V. Dubrov (independent engineering blog). Credibility: 8/10
-3. [OCRBench v2 (official repo, NeurIPS 2025)](https://github.com/Yuliang-Liu/MultimodalOCR) — primary benchmark source. Credibility: 9.5/10
-4. [olmOCR-Bench / IDP Leaderboard](https://www.idp-leaderboard.org/benchmarks/olmocr/) — Nanonets-operated (note COI). Credibility: 8/10
-5. [OCRBench v2 Leaderboard](https://www.codesota.com/benchmark/ocrbench-v2) — aggregator. Credibility: 8.5/10
-6. [Gemini 3.5 Flash vs Claude Opus 4.7 vs GPT-5.5](https://www.aimadetools.com/blog/gemini-3-5-flash-vs-claude-opus-4-7-vs-gpt-5-5/) — comparison blog (affiliate). Credibility: 6.5/10
-7. [MinerU2.5-Pro: Pushing the Limits of Data-Centric Document Parsing at Scale](https://arxiv.org/abs/2604.04771) — arXiv (OpenDataLab). Credibility: 9/10
-8. [OmniDocBench 2026: Specialists Outperform Frontier](https://www.bestaiweb.ai/mineru-2-5-glm-ocr-and-gemini-3-pro-the-2026-omnidocbench-race-for-document-parsing-supremacy/) — analysis (cites primary sources). Credibility: 7.5/10
-9. [OmniDocBench v1.5 Leaderboard](https://www.idp-leaderboard.org/benchmarks/omnidocbench) and [DeepSeek-OCR 2: Visual Causal Flow](https://arxiv.org/abs/2601.20552) — IDP Leaderboard; arXiv. Credibility: 8–9/10
-10. [PP-OCRv5: A Specialized 5M-Parameter Model Rivaling Billion-Parameter VLMs](https://arxiv.org/abs/2603.24373) — CVPR 2026 (Baidu). Credibility: 9.5/10
-11. [Zero-shot OCR Accuracy of Low-Resourced Languages: Sinhala and Tamil](https://arxiv.org/abs/2507.18264) — RANLP 2025. Credibility: 9/10
-12. [GLM-OCR: Z.ai's 0.9B Model Tops Document Benchmarks](https://rits.shanghai.nyu.edu/ai/glm-ocr-z-ais-0-9b-model-takes-the-top-spot-on-document-understanding-benchmarks/) — NYU Shanghai. Credibility: 8.5/10
-13. [olmOCR-Bench Leaderboard 2026](https://voidsource.dev/en/ai/benchmarks/olmocr-bench) and self-hosting cost analysis — VoidSource; cost figures cross-referenced. Credibility: 8/10
-14. [Math PDF OCR Benchmark: Gemini Flash vs Mathpix](https://igorrivin.github.io/blog/ocr-benchmark/) — independent (small sample). Credibility: 7/10
-15. [Building a Local LLM-Powered Hybrid OCR Engine](https://www.ahnafnafee.dev/blog/local-llm-pdf-ocr) — developer blog with working code. Credibility: 6.5/10
-16. [Introducing Mistral OCR 3](https://mistral.ai/news/mistral-ocr-3/) — Mistral AI (official). Credibility: 9.5/10
-17. [Mistral OCR 3: $2/1000 Pages Cuts Document AI Costs 97%](https://byteiota.com/mistral-ocr-3-2-1000-pages-cuts-document-ai-costs-97/) — analysis (cross-checked vs official). Credibility: 7/10
-18. [PaddleOCR-VL-1.5 / 1.6 documentation](https://www.paddleocr.ai/main/en/index.html) — PaddlePaddle (official). Credibility: 8.5/10
-19. [DeepSeek-OCR (official repo)](https://github.com/deepseek-ai/DeepSeek-OCR) — DeepSeek-AI. Credibility: 9.5/10
-20. [dots.ocr (official repo)](https://github.com/rednote-hilab/dots.ocr) — rednote-hilab. Credibility: 9/10
-21. [olmOCR (official repo)](https://github.com/allenai/olmocr) — AllenAI. Credibility: 9.5/10
-22. [GOT-OCR 2.0 (official repo)](https://github.com/Ucas-HaoranWei/GOT-OCR2.0) — UCAS. Credibility: 9/10
-23. [NVIDIA Llama Nemotron Nano VL tops OCRBench](https://developer.nvidia.com/blog/new-nvidia-llama-nemotron-nano-vision-language-model-tops-ocr-benchmark-for-accuracy/) — NVIDIA (official). Credibility: 9/10
-24. [NVIDIA Nemotron Nano V2 VL](https://arxiv.org/abs/2511.03929) — arXiv (NVIDIA). Credibility: 9/10
-25. [IBM Granite Docling](https://www.ibm.com/granite/docs/models/docling) — IBM (official). Credibility: 9/10
-26. [Qwen3-VL GPU/VRAM guides](https://willitrunai.com/blog/qwen-3-gpu-requirements) — hardware sizing. Credibility: 7.5/10
-27. [InternVL (official repo)](https://github.com/OpenGVLab/InternVL) — OpenGVLab. Credibility: 9/10
-28. [Awesome OCR 2026: Costs, Latency and Scaling](https://github.com/WalidHadri-Iron/awesome-ocr-2026/blob/master/docs/10-costs-latency-and-scaling.md) — community. Credibility: 6.5/10
-29. [Surya OCR (official repo)](https://github.com/datalab-to/surya) — Datalab. Credibility: 8/10
-30. [Visual Prompt Injection (OCR Attacks)](https://genbounty.com/academy/adversarial-attacks/visual-prompt-injection-ocr) — security advisory. Credibility: 6/10
-31. [Azure AI Document Intelligence Pricing](https://azure.microsoft.com/en-us/pricing/details/document-intelligence/) — Microsoft (official). Credibility: 8/10
-32. [Google Document AI Pricing](https://cloud.google.com/document-ai/pricing) — Google Cloud (official). Credibility: 9.5/10
-33. [AWS Textract Pricing](https://aws.amazon.com/textract/pricing/) — AWS (official). Credibility: 9.5/10
-34. [IBM Docling (IBM Developer)](https://developer.ibm.com/components/docling/) — IBM (official). Credibility: 8.5/10
-35. [Oracle OCI Document Understanding](https://www.oracle.com/artificial-intelligence/document-understanding/) — Oracle (official). Credibility: 8/10
-36. [BenchmarkList OCRBench](https://benchmarklist.com/benchmarks/ocrbench/) and [API guide](https://benchmarklist.com/agents/) — verified source-linked OCRBench snapshot used for provenance.
-37. [Intelligent Document Processing: The Future of Automation (2026)](https://highpeaksw.com/intelligent-document-processing/) — consultancy analysis. Credibility: 7/10
-
-38. [NaviDC-OCR: Navigating Document Parsing Across Digital and Camera-Captured Documents](https://arxiv.org/abs/2608.12898) and [model weights](https://huggingface.co/StarDoc-AI/NaviDC-OCR) — primary paper and Apache-2.0 checkpoint; 1.2B parameters and 96.87 on OmniDocBench v1.6.
-39. [OvisOCR2 Technical Report](https://arxiv.org/abs/2607.13639) and [model weights](https://huggingface.co/ATH-MaaS/OvisOCR2) — primary paper and Apache-2.0 checkpoint; 0.8B parameters and 96.58 on OmniDocBench v1.6.
-40. [PaddleOCR-VL-1.6](https://arxiv.org/abs/2606.03264) and [model weights](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.6) — primary paper and Apache-2.0 checkpoint; 0.9B parameters and 96.33 on OmniDocBench v1.6.
-41. [Gemma 4 Technical Report](https://arxiv.org/abs/2607.02770) — primary source for family parameter counts and OmniDocBench v1.5 normalised edit distance.
-42. [HunyuanOCR-1.5: Making Lightweight OCR VLMs Faster and Better](https://arxiv.org/abs/2607.04884) and [model weights](https://huggingface.co/tencent/HunyuanOCR) — primary paper and downloadable checkpoint; 1B published parameters and 94.74 on OmniDocBench v1.6.
-43. [Ovis2.6-30B-A3B model weights](https://huggingface.co/ATH-MaaS/Ovis2.6-30B-A3B) and the [NaviDC-OCR common evaluation](https://arxiv.org/abs/2608.12898) — Apache-2.0 checkpoint; 30B total / 3B active parameters and 93.62 on OmniDocBench v1.6.
-44. [OmniDocBench official repository](https://github.com/opendatalab/OmniDocBench) — benchmark release notes and current evaluation tooling.
+1. [NaviDC-OCR: Navigating Document Parsing Across Digital and Camera-Captured Documents](https://arxiv.org/abs/2608.12898) — paper and common OmniDocBench v1.6 comparison.
+2. [OvisOCR2 Technical Report](https://arxiv.org/abs/2607.13639) — 0.8B page parser and benchmark results.
+3. [PaddleOCR-VL-1.6](https://arxiv.org/abs/2606.03264) — 0.9B document parser and benchmark results.
+4. [OmniHandwritingOCR](https://arxiv.org/abs/2608.18586) — CIKM 2026 diagnostic benchmark for handwritten text and formulas.
+5. [ICDAR 2026 Competition on Multilingual Medieval Handwriting Recognition: Results](https://cmmhwr26.inria.fr/results/) — multilingual, Occitan, and Czech CER/WER results.
+6. [kraken documentation](https://kraken.re/main/index.html) — open HTR engine, features, formats, and licence.
+7. [MEDUSA 0.1 model card](https://huggingface.co/ENC-PSL/Medusa0.1Line-4B) — open medieval multilingual HTR models and results.
+8. [PP-OCRv6 paper](https://arxiv.org/abs/2606.13108) — architecture and reported performance.
+9. [PP-OCRv6 official documentation](https://github.com/PaddlePaddle/PaddleOCR/blob/main/docs/version3.x/algorithm/PP-OCRv6/PP-OCRv6.en.md) — language coverage, diacritic dictionary, benchmarks, and deployment.
+10. [Unicode Standard Annex #15: Unicode Normalization Forms](https://www.unicode.org/reports/tr15/) — canonical Unicode normalisation.
+11. [Quality Assurance in OCR-D](https://ocr-d.de/en/spec/ocrd_eval.html) — grapheme-cluster and NFC conventions for OCR evaluation.
+12. [NaviDC-OCR model card](https://huggingface.co/StarDoc-AI/NaviDC-OCR) — Apache-2.0 weights, scope, and reported results.
+13. [OvisOCR2 model card](https://huggingface.co/ATH-MaaS/OvisOCR2) — Apache-2.0 weights, usage, and limitations.
+14. [PaddleOCR-VL-1.6 model card](https://huggingface.co/PaddlePaddle/PaddleOCR-VL-1.6) — Apache-2.0 weights and official pipeline use.
+15. [Unlimited OCR Works](https://arxiv.org/abs/2606.23050) and [code](https://github.com/baidu/Unlimited-OCR) — long-output architecture and MIT-licensed implementation.
+16. [Jina-OCR-v1](https://arxiv.org/abs/2609.03181) — 2 September 2026 paper and reported throughput.
+17. [IDP Leaderboard: OmniDocBench v1.5](https://www.idp-leaderboard.org/benchmarks/omnidocbench) — third-party source for the repository chart values.
+18. [Tesseract user manual](https://tesseract-ocr.github.io/tessdoc/) — Apache-2.0 engine and language data.
+19. [Qwen3-VL-8B-Instruct model card](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct) — Apache-2.0 weights and OCR language scope.
+20. [Nanonets-OCR2-3B model card](https://huggingface.co/nanonets/Nanonets-OCR2-3B) — multilingual handwriting scope; no licence field was present when checked.
+21. [eScriptorium](https://escriptorium.eu/about/) — open human-in-the-loop HTR platform.
+22. [TrOCR](https://arxiv.org/abs/2109.10282) and [handwritten model card](https://huggingface.co/microsoft/trocr-large-handwritten) — line-level transformer recogniser and IAM checkpoint.
+23. [pero-ocr](https://github.com/DCGM/pero-ocr) — open page and line OCR pipeline with ALTO/PAGE XML output.
+24. [OCRmyPDF](https://github.com/ocrmypdf/OCRmyPDF) — scanned-PDF preprocessing and searchable PDF/A output.
+25. [Amazon Textract quotas and supported text](https://docs.aws.amazon.com/textract/latest/dg/limits-document.html) — language, character, PDF, and handwriting limits.
+26. [Azure Document Intelligence OCR language support](https://learn.microsoft.com/en-us/azure/ai-services/document-intelligence/language-support/ocr?view=doc-intel-4.0.0) — Read and Layout language tables.
+27. [Google Cloud Vision OCR language support](https://cloud.google.com/vision/docs/languages) — language hints and handwriting script support.
+28. [Docling](https://docling.org/) — IBM Research's open local document conversion and parsing project.
+29. [OCI Document Understanding OCR](https://docs.oracle.com/en-us/iaas/Content/document-understanding/using/pretrained_doc_ocr.htm) — features, confidence, geometry, and English-only limit.

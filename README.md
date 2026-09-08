@@ -20,7 +20,7 @@ Tracked plot snapshots are generated with `python3 .scripts/plot_benchmarks.py -
 - [Cost versus intelligence](images/cost-per-intelligence.png) — Artificial Analysis Intelligence Index against a defined 1M-input + 1M-output workload cost
 - [Tool-use benchmarks](images/tool-use-benchmarks.png) — BFCL V4, τ-bench domains, and Toolathlon-Verified panels
 - [Agentic coding benchmarks](images/agentic-coding-benchmarks.png) — SWE-bench Pro, Terminal-Bench 2.1, and LiveCodeBench source observations
-- [Open-weight OCR efficiency](images/ocr-performance-vs-parameter-count.png) — Performance versus published parameter count for current OCR specialists and the Gemma 4 family
+- [Open-weight OCR efficiency](images/ocr-performance-vs-parameter-count.png) — Apples-for-apples OmniDocBench v1.5 overall scores for GLM-OCR and evaluated Gemma 4 variants
 
 ## Benchmark provenance
 
@@ -68,7 +68,7 @@ Articles are organised into topic folders. Survey-style articles compare options
 ## Multimodal understanding
 
 - [Local Multimodal Vision-Language Models](multimodal/local-multimodal-vision-language-models.md) — Open-source VLMs for image identification, interpretation, and detailed description running on local hardware
-- [OCR in 2026](multimodal/ocr-models.md) — Multimodal LLMs vs specialist and traditional OCR: benchmarks, when non-LLM solutions win, reliability, hybrid pipelines, cost, and hyperscaler services
+- [OCR in 2026](multimodal/ocr-models.md) — Open OCR models, handwritten PDFs, diacritic-safe name extraction, benchmarks, hybrid pipelines, and hyperscaler limits
 - [Local Audio Language Models](multimodal/local-audio-language-models.md) — Open-source audio LLMs (Qwen-Omni, Audio Flamingo, Kimi-Audio, Phi-4-mm, MiniCPM-o) for audio understanding and reasoning: model landscape, architecture, benchmarks (MMAU/MMAR), VRAM/inference, quantisation, licensing, and hyperscaler services
 - [Building Real-Time Tool-Using Voice Agents](multimodal/real-time-voice-llms.md) — Cascaded, native, and hybrid architectures; open and managed stacks; revision-aware tool protocols; deployment channels; safety controls; and evaluation
 - [Facial Recognition: Deepfake & Impersonation Detection](multimodal/facial-recognition-deepfake-impersonation-detection.md) — Modern face recognition plus the trust layers that defend it: PAD/liveness, injection detection, deepfake detection (foundation-model SOTA & the generalisation problem), morphing attack detection (NIST FATE MORPH), provenance (C2PA), demographic bias, hyperscaler liveness services, and standards/regulation (ISO 30107, FIDO, EU AI Act, BIPA)

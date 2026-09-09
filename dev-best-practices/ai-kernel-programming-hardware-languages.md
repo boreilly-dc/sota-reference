@@ -4,7 +4,7 @@
 |-------|-------|
 | Created | 2026-09-09 |
 | Last Updated | 2026-09-09 |
-| Version | 1.0 |
+| Version | 1.1 |
 
 ---
 
@@ -21,6 +21,8 @@
 - [Other data-centre AI accelerators](#other-data-centre-ai-accelerators)
 - [Mobile, embedded and browser accelerators](#mobile-embedded-and-browser-accelerators)
 - [Programming language matrix](#programming-language-matrix)
+- [Application framework matrix for seven languages](#application-framework-matrix-for-seven-languages)
+- [Language-specific guidance](#language-specific-guidance)
 - [Framework matrix](#framework-matrix)
 - [Kernel libraries by operation](#kernel-libraries-by-operation)
 - [Portability and performance](#portability-and-performance)
@@ -67,6 +69,11 @@ The main findings are:
 | Browser inference | ONNX Runtime Web or a WebGPU-native framework; WGSL only for true kernel gaps | WebGPU is the standard browser compute layer |
 | C++ product with portable GPU kernels | SYCL, Vulkan compute, or a backend abstraction with CUDA/HIP specialisations | Better application portability than a single-vendor API |
 | Rust-native product | Burn/CubeCL or `wgpu`/WGSL; use CUDA bindings only for NVIDIA-specific hot paths | Keeps most code in Rust while retaining an escape hatch |
+| Go-native model development | GoMLX; use ONNX Runtime through a maintained community wrapper for imported models | GoMLX supplies training and OpenXLA acceleration, while ONNX Runtime is better for portable inference |
+| JavaScript or TypeScript application | ONNX Runtime Web or Transformers.js for inference; TensorFlow.js when training is required | These routes support browser deployment and WebGPU without native application code |
+| C#/.NET application | ONNX Runtime or Windows ML for inference; TorchSharp for training | Uses maintained .NET APIs and native acceleration packages |
+| Swift application | Core ML for production; MLX Swift for research; Metal for custom GPU work | Matches Apple's supported deployment and research stacks |
+| Kotlin or Android application | LiteRT, ONNX Runtime Java or ExecuTorch; KotlinDL for Kotlin-native model development | Uses first-class Android/JVM APIs and available CPU, GPU or NPU backends |
 
 ## What an AI kernel is
 
@@ -410,6 +417,181 @@ Python kernel systems use one of these techniques:
 
 Normal Python features such as arbitrary objects, dynamic allocation, exceptions and unrestricted runtime control flow are generally unavailable inside device code. Each DSL has its own type, memory, synchronisation and control-flow rules.
 
+## Application framework matrix for seven languages
+
+This section covers **Python, Go, Rust, JavaScript/TypeScript, C#, Swift and Kotlin**. It distinguishes three capabilities:
+
+- **author and train:** define models, use automatic differentiation and optimise weights in the language;
+- **run inference:** load and execute a model that can have been trained elsewhere; and
+- **write kernels:** author accelerator code in the language, or in a compiled subset embedded in it.
+
+These capabilities are independent. For example, ONNX Runtime has strong C# inference support, but it is not a C# model-training framework or a C# kernel compiler.
+
+### Summary by language
+
+| Language | Best native framework choices | Training | Inference and serving | Direct custom-kernel options | Overall assessment |
+|---|---|---|---|---|---|
+| Python | PyTorch, JAX, TensorFlow/Keras, MLX | Excellent | Excellent | Triton, CuTe DSL, Pallas, NKI, Numba-CUDA, Helion, TileLang, Taichi | Primary language for model and kernel research |
+| Go | GoMLX; Gorgonia for established graph-style Go ML | Moderate, smaller ecosystem | Good through GoMLX, ONNX wrappers or service APIs | No mainstream Go-native AI kernel DSL; use XLA generation or C/C++/CUDA/HIP/Vulkan bindings | Good for Go-native services; weak for frontier kernel work |
+| Rust | Burn and Candle; `tch-rs` for LibTorch | Good in Burn; possible in Candle and `tch-rs` | Strong for native and embedded deployment | CubeCL; `wgpu`/WGSL; Rust-CUDA experiments; CUDA FFI | Best non-Python systems-language ecosystem in this set |
+| JavaScript/TypeScript | TensorFlow.js; Transformers.js; ONNX Runtime Web/Node | Supported by TensorFlow.js, but not the common large-model route | Excellent for browser inference; good in Node.js | WGSL/WebGPU; framework-specific WebGPU shader work | Best for web delivery, not accelerator-portable training |
+| C#/.NET | TorchSharp, ML.NET; ONNX Runtime for deployment | Good with TorchSharp; strong for classical ML with ML.NET | Strong, especially ONNX Runtime and Windows ML | ILGPU, ComputeSharp, or native CUDA/C++ extensions through interop | Strong Windows and enterprise application integration |
+| Swift | MLX Swift for research; Core ML for production; Swift Transformers around model loading/tokenisation | Supported by MLX Swift on Apple Silicon | Excellent on Apple platforms through Core ML and MLX | Host Metal from Swift; kernels are MSL; MLX custom-kernel support is lower-level | Best native Apple-platform option |
+| Kotlin | KotlinDL; JVM libraries such as DJL; LiteRT, ONNX Runtime and ExecuTorch on Android | Available through KotlinDL/TensorFlow Java, but narrower than Python | Strong on JVM and Android | No mainstream Kotlin device-kernel language; use JNI/NDK with Vulkan, OpenCL or C++ custom ops | Best for Android application integration and JVM inference |
+
+### Framework availability and role
+
+| Framework or runtime | Python | Go | Rust | JS/TS | C#/.NET | Swift | Kotlin | Main role |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| PyTorch | Native, primary | No maintained official binding | `tch-rs` over LibTorch | No general native API | TorchSharp over LibTorch | No general native API | No general native API | Training, research and deployment |
+| JAX | Native, primary | GoMLX uses OpenXLA concepts, not JAX bindings | No mainstream binding | No | No | No | No | Compiled research and TPU workloads |
+| TensorFlow/Keras | Native, primary | Official Go binding is archived or unsupported | Community bindings only | TensorFlow.js is a separate JS implementation/API | TensorFlow.NET is community-maintained | Swift for TensorFlow was archived in 2021 | TensorFlow Java under KotlinDL or direct JVM use | Training and deployment; maturity varies sharply by binding |
+| MLX | Native Python plus C/C++ APIs | No | No first-party Rust API | No | No | MLX Swift | No | Apple-focused research; Linux CPU/CUDA support also exists |
+| GoMLX | No | Native | No | Pure-Go backend can compile to WebAssembly | No | No | No | Go-native training and inference through OpenXLA or pure Go |
+| Gorgonia | No | Native | No | No | No | No | No | Go graph/autodiff and model training |
+| Burn | No | No | Native | Can deploy through Rust/WebAssembly and WebGPU paths | No | No | No | Rust-native training and inference |
+| Candle | No | No | Native | WebAssembly deployments are possible | No | No | No | Lightweight Rust model execution and training building blocks |
+| TensorFlow.js | No | No | No | Native | No | No | No | Browser and Node.js training/inference |
+| Transformers.js | No | No | No | Native | No | No | No | Pretrained transformer inference in browser and server JS |
+| ML.NET | No | No | No | No | Native | No | JVM interop is not a normal route | Classical ML and integration of selected deep-learning runtimes |
+| TorchSharp | No | No | No | No | Native .NET binding to LibTorch | No | No | PyTorch-style tensor work and training from C# |
+| KotlinDL | No | No | No | No | No | No | Native Kotlin API over TensorFlow Java and ONNX Runtime Java | JVM training and inference |
+| Core ML | Python conversion tools | No | Community/native interop possible | No | Binding work is not the standard route | Native | No | Apple deployment across CPU, GPU and ANE |
+| LiteRT | Python conversion and tooling | C/C++ binding possible; no primary Go API | C API bindings possible | Web path is separate | C API bindings possible | Swift/iOS APIs | Native Kotlin Android API | On-device inference across CPU, GPU and supported NPUs |
+| ExecuTorch | Python export workflow | C++ interop possible | C++ interop possible | No primary web route | C++ interop possible | Objective-C++/Swift integration | Java/Kotlin Android bindings | PyTorch model deployment on edge devices |
+| ONNX Runtime | Official | Community C-API wrappers | Community bindings such as `ort`; an in-repository Rust binding also exists | Official Web and Node.js packages | Official | Official Objective-C API is callable from Swift | Official Java API works from Kotlin | Cross-platform inference with execution providers |
+| OpenVINO | Official Python and C++ | Community or C API | Community or C API | Node.js API available in current distributions | C/C++ interop | C/C++ interop | Java API usable from Kotlin | Intel-focused inference and model optimisation |
+| DJL | No | No | No | No | No | No | Java API directly usable from Kotlin | JVM inference across PyTorch, TensorFlow, ONNX Runtime and other engines |
+
+**Interpretation rules:**
+
+- **Native** means the project publishes and documents an API for that language. It does not mean that the compute engine is implemented in that language.
+- **Binding** means the language calls a native runtime such as LibTorch or ONNX Runtime. Hardware support then depends on the native package and its execution providers.
+- **Community** means the binding is not the primary API maintained by the upstream framework. Check release activity and binary compatibility before adoption.
+- A blank or “No” means there is no mainstream supported route. Foreign-function interfaces can still make integration technically possible.
+
+### Hardware reach from each application language
+
+| Language | CPU | NVIDIA GPU | AMD GPU | Intel GPU/NPU | Apple GPU/ANE | Android GPU/NPU | TPU | AWS Trainium/Inferentia |
+|---|---|---|---|---|---|---|---|---|
+| Python | Native framework kernels | Excellent | Excellent on supported ROCm hardware | Good through XPU/OpenVINO; NPU through graph runtimes | Good through MLX/MPS/Core ML tools | Model conversion and runtime tooling | Excellent | Excellent through Neuron SDK |
+| Go | Excellent | GoMLX XLA or native wrappers; Gorgonia CUDA | Possible through XLA or C APIs; less established | XLA/C API routes; verify target | Limited native ecosystem | C/JNI-style integration is not Go's main deployment path | GoMLX XLA route | No mainstream native route |
+| Rust | Excellent | Burn/CubeCL, Candle, `tch-rs`, CUDA bindings | Burn/CubeCL; other paths vary | Vulkan/WebGPU or native bindings | Burn/CubeCL Metal and Candle Metal; Core ML interop | Rust native layer with Vulkan/WebGPU or C APIs | No mainstream native framework | No mainstream native route |
+| JS/TS | WebAssembly or Node native runtime | Browser WebGPU or Node TensorFlow native package | Browser WebGPU; direct vendor control is limited | WebGPU/WebNN or Windows/runtime package | Browser WebGPU; Core ML needs native bridge | Browser/WebView paths or React Native package | No direct browser TPU path | Service API rather than local runtime |
+| C#/.NET | Excellent | TorchSharp CUDA, ONNX Runtime CUDA, ILGPU | ONNX Runtime/provider-dependent; less direct than CUDA | OpenVINO, Windows ML and compatible EPs | Limited; native Apple APIs favour Swift/Objective-C | Xamarin/.NET Android plus native runtime bindings | No mainstream native route | Service or native-runtime interop |
+| Swift | Excellent on Apple | MLX CUDA support is not a general Swift deployment target; use C/C++ interop if required | No mainstream route | No mainstream route | Excellent through Core ML, MLX Swift and Metal | Not an Android target | No mainstream native route | Service API |
+| Kotlin | Excellent on JVM/Android | JVM engines or ONNX Runtime on servers | JVM engines/provider-dependent | OpenVINO/JVM and Android runtime paths | Not a primary Apple-platform route | Excellent through LiteRT, ONNX Runtime and ExecuTorch | No mainstream native route | Service API or Java native integration |
+
+Hardware cells describe practical routes, not guaranteed support for every device or operation. Validate the exact package, operating system and execution provider.
+
+## Language-specific guidance
+
+### Python
+
+Python is the only language in this set with first-class coverage from model authoring down to multiple accelerator-specific kernel DSLs.
+
+Use:
+
+- **PyTorch** for the broadest model ecosystem and CUDA/ROCm deployment;
+- **JAX** for functional compilation, research and TPU;
+- **TensorFlow/Keras** where its deployment stack or existing estate is required;
+- **MLX** for Apple Silicon research and local models;
+- **ONNX Runtime** for inference portability; and
+- **Triton, CuTe DSL, Pallas or NKI** for custom kernels on their supported targets.
+
+Python remains the reference implementation language even when production inference runs in another language. Export model artefacts and record preprocessing, tokenisation and numerical assumptions with them.
+
+### Go
+
+Go has credible native ML options, but it does not have Python's framework or kernel-library depth.
+
+- **GoMLX** is the strongest Go-native option for tensor code, automatic differentiation, model training and inference. It offers an OpenXLA backend and a pure-Go backend. The project states that XLA can target CPU, NVIDIA GPU and TPU, while other GPU targets need explicit validation. The pure-Go backend also supports WebAssembly.
+- **Gorgonia** provides graph computation and automatic differentiation in Go. It has CUDA support, but its ecosystem and current operator coverage are smaller than PyTorch's.
+- **ONNX inference** normally uses a community Go wrapper over ONNX Runtime's C API. ONNX Runtime does not list Go among its primary official high-level APIs. Treat wrapper maintenance and native-library packaging as project responsibilities.
+- **TensorFlow Go** is listed by TensorFlow as archived or unsupported. Do not start a new system on it unless the project accepts ownership of the binding.
+
+Go has no mainstream Go-syntax equivalent to Triton, Pallas or CubeCL. For a custom GPU operation, use one of these patterns:
+
+1. let GoMLX/XLA generate it;
+2. call a C ABI around CUDA, HIP, SYCL, Vulkan or a vendor library;
+3. implement a service boundary to a Python/C++ accelerator component; or
+4. keep inference in ONNX Runtime and implement a custom ONNX operator in C++.
+
+**Recommended use:** Go for serving, orchestration and CPU-heavy pipelines; GoMLX when the team explicitly wants Go-native training. Use a native extension for specialised kernels.
+
+### Rust
+
+Rust has the strongest native systems-language AI ecosystem among the requested non-Python languages.
+
+- **Burn** supports training and inference. Its current preferred accelerated backends use CubeCL for CUDA, ROCm, Metal, Vulkan, WebGPU and CPU. The older LibTorch backend is deprecated in current Burn documentation.
+- **CubeCL** is a Rust kernel language extension, JIT compiler and runtime. A `#[cube]` function can target CUDA, HIP, Metal, SPIR-V, WGSL or CPU SIMD. The project marks its public API as alpha, so pin versions and expect change.
+- **Candle** is a lightweight Rust ML framework with CPU, CUDA and Metal support. It is well suited to model inference and compact deployments; it also contains training primitives.
+- **`tch-rs`** binds LibTorch. It gives Rust access to PyTorch tensor operations and CUDA support when the linked LibTorch distribution includes CUDA, but it inherits native packaging and API-version coupling.
+- **ONNX Runtime** can be used through Rust bindings, including the repository binding and community `ort` crate.
+- **`wgpu` and WGSL** give a portable low-level GPU route. **Rust-CUDA** and CUDA wrappers provide NVIDIA-specific routes, but they are less mature than CUDA C++.
+
+**Recommended use:** Burn for Rust-native training and portable acceleration; Candle for small native inference applications; ONNX Runtime for imported models; CubeCL only when the team wants to own Rust kernels and accepts an evolving API.
+
+### JavaScript and TypeScript
+
+JavaScript and TypeScript are strongest for browser and application-layer inference.
+
+- **TensorFlow.js** supports training and inference in browsers and Node.js. Browser backends include WebGL, WebGPU and CPU/WASM options. The Node package can call the TensorFlow C library and use available native acceleration, including CUDA where the package and platform support it.
+- **ONNX Runtime Web** provides WebAssembly and WebGPU execution in browsers. ONNX Runtime also publishes Node.js packages. Operator support and model size limits differ by backend.
+- **Transformers.js** provides a transformers-style API for pretrained models and uses browser/runtime acceleration, including WebGPU for supported models.
+- **WebGPU/WGSL** is the direct custom-kernel route. TypeScript configures pipelines and buffers; WGSL defines the device code.
+
+JavaScript frameworks can train small and medium models, but browser memory, shader capability, compilation latency and tab lifecycle make browser-based large-model training impractical. Node.js native packages are wrappers over C/C++ runtimes rather than JavaScript kernel compilers.
+
+**Recommended use:** ONNX Runtime Web or Transformers.js for browser inference, TensorFlow.js when in-browser training or its API is required, and direct WGSL only for a measured missing operation.
+
+### C# and .NET
+
+C# has strong model consumption and useful training options, especially on Windows.
+
+- **TorchSharp** is a .NET Foundation binding to LibTorch. It supports PyTorch-style tensors, neural networks, automatic differentiation and training. CUDA availability depends on the selected native LibTorch package. It is a binding, so Python-only PyTorch packages and custom Python kernels do not become C# APIs automatically.
+- **ML.NET** is Microsoft's cross-platform .NET ML framework. It is strong for classical ML, data transforms and integrating selected deep-learning models. It is not a replacement for the complete PyTorch research ecosystem.
+- **ONNX Runtime C#** is the default for portable inference. Execution-provider availability depends on the native NuGet package or custom build. Relevant paths include CPU, CUDA, DirectML, OpenVINO, TensorRT, Core ML and QNN, but not every provider is packaged for every .NET target.
+- **Windows ML** supplies a Windows-managed ONNX Runtime path and can select hardware-specific execution providers for CPU, GPU or NPU.
+- **TensorFlow.NET** is community-maintained. Treat it as a binding with separate compatibility risk, not as an official peer of Python TensorFlow.
+
+C# has two notable kernel-writing options:
+
+- **ILGPU** JIT-compiles a subset of .NET code to CPU, CUDA and OpenCL accelerators.
+- **ComputeSharp** translates supported C# compute-shader code to HLSL and runs it through DirectX 12.
+
+Neither supplies the AI-specific kernel ecosystem of Triton, CUTLASS or cuDNN. They suit custom parallel operations and application-local preprocessing more than frontier transformer kernel development.
+
+**Recommended use:** ONNX Runtime or Windows ML for production inference, TorchSharp for .NET-native model training, and C++/CUDA extensions when a performance-critical AI kernel is required.
+
+### Swift
+
+Swift is the primary application language for Apple platforms.
+
+- **Core ML** is the production deployment choice. It can schedule supported models across Apple CPU, GPU and ANE.
+- **MLX Swift** provides Swift APIs for MLX tensors, neural networks, automatic differentiation and optimisers. Apple and Swift documentation position it for research and experimentation rather than as the default production app runtime.
+- **Swift Transformers** supplies model download, tokenisation, chat templates and integration utilities around local Apple model runtimes. It is not itself a general tensor compiler.
+- **Metal** is available from Swift for command encoding, memory and pipeline control. The device kernel is still written in Metal Shading Language.
+- **ONNX Runtime** provides an Objective-C API for iOS and documents its use from Swift when ONNX deployment is required.
+
+**Swift for TensorFlow is archived** and must not be selected for a new project.
+
+**Recommended use:** Train or adapt with Python or MLX Swift, convert stable application models to Core ML, and use MSL only for Apple GPU operations that Core ML or MPSGraph cannot express. No public Swift or MSL path writes arbitrary ANE kernels.
+
+### Kotlin
+
+Kotlin inherits the JVM ecosystem and has first-class Android application support.
+
+- **KotlinDL** is a Keras-inspired Kotlin API. It uses TensorFlow Java for training and ONNX Runtime Java for ONNX inference. This gives real Kotlin model APIs, but operator breadth and community size are smaller than Python's.
+- **LiteRT CompiledModel Kotlin API** is the main new Android inference route. It provides accelerator-first execution across CPU, GPU and supported NPUs without making Kotlin a device-kernel language.
+- **ONNX Runtime Java** works directly from Kotlin. On Android it can use NNAPI and, with the correct package and configuration, vendor execution providers such as QNN.
+- **ExecuTorch** provides Java/Kotlin Android bindings for models exported from PyTorch.
+- **Deep Java Library (DJL)** is callable from Kotlin and can host engines such as PyTorch, TensorFlow and ONNX Runtime. It is useful for JVM inference and service integration.
+
+Kotlin does not have a mainstream device-kernel DSL. For custom Android GPU compute, Kotlin calls native Vulkan or OpenGL/compute infrastructure through JNI/NDK or a wrapper; the shader is SPIR-V-generating source such as GLSL, not ordinary Kotlin. RenderScript is deprecated. Custom NPU operations depend on the vendor SDK and are often unavailable through the high-level Kotlin API.
+
+**Recommended use:** LiteRT or ExecuTorch for Android, ONNX Runtime Java for portable JVM/Android inference, and KotlinDL only when the team explicitly needs Kotlin-native model definition or training.
+
 ## Framework matrix
 
 A framework's hardware support and its custom-kernel support are separate properties. "Yes" below means a documented, practical route exists. It does not mean complete operator parity across all devices.
@@ -627,6 +809,7 @@ Test empty tensors, non-contiguous layouts, alignment, tails, large indices, NaN
 8. **Treat mobile NPUs as graph compilers unless a documented custom-operator SDK is available to the project.** Do not design around an assumed low-level NPU API.
 9. **Profile end to end.** Kernel duration alone can hide graph breaks, copies, compilation, launch overhead and collective costs.
 10. **Track software versions with benchmark results.** Kernel behaviour changes with compiler, library, driver, firmware and architecture releases.
+11. **Choose application frameworks by language and workload.** Use Python for kernel research, Go for Go-native services or GoMLX, Rust for native training and portable kernels, JS/TS for browser inference, C# for .NET and Windows integration, Swift for Apple platforms, and Kotlin for Android or JVM deployment.
 
 ## References
 
@@ -641,6 +824,11 @@ Test empty tensors, non-contiguous layouts, alignment, tails, large indices, NaN
 - IREE documentation: https://iree.dev/
 - Apache TVM documentation: https://tvm.apache.org/docs/
 - ONNX Runtime execution providers: https://onnxruntime.ai/docs/execution-providers/
+- ONNX Runtime API documentation: https://onnxruntime.ai/docs/api/
+- ONNX Runtime JavaScript API: https://onnxruntime.ai/docs/get-started/with-javascript/
+- ONNX Runtime C# API: https://onnxruntime.ai/docs/get-started/with-csharp.html
+- ONNX Runtime Java API: https://onnxruntime.ai/docs/get-started/with-java.html
+- ONNX Runtime Objective-C and Swift use: https://onnxruntime.ai/docs/get-started/with-obj-c.html
 
 ### NVIDIA
 
@@ -715,6 +903,28 @@ Test empty tensors, non-contiguous layouts, alignment, tails, large indices, NaN
 - Khronos, OpenCL: https://www.khronos.org/opencl/
 - WebGPU project: https://webgpu.org/
 - ONNX Runtime WebGPU: https://onnxruntime.ai/docs/tutorials/web/ep-webgpu.html
+
+### Application languages
+
+- GoMLX: https://gomlx.github.io/
+- Gorgonia: https://gorgonia.org/
+- TensorFlow language APIs and unsupported bindings: https://www.tensorflow.org/api_docs
+- Burn: https://burn.dev/
+- Candle: https://huggingface.github.io/candle/
+- `tch-rs`: https://github.com/LaurentMazare/tch-rs
+- TensorFlow.js: https://www.tensorflow.org/js
+- Transformers.js: https://huggingface.co/docs/transformers.js/index
+- ML.NET: https://dotnet.microsoft.com/en-us/apps/ai/ml-dotnet
+- TorchSharp: https://github.com/dotnet/TorchSharp
+- ILGPU: https://ilgpu.net/
+- ComputeSharp: https://github.com/Sergio0694/ComputeSharp
+- MLX Swift: https://www.swift.org/blog/mlx-swift/
+- Swift Transformers: https://github.com/huggingface/swift-transformers
+- Swift for TensorFlow archive: https://github.com/tensorflow/swift
+- KotlinDL: https://github.com/Kotlin/kotlindl
+- LiteRT Kotlin API: https://developers.google.com/edge/litert/next/android_kotlin
+- ExecuTorch Android Java/Kotlin API: https://docs.pytorch.org/executorch/stable/using-executorch-android.html
+- Deep Java Library: https://docs.djl.ai/master/docs/
 
 ### Emerging language and kernel projects
 

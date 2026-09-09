@@ -81,6 +81,7 @@ Articles are organised into topic folders. Survey-style articles compare options
 
 ## Developer best practices
 
+- [AI Kernel Programming Across Hardware and Languages](dev-best-practices/ai-kernel-programming-hardware-languages.md) — Kernel languages, libraries, compilers, framework backends, and portability trade-offs across GPUs, CPUs, TPUs, cloud accelerators, NPUs, and browsers
 - [Prompting Best Practices](dev-best-practices/prompting.md) — Prompting techniques, prompt storage patterns, CI/CD testing, and multi-cloud management for professional services
 - [Azure AI Development Best Practices](dev-best-practices/azure-ai-development.md) — Platform architecture, RAG, agents, security, cost management, and evaluation for building AI systems on Azure in 2026
 - [AWS AI Development Best Practices](dev-best-practices/aws-ai-development.md) — Bedrock platform, RAG (Knowledge Bases + S3 Vectors), AgentCore, Guardrails, cost management, and evaluation for building AI systems on AWS in 2026
